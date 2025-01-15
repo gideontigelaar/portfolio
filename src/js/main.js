@@ -28,3 +28,8 @@ function applyTransition(element, action, duration = 200) {
         }, duration);
     }
 }
+
+function addYear() {
+    const year = document.getElementById('copyrightYear');
+    year.innerText = parseInt(year.innerText) + 1;
+}
