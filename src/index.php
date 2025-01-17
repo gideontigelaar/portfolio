@@ -1,3 +1,9 @@
+<?php
+if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
+    http_response_code(404);
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
     <head>
@@ -242,7 +248,7 @@
             </main>
 
             <footer class="flex justify-center items-center bg-zinc-50 dark:bg-zinc-950 py-4 text-sm opacity-75">
-                <span>&copy; <span class="cursor-pointer select-none" id="copyrightYear" onclick="addYear()"><?= date('Y') ?></span> - Gideon Tigelaar</span>
+                <span>&copy; <span class="cursor-pointer select-none" id="copyrightYear" role="button" onclick="addYear()"><?= date('Y') ?></span> - Gideon Tigelaar</span>
             </footer>
         </div>
     </body>
