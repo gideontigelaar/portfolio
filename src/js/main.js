@@ -1,5 +1,5 @@
 function copyEmail() {
-    navigator.clipboard.writeText('g.tigelaar@student.alfa-college.nl');
+    navigator.clipboard.writeText('g.tigelaar@st.hanze.nl');
 
     setTimeout(() => {
         alert('Email copied to clipboard!');
