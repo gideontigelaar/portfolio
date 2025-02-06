@@ -71,7 +71,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                     <div class="py-20 flex flex-col gap-3">
                         <img src="https://avatars.githubusercontent.com/gideontigelaar" class="rounded-full" alt="Gideon Tigelaar" width="100" height="100">
                         <h1 class="font-bold text-3xl">Gideon Tigelaar</h1>
-                        <p class="opacity-75 max-w-[500px]">I'm currently studying software development at Alfa-college in Groningen, the Netherlands. My particular interest lies in web development, and I'm actively building on my skills in this area.</p>
+                        <p class="opacity-75 max-w-[500px]">I'm a <?= (new DateTime('2004-11-23'))->diff(new DateTime())->y ?>-year-old software engineering student from the Netherlands, currently working as a PHP Developer at Dotsimpel. I'm particularly interested in web development and have been actively building my skills in this area.</p>
                     </div>
                 </section>
 
@@ -102,7 +102,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                         <div class="relative h-full w-full rounded-2xl border border-2 border-zinc-200 dark:border-zinc-800 text-sm bg-zinc-100 dark:bg-zinc-900 shadow-sm col-span-1 row-span-1 overflow-hidden aspect-square">
                             <a href="https://whisp.gideontigelaar.com/" target="_blank">
-                                <img src="/src/images/whisp-logo.webp" alt="Whisp" width="100%" height="100%">
+                                <img src="/src/images/whisp-logo.png" alt="Whisp" width="100%" height="100%">
                             </a>
                         </div>
 
@@ -120,16 +120,16 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                             <div class="hidden md:grid grid-cols-2 gap-3">
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-1.webp" class="object-cover" alt="Photo 1">
+                                    <img src="/src/images/photos/photo-1.png" class="object-cover" alt="Photo 1">
                                 </a>
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-2.webp" class="object-cover" alt="Photo 2">
+                                    <img src="/src/images/photos/photo-2.png" class="object-cover" alt="Photo 2">
                                 </a>
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-3.webp" class="object-cover" alt="Photo 3">
+                                    <img src="/src/images/photos/photo-3.png" class="object-cover" alt="Photo 3">
                                 </a>
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-4.webp" class="object-cover" alt="Photo 4">
+                                    <img src="/src/images/photos/photo-4.png" class="object-cover" alt="Photo 4">
                                 </a>
                             </div>
                         </div>
@@ -142,39 +142,54 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                         <div class="grid grid-cols-2 gap-12 sm:gap-6">
                             <div class="col-span-2 sm:col-span-1">
-                                <p class="opacity-75">I'm currently studying software development at Alfa-college in Groningen, the Netherlands. My particular interest lies in web development, and I'm actively building on my skills in this area.<br><br>My interest in software development began in 2015 when I dived into creating simple games in Unity3D. A few years later, I built my own Discord bot. That's when I realized that programming is my thing!</p>
+                                <p class="opacity-75">I'm currently studying software development at Alfa-college in Groningen, the Netherlands. My particular interest lies in web development, and I'm actively building on my skills in this area.<br><br>My interest in software development began in 2015 when I dived into creating simple games in Unity3D. A few years later, I built my own Discord bot. That's when I realized that programming is my thing!<br><br>Amet aliqua est qui nulla minim. Cillum laboris do deserunt consequat nostrud est. Consequat consectetur Lorem magna enim nulla ex ex non. Culpa dolor deserunt ad non non anim aliquip laboris proident consectetur exercitation aute fugiat est.</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1 flex flex-col gap-6">
+                                <h3 class="font-semibold text-xl">Work Experience</h3>
+
+                                <a href="https://www.dotsimpel.nl/" target="_blank" class="flex gap-3">
+                                    <img src="/src/images/companies/dotsimpel.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Dotsimpel Logo" width="50" height="50">
+                                    <div class="flex flex-col w-full">
+                                        <span class="opacity-100">PHP Web Developer</span>
+                                        <div class="flex justify-between">
+                                            <span class="opacity-75">Dotsimpel</span>
+                                            <span class="opacity-75">2025 - Now</span>
+                                        </div>
+                                    </div>
+                                </a>
+
                                 <a href="https://www.aldi.nl/" target="_blank" class="flex gap-3">
-                                    <img src="/src/images/companies/aldi-nord.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Company logo" width="50" height="50">
+                                    <img src="/src/images/companies/aldi-nord.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="ALDI Nord Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
                                         <span class="opacity-100">Assistant Store Manager</span>
                                         <div class="flex justify-between">
-                                            <span class="opacity-75">ALDI</span>
+                                            <span class="opacity-75">ALDI Nederland</span>
                                             <span class="opacity-75">2024 - Now</span>
                                         </div>
                                     </div>
                                 </a>
 
-                                <a href="https://www.dotsimpel.nl/" target="_blank" class="flex gap-3">
-                                    <img src="/src/images/companies/dotsimpel.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Company logo" width="50" height="50">
+                                <h3 class="font-semibold text-xl">Education</h3>
+
+                                <a href="https://www.hanze.nl/" target="_blank" class="flex gap-3">
+                                    <img src="/src/images/companies/hanze.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Hanze Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
-                                        <span class="opacity-100">PHP Developer Internship</span>
+                                        <span class="opacity-100">Bachelor, Software Engineering</span>
                                         <div class="flex justify-between">
-                                            <span class="opacity-75">Dotsimpel</span>
-                                            <span class="opacity-75">2023 - Now</span>
+                                            <span class="opacity-75">Hanze</span>
+                                            <span class="opacity-75">Sept. 2025</span>
                                         </div>
                                     </div>
                                 </a>
 
                                 <a href="https://www.alfa-college.nl/" target="_blank" class="flex gap-3">
-                                    <img src="/src/images/companies/alfa-college.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Company logo" width="50" height="50">
+                                    <img src="/src/images/companies/alfa-college.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Alfa-college Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
-                                        <span class="opacity-100">Software Developer Student</span>
+                                        <span class="opacity-100">MBO 4, Software Development</span>
                                         <div class="flex justify-between">
                                             <span class="opacity-75">Alfa-college</span>
-                                            <span class="opacity-75">2021 - Now</span>
+                                            <span class="opacity-75">2021 - 2025</span>
                                         </div>
                                     </div>
                                 </a>
@@ -191,33 +206,33 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                         </div>
 
                         <div class="grid grid-cols-1 gap-12 sm:gap-6">
+                            <a href="https://github.com/gideontigelaar/mila" target="_blank" class="grid grid-cols-3 gap-4">
+                                <div class="col-span-3 sm:col-span-1">
+                                    <img src="/src/images/projects/mila.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Mila Project Image">
+                                </div>
+                                <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
+                                    <span class="text-lg opacity-100">Mila<span class="opacity-75"> • 2025</span></span>
+                                    <span class="opacity-75">A real-time portfolio tracker with Trading 212 integration. Built with Next.js and Tailwind CSS for maximum efficiency.</span>
+                                </div>
+                            </a>
+
+                            <a href="https://github.com/gideontigelaar/fiscariep" target="_blank" class="grid grid-cols-3 gap-4">
+                                <div class="col-span-3 sm:col-span-1">
+                                    <img src="/src/images/projects/fiscariep.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Fiscariep Project Image">
+                                </div>
+                                <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
+                                    <span class="text-lg opacity-100">Fiscariep<span class="opacity-75"> • 2024</span></span>
+                                    <span class="opacity-75">A print job management system where customers can upload their files and receive a quote. Built for a school project.</span>
+                                </div>
+                            </a>
+
                             <a href="https://github.com/gideontigelaar/whisp" target="_blank" class="grid grid-cols-3 gap-4">
                                 <div class="col-span-3 sm:col-span-1">
-                                    <img src="/src/images/projects/whisp.webp" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Project 1">
+                                    <img src="/src/images/projects/whisp.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Whisp Project Image">
                                 </div>
                                 <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
                                     <span class="text-lg opacity-100">Whisp<span class="opacity-75"> • 2024</span></span>
-                                    <span class="opacity-75">A social media website made for interactions between developers. Built with Bootstrap, PHP, and JavaScript to make it as efficient as possible.</span>
-                                </div>
-                            </a>
-
-                            <a href="" target="_blank" class="grid grid-cols-3 gap-4">
-                                <div class="col-span-3 sm:col-span-1">
-                                    <img src="/src/images/projects/rt2d-bomberman.webp" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Project 2">
-                                </div>
-                                <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
-                                    <span class="text-lg opacity-100">RT2D Bomberman<span class="opacity-75"> • 2023</span></span>
-                                    <span class="opacity-75">A Bomberman-like game made using the OpenGL Framework 'RT2D', and documented using Doxygen.</span>
-                                </div>
-                            </a>
-
-                            <a href="" target="_blank" class="grid grid-cols-3 gap-4">
-                                <div class="col-span-3 sm:col-span-1">
-                                    <img src="/src/images/projects/project-architecture.webp" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Project 3">
-                                </div>
-                                <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
-                                    <span class="text-lg opacity-100">Project Architecture<span class="opacity-75"> • 2022</span></span>
-                                    <span class="opacity-75">A game made in Unity3D that showcases custom models made in Blender. In the game, you repair an interactive village that was destroyed by a monster.</span>
+                                    <span class="opacity-75">A social media platform made for developers to interact with each other. Built with Bootstrap, PHP, and JavaScript to make it as maintainable as possible.</span>
                                 </div>
                             </a>
                         </div>
@@ -248,7 +263,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
             </main>
 
             <footer class="flex justify-center items-center bg-zinc-50 dark:bg-zinc-950 py-4 text-sm opacity-75">
-                <span>&copy; <span class="cursor-pointer select-none" id="copyrightYear" role="button" onclick="addYear()"><?= date('Y') ?></span> - Gideon Tigelaar</span>
+                <span>&copy; <span class="cursor-pointer select-none touch-manipulation" id="copyrightYear" role="button" onclick="addYear()"><?= date('Y') ?></span> - Gideon Tigelaar</span>
             </footer>
         </div>
     </body>
