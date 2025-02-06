@@ -142,7 +142,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                         <div class="grid grid-cols-2 gap-12 sm:gap-6">
                             <div class="col-span-2 sm:col-span-1">
-                                <p class="opacity-75">I'm currently studying software development at Alfa-college in Groningen, the Netherlands. My particular interest lies in web development, and I'm actively building on my skills in this area.<br><br>My interest in software development began in 2015 when I dived into creating simple games in Unity3D. A few years later, I built my own Discord bot. That's when I realized that programming is my thing!<br><br>Amet aliqua est qui nulla minim. Cillum laboris do deserunt consequat nostrud est. Consequat consectetur Lorem magna enim nulla ex ex non. Culpa dolor deserunt ad non non anim aliquip laboris proident consectetur exercitation aute fugiat est.</p>
+                                <p class="opacity-75">I'm a software engineering student from the Netherlands, currently working as a PHP Developer at Dotsimpel. I'm particularly interested in web development and have been actively building my skills in this area.<br><br>My interest in software development began in 2015 when I dived into creating simple games in Unity3D. A few years later, I built my own Discord bot. That's when I realized that programming is my thing!<br><br>For the last year, I've been learning and enjoying all aspects of web development. I even finished a few projects already, like a print job management system and a social media application. Check out my projects below for more information!</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1 flex flex-col gap-6">
