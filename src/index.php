@@ -15,18 +15,18 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
         <link rel="canonical" href="https://gideontigelaar.com/">
 
-        <link href="/src/css/output.css" rel="stylesheet">
-        <link rel="preload" href="/src/fonts/Manrope-ExtraLight.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-        <link rel="preload" href="/src/fonts/Manrope-Light.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-        <link rel="preload" href="/src/fonts/Manrope-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-        <link rel="preload" href="/src/fonts/Manrope-Medium.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-        <link rel="preload" href="/src/fonts/Manrope-SemiBold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-        <link rel="preload" href="/src/fonts/Manrope-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-        <link rel="preload" href="/src/fonts/Manrope-ExtraBold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link href="src/css/output.css" rel="stylesheet">
+        <link rel="preload" href="src/fonts/Manrope-ExtraLight.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="src/fonts/Manrope-Light.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="src/fonts/Manrope-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="src/fonts/Manrope-Medium.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="src/fonts/Manrope-SemiBold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="src/fonts/Manrope-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="src/fonts/Manrope-ExtraBold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 
-        <script src="/src/js/main.js" defer></script>
-        <script src="/src/js/theme.js"></script>
+        <script src="src/js/main.js" defer></script>
+        <script src="src/js/theme.js"></script>
     </head>
 
     <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 font-medium" id="home">
@@ -49,12 +49,11 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                     <i class="ph ph-sun text-[1.5rem] flex items-center hidden" id="sunIcon"></i>
                 </button>
 
-              <div class="absolute right-0 top-full w-36 z-10 bg-white dark:bg-black shadow-md rounded-2xl p-2 text-sm hidden transform" id="themePopup">
-                <div class="">
+                <div class="absolute right-0 top-full w-36 z-10 bg-white dark:bg-black shadow-md rounded-2xl p-2 text-sm hidden transform" id="themePopup">
                     <button class="flex justify-between items-center gap-2 rounded-lg px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 w-full" onclick="setTheme('light')" aria-label="Switch to light theme" role="button">
                         <span>Light</span>
                         <i class="ph ph-check text-[1rem] flex items-center hidden" aria-hidden="true" id="themeCheck1"></i>
-                    </div>
+                    </button>
                     <button class="flex justify-between items-center gap-2 rounded-lg px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 w-full" onclick="setTheme('dark')" aria-label="Switch to dark theme" role="button">
                         <span>Dark</span>
                         <i class="ph ph-check text-[1rem] flex items-center hidden" aria-hidden="true" id="themeCheck2"></i>
@@ -83,12 +82,12 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                                     <span class="text-2xl">Languages I use</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <img src="/src/images/skillicons/php-logo.svg" alt="PHP" width="50" height="50">
-                                    <img src="/src/images/skillicons/css-logo.svg" alt="CSS" width="50" height="50">
-                                    <img src="/src/images/skillicons/mysql-logo.svg" alt="MySQL" width="50" height="50">
-                                    <img src="/src/images/skillicons/js-logo.svg" alt="JavaScript" width="50" height="50">
-                                    <img src="/src/images/skillicons/cpp-logo.svg" alt="C++" width="50" height="50">
-                                    <img src="/src/images/skillicons/cs-logo.svg" class="hidden md:block" alt="C#" width="50" height="50">
+                                    <img src="src/images/logos/languages/php-logo.svg" alt="PHP" width="50" height="50">
+                                    <img src="src/images/logos/languages/css-logo.svg" alt="CSS" width="50" height="50">
+                                    <img src="src/images/logos/languages/mysql-logo.svg" alt="MySQL" width="50" height="50">
+                                    <img src="src/images/logos/languages/js-logo.svg" alt="JavaScript" width="50" height="50">
+                                    <img src="src/images/logos/languages/cpp-logo.svg" alt="C++" width="50" height="50">
+                                    <img src="src/images/logos/languages/cs-logo.svg" class="hidden md:block" alt="C#" width="50" height="50">
                                 </div>
                             </a>
                         </div>
@@ -102,14 +101,14 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                         <div class="relative h-full w-full rounded-2xl border border-2 border-zinc-200 dark:border-zinc-800 text-sm bg-zinc-100 dark:bg-zinc-900 shadow-sm col-span-1 row-span-1 overflow-hidden aspect-square">
                             <a href="https://whisp.gideontigelaar.com/" target="_blank">
-                                <img src="/src/images/whisp-logo.png" alt="Whisp" width="100%" height="100%">
+                                <img src="src/images/whisp-logo.png" alt="Whisp" width="100%" height="100%">
                             </a>
                         </div>
 
                         <div class="relative h-full w-full rounded-2xl border border-2 border-zinc-200 dark:border-zinc-800 text-sm bg-zinc-100 dark:bg-zinc-900 shadow-sm px-7 py-8 col-span-2 row-span-1 overflow-hidden flex justify-between items-center gap-1">
                             <div class="flex flex-col justify-between h-full">
                                 <div class="flex items-center w-60 gap-3">
-                                    <img src="/src/images/skillicons/instagram-logo.svg" alt="Instagram" width="35" height="35">
+                                    <img src="src/images/logos/instagram-logo.svg" alt="Instagram" width="35" height="35">
                                     <span class="text-base opacity-75">@gideontigelaar</span>
                                 </div>
 
@@ -120,16 +119,16 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                             <div class="hidden md:grid grid-cols-2 gap-3">
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-1.png" class="object-cover" alt="Photo 1">
+                                    <img src="src/images/photos/photo-1.png" class="object-cover" alt="Photo 1">
                                 </a>
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-2.png" class="object-cover" alt="Photo 2">
+                                    <img src="src/images/photos/photo-2.png" class="object-cover" alt="Photo 2">
                                 </a>
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-3.png" class="object-cover" alt="Photo 3">
+                                    <img src="src/images/photos/photo-3.png" class="object-cover" alt="Photo 3">
                                 </a>
                                 <a href="https://www.instagram.com/gideontigelaar/" target="_blank" class="rounded-xl overflow-hidden aspect-square">
-                                    <img src="/src/images/photos/photo-4.png" class="object-cover" alt="Photo 4">
+                                    <img src="src/images/photos/photo-4.png" class="object-cover" alt="Photo 4">
                                 </a>
                             </div>
                         </div>
@@ -149,7 +148,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                                 <h3 class="font-semibold text-xl">Work Experience</h3>
 
                                 <a href="https://www.dotsimpel.nl/" target="_blank" class="flex gap-3">
-                                    <img src="/src/images/companies/dotsimpel.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Dotsimpel Logo" width="50" height="50">
+                                    <img src="src/images/logos/dotsimpel-logo.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Dotsimpel Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
                                         <span class="opacity-100">PHP Web Developer</span>
                                         <div class="flex justify-between">
@@ -160,7 +159,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                                 </a>
 
                                 <a href="https://www.aldi.nl/" target="_blank" class="flex gap-3">
-                                    <img src="/src/images/companies/aldi-nord.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="ALDI Nord Logo" width="50" height="50">
+                                    <img src="src/images/logos/aldi-nord-logo.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="ALDI Nord Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
                                         <span class="opacity-100">Assistant Store Manager</span>
                                         <div class="flex justify-between">
@@ -172,8 +171,8 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                                 <h3 class="font-semibold text-xl">Education</h3>
 
-                                <a href="https://www.hanze.nl/" target="_blank" class="flex gap-3">
-                                    <img src="/src/images/companies/hanze.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Hanze Logo" width="50" height="50">
+                                <a href="https://www.hanze.nl/" target="_blank" class="flex gap-3 opacity-55">
+                                    <img src="src/images/logos/hanze-logo.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Hanze Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
                                         <span class="opacity-100">Bachelor, Software Engineering</span>
                                         <div class="flex justify-between">
@@ -184,7 +183,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                                 </a>
 
                                 <a href="https://www.alfa-college.nl/" target="_blank" class="flex gap-3">
-                                    <img src="/src/images/companies/alfa-college.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Alfa-college Logo" width="50" height="50">
+                                    <img src="src/images/logos/alfa-college-logo.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Alfa-college Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
                                         <span class="opacity-100">MBO 4, Software Development</span>
                                         <div class="flex justify-between">
@@ -208,7 +207,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                         <div class="grid grid-cols-1 gap-12 sm:gap-6">
                             <a href="https://github.com/gideontigelaar/mila" target="_blank" class="grid grid-cols-3 gap-4">
                                 <div class="col-span-3 sm:col-span-1">
-                                    <img src="/src/images/projects/mila.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Mila Project Image">
+                                    <img src="src/images/projects/mila.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Mila Project Image">
                                 </div>
                                 <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
                                     <span class="text-lg opacity-100">Mila<span class="opacity-75"> • 2025</span></span>
@@ -218,7 +217,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                             <a href="https://github.com/gideontigelaar/fiscariep" target="_blank" class="grid grid-cols-3 gap-4">
                                 <div class="col-span-3 sm:col-span-1">
-                                    <img src="/src/images/projects/fiscariep.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Fiscariep Project Image">
+                                    <img src="src/images/projects/fiscariep.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Fiscariep Project Image">
                                 </div>
                                 <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
                                     <span class="text-lg opacity-100">Fiscariep<span class="opacity-75"> • 2024</span></span>
@@ -228,7 +227,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                             <a href="https://github.com/gideontigelaar/whisp" target="_blank" class="grid grid-cols-3 gap-4">
                                 <div class="col-span-3 sm:col-span-1">
-                                    <img src="/src/images/projects/whisp.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Whisp Project Image">
+                                    <img src="src/images/projects/whisp.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Whisp Project Image">
                                 </div>
                                 <div class="flex flex-col col-span-3 sm:col-span-2 justify-center">
                                     <span class="text-lg opacity-100">Whisp<span class="opacity-75"> • 2024</span></span>
@@ -254,8 +253,8 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                                 <a class="text-blue-600 dark:text-blue-400" href="https://www.linkedin.com/in/gideontigelaar" target="_blank">in/gideontigelaar</a>
                             </div>
                             <div class="flex items-center gap-2">
-                                <i class="ph ph-x-logo"></i>
-                                <a class="text-blue-600 dark:text-blue-400" href="https://twitter.com/gideontigelaar" target="_blank">@gideontigelaar</a>
+                                <i class="ph ph-instagram-logo"></i>
+                                <a class="text-blue-600 dark:text-blue-400" href="https://www.instagram.com/gideontigelaar" target="_blank">@gideontigelaar</a>
                             </div>
                         </div>
                     </div>
