@@ -1,4 +1,5 @@
 Options -Indexes
 
 RewriteEngine On
-RewriteRule ^$ /src/index.php [L]
+RewriteBase /portfolio/
+RewriteRule ^$ src/index.php [L]
