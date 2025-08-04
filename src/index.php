@@ -171,13 +171,13 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
 
                                 <h3 class="font-semibold text-xl">Education</h3>
 
-                                <a href="https://www.hanze.nl/" target="_blank" class="flex gap-3 opacity-55">
+                                <a href="https://www.hanze.nl/" target="_blank" class="flex gap-3">
                                     <img src="src/images/logos/hanze-logo.svg" class="bg-zinc-100 border border-2 border-zinc-300 dark:border-zinc-400 rounded-full" alt="Hanze Logo" width="50" height="50">
                                     <div class="flex flex-col w-full">
                                         <span class="opacity-100">Bachelor, Software Engineering</span>
                                         <div class="flex justify-between">
                                             <span class="opacity-75">Hanze</span>
-                                            <span class="opacity-75">Sept. 2025</span>
+                                            <span class="opacity-75">2025 - Now</span>
                                         </div>
                                     </div>
                                 </a>
@@ -205,7 +205,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                         </div>
 
                         <div class="grid grid-cols-1 gap-12 sm:gap-6">
-                            <a href="https://github.com/gideontigelaar/mila" target="_blank" class="grid grid-cols-3 gap-4">
+                            <!-- <a href="https://github.com/gideontigelaar/mila" target="_blank" class="grid grid-cols-3 gap-4">
                                 <div class="col-span-3 sm:col-span-1">
                                     <img src="src/images/projects/mila.png" class="border border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm" alt="Mila Project Image">
                                 </div>
@@ -213,7 +213,7 @@ if ($_SERVER['HTTP_HOST'] !== 'gideontigelaar.com') {
                                     <span class="text-lg opacity-100">Mila<span class="opacity-75"> • 2025</span></span>
                                     <span class="opacity-75">A real-time portfolio tracker with Trading 212 integration. Built with Next.js and Tailwind CSS for maximum efficiency.</span>
                                 </div>
-                            </a>
+                            </a> -->
 
                             <a href="https://github.com/gideontigelaar/fiscariep" target="_blank" class="grid grid-cols-3 gap-4">
                                 <div class="col-span-3 sm:col-span-1">
