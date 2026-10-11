@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+
+type Props = Project;
+
+const { title, year, description, href, screenshot, screenshotDark } = Astro.props;
+
+const screenshots = [
+  { src: screenshot, visibility: screenshotDark ? 'block dark:hidden' : undefined },
+  ...(screenshotDark ? [{ src: screenshotDark, visibility: 'hidden dark:block' }] : []),
+];
+---
+
+<a href={href} target="_blank" rel="noopener noreferrer" class="grid grid-cols-3 gap-4">
+  <div class="col-span-3 sm:col-span-1">
+    {
+      screenshots.map(({ src, visibility }) => (
+        <Image
+          src={src}
+          alt={`${title} screenshot`}
+          widths={[430, 860]}
+          sizes="(min-width: 640px) 215px, calc(100vw - 48px)"
+          class:list={[
+            'rounded-2xl border-2 border-zinc-200 shadow-xs dark:border-zinc-800',
+            visibility,
+          ]}
+        />
+      ))
+    }
+  </div>
+  <div class="col-span-3 flex flex-col justify-center sm:col-span-2">
+    <span class="text-lg">{title}<span class="opacity-75"> • {year}</span></span>
+    <span class="opacity-75">{description}</span>
+  </div>
+</a>
