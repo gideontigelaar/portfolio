@@ -9,5 +9,9 @@ export const site = {
       label: 'gideontigelaar',
       url: 'https://github.com/gideontigelaar',
     },
+    instagram: {
+      label: '@gideontigelaar',
+      url: 'https://www.instagram.com/gideontigelaar/',
+    },
   },
 };

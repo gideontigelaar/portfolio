@@ -1,13 +1,21 @@
 ---
 import { Image } from 'astro:assets';
+import Button from '../Button.astro';
 import Card from '../Card.astro';
 import CopyEmailButton from '../CopyEmailButton.astro';
 
+import instagramIcon from '../../assets/icons/skill-icons/instagram.svg';
+import whispLogo from '../../assets/images/logos/whisp.webp';
+
 import { languages } from '../../data/languages';
+import { photos } from '../../data/photos';
 import { site } from '../../data/site';
 ---
 
-<section id="summary" class="grid grid-cols-2 gap-4 py-20 sm:grid-cols-3 sm:gap-6">
+<section
+  id="summary"
+  class="grid grid-cols-2 grid-rows-3 gap-4 py-20 sm:grid-cols-3 sm:grid-rows-2 sm:gap-6"
+>
   <Card class="col-span-2">
     <a
       href={site.socials.github.url}
@@ -35,5 +43,49 @@ import { site } from '../../data/site';
   <Card class="flex aspect-square flex-col justify-between px-7 py-8">
     <span class="text-2xl">Question?</span>
     <CopyEmailButton email={site.email} />
+  </Card>
+
+  <Card class="aspect-square">
+    <a href="https://whisp.gideontigelaar.com/" target="_blank" rel="noopener noreferrer">
+      <Image
+        src={whispLogo}
+        alt="Whisp"
+        widths={[250, 500]}
+        sizes="(min-width: 640px) 215px, 50vw"
+      />
+    </a>
+  </Card>
+
+  <Card class="col-span-2 flex items-center justify-between gap-1 px-7 py-8">
+    <div class="flex h-full flex-col justify-between">
+      <div class="flex w-60 items-center gap-3">
+        <Image src={instagramIcon} alt="Instagram" width={35} height={35} />
+        <span class="text-base opacity-75">{site.socials.instagram.label}</span>
+      </div>
+      <Button href={site.socials.instagram.url} target="_blank" rel="noopener noreferrer">
+        Follow me!
+      </Button>
+    </div>
+
+    <div class="hidden grid-cols-2 gap-3 md:grid">
+      {
+        photos.map((photo) => (
+          <a
+            href={site.socials.instagram.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="aspect-square overflow-hidden rounded-xl"
+          >
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              widths={[200, 400]}
+              sizes="200px"
+              class="size-full object-cover"
+            />
+          </a>
+        ))
+      }
+    </div>
   </Card>
 </section>
