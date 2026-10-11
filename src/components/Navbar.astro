@@ -1,11 +1,26 @@
 ---
 import HouseIcon from '@phosphor-icons/core/assets/regular/house.svg';
 import ThemeToggle from './ThemeToggle.astro';
+
+const links = [
+  { href: '/#about', label: 'About' },
+];
 ---
 
 <nav class="sticky top-0 z-50 flex justify-between bg-zinc-50 py-4 dark:bg-zinc-950">
   <a href="/#home" aria-label="Home" class="flex items-center opacity-75">
     <HouseIcon class="size-6" />
   </a>
+  <ul class="flex items-center gap-6">
+    {
+      links.map((link) => (
+        <li>
+          <a href={link.href} class="opacity-75">
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
   <ThemeToggle />
 </nav>

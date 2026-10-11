@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import type { ExperienceEntry } from '../data/experience';
+
+type Props = ExperienceEntry;
+
+const { title, organization, period, href, logo, logoAlt } = Astro.props;
+---
+
+<a href={href} target="_blank" rel="noopener noreferrer" class="flex gap-3">
+  <Image
+    src={logo}
+    alt={logoAlt}
+    width={50}
+    height={50}
+    class="rounded-full border-2 border-zinc-300 bg-zinc-100 dark:border-zinc-400"
+  />
+  <div class="flex w-full flex-col">
+    <span>{title}</span>
+    <div class="flex justify-between">
+      <span class="opacity-75">{organization}</span>
+      <span class="opacity-75">{period}</span>
+    </div>
+  </div>
+</a>
