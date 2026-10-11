@@ -1,0 +1,24 @@
+---
+import { Image } from 'astro:assets';
+import { site } from '../../data/site';
+---
+
+<section id="hero" class="flex flex-col gap-3 py-20">
+  <Image
+    src={site.avatar}
+    alt={site.name}
+    width={100}
+    height={100}
+    widths={[200, 300, 400]}
+    sizes="100px"
+    quality={90}
+    priority
+    class="rounded-full"
+  />
+  <h1 class="text-3xl font-bold">{site.name}</h1>
+  <p class="max-w-[500px] opacity-75">
+    I'm Gideon, a software engineering student from the Netherlands, studying at Hanze
+    University of Applied Sciences in Groningen. Alongside my studies, I work as a PHP
+    developer at Dotsimpel, where I apply my skills in the real world.
+  </p>
+</section>
