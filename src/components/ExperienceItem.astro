@@ -7,19 +7,24 @@ type Props = ExperienceEntry;
 const { title, organization, period, href, logo, logoAlt } = Astro.props;
 ---
 
-<a href={href} target="_blank" rel="noopener noreferrer" class="flex gap-3">
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group -mx-3 flex items-center gap-3 rounded-2xl px-3 py-2 transition-colors duration-200 hover:bg-zinc-200/50 active:bg-zinc-200/50 dark:hover:bg-zinc-900 dark:active:bg-zinc-900"
+>
   <Image
     src={logo}
     alt={logoAlt}
-    width={50}
-    height={50}
-    class="rounded-full border-2 border-zinc-300 bg-zinc-100 dark:border-zinc-400"
+    width={48}
+    height={48}
+    class="shrink-0 rounded-full bg-white ring-1 ring-line"
   />
   <div class="flex w-full flex-col">
-    <span>{title}</span>
-    <div class="flex justify-between">
-      <span class="opacity-75">{organization}</span>
-      <span class="opacity-75">{period}</span>
+    <span class="w-fit underline-grow">{title}</span>
+    <div class="flex items-baseline justify-between gap-2 text-muted">
+      <span>{organization}</span>
+      <span class="text-sm tabular-nums">{period}</span>
     </div>
   </div>
 </a>

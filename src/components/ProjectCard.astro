@@ -12,8 +12,13 @@ const screenshots = [
 ];
 ---
 
-<a href={href} target="_blank" rel="noopener noreferrer" class="grid grid-cols-3 gap-4">
-  <div class="col-span-3 sm:col-span-1">
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group -mx-3 grid grid-cols-3 items-center gap-4 rounded-3xl p-3 transition-colors duration-200 hover:bg-zinc-200/50 active:bg-zinc-200/50 sm:gap-5 dark:hover:bg-zinc-900 dark:active:bg-zinc-900"
+>
+  <div class="col-span-3 overflow-hidden rounded-2xl border border-line shadow-xs sm:col-span-1">
     {
       screenshots.map(({ src, visibility }) => (
         <Image
@@ -22,15 +27,18 @@ const screenshots = [
           widths={[430, 860]}
           sizes="(min-width: 640px) 215px, calc(100vw - 48px)"
           class:list={[
-            'rounded-2xl border-2 border-zinc-200 shadow-xs dark:border-zinc-800',
+            'w-full',
             visibility,
           ]}
         />
       ))
     }
   </div>
-  <div class="col-span-3 flex flex-col justify-center sm:col-span-2">
-    <span class="text-lg">{title}<span class="opacity-75"> • {year}</span></span>
-    <span class="opacity-75">{description}</span>
+  <div class="col-span-3 flex flex-col gap-1 sm:col-span-2">
+    <span class="flex items-baseline gap-2 text-lg font-semibold tracking-tight">
+      <span class="underline-grow">{title}</span>
+      <span class="text-sm font-medium text-muted tabular-nums">{year}</span>
+    </span>
+    <span class="text-muted">{description}</span>
   </div>
 </a>

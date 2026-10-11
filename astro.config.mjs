@@ -3,6 +3,9 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://gideontigelaar.com',
+  build: {
+    inlineStylesheets: 'always',
+  },
   image: {
     domains: ['avatars.githubusercontent.com'],
   },

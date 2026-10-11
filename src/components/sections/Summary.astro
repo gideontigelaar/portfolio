@@ -14,74 +14,84 @@ import { site } from '../../data/site';
 
 <section
   id="summary"
-  class="grid grid-cols-2 grid-rows-3 gap-4 py-20 sm:grid-cols-3 sm:grid-rows-2 sm:gap-6"
+  class="grid grid-cols-2 gap-4 pb-14 sm:grid-cols-3 sm:grid-rows-2 sm:gap-5 sm:pb-20"
 >
-  <Card class="col-span-2">
-    <a
-      href={site.socials.github.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="flex h-full flex-col justify-between px-7 py-8"
-    >
-      <span class="text-2xl">Languages I use</span>
-      <div class="flex justify-between">
-        {
-          languages.map((language) => (
-            <Image
-              src={language.icon}
-              alt={language.name}
-              width={50}
-              height={50}
-              class:list={[language.hiddenOnMobile && 'hidden md:block']}
-            />
-          ))
-        }
-      </div>
-    </a>
+  <Card
+    href={site.socials.github.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="col-span-2 flex flex-col justify-between gap-6 p-5 sm:px-7 sm:py-8"
+  >
+    <span class="text-2xl tracking-tight">Languages I use</span>
+    <div class="flex justify-between">
+      {
+        languages.map((language) => (
+          <Image
+            src={language.icon}
+            alt={language.name}
+            width={50}
+            height={50}
+            loading="eager"
+            class:list={['size-10 sm:size-12.5', language.hiddenOnMobile && 'hidden md:block']}
+          />
+        ))
+      }
+    </div>
   </Card>
 
-  <Card class="flex aspect-square flex-col justify-between px-7 py-8">
-    <span class="text-2xl">Question?</span>
+  <Card class="flex aspect-square flex-col justify-between p-5 sm:px-7 sm:py-8">
+    <span class="text-2xl tracking-tight">Question?</span>
     <CopyEmailButton email={site.email} />
   </Card>
 
-  <Card class="aspect-square">
-    <a href="https://whisp.gideontigelaar.com/" target="_blank" rel="noopener noreferrer">
-      <Image
-        src={whispLogo}
-        alt="Whisp"
-        widths={[250, 500]}
-        sizes="(min-width: 640px) 215px, 50vw"
-      />
-    </a>
+  <Card
+    href="https://whisp.gideontigelaar.com/"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="group aspect-square"
+  >
+    <Image
+      src={whispLogo}
+      alt="Whisp"
+      loading="eager"
+      widths={[250, 500]}
+      sizes="(min-width: 640px) 215px, 50vw"
+      class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
   </Card>
 
-  <Card class="col-span-2 flex items-center justify-between gap-1 px-7 py-8">
-    <div class="flex h-full flex-col justify-between">
-      <div class="flex w-60 items-center gap-3">
-        <Image src={instagramIcon} alt="Instagram" width={35} height={35} />
-        <span class="text-base opacity-75">{site.socials.instagram.label}</span>
+  <Card class="col-span-2 flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between md:gap-1 md:px-7 md:py-8">
+    <div class="contents md:flex md:h-full md:flex-col md:justify-between">
+      <div class="flex items-center gap-3 md:w-60">
+        <Image src={instagramIcon} alt="Instagram" width={35} height={35} loading="eager" />
+        <span class="text-base text-muted">{site.socials.instagram.label}</span>
       </div>
-      <Button href={site.socials.instagram.url} target="_blank" rel="noopener noreferrer">
+      <Button
+        href={site.socials.instagram.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="order-3"
+      >
         Follow me!
       </Button>
     </div>
 
-    <div class="hidden grid-cols-2 gap-3 md:grid">
+    <div class="order-2 grid grid-cols-4 gap-2 md:grid-cols-2 md:gap-3">
       {
         photos.map((photo) => (
           <a
             href={site.socials.instagram.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="aspect-square overflow-hidden rounded-xl"
+            class="group aspect-square overflow-hidden rounded-xl"
           >
             <Image
               src={photo.src}
               alt={photo.alt}
-              widths={[200, 400]}
-              sizes="200px"
-              class="size-full object-cover"
+              widths={[96, 160, 256]}
+              sizes="(min-width: 768px) 64px, 22vw"
+              loading="eager"
+              class="size-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           </a>
         ))

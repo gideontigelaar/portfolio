@@ -12,7 +12,7 @@ const options = [
 
 <button
   type="button"
-  class="flex items-center opacity-75"
+  class="flex items-center nav-item p-2"
   aria-label="Toggle theme"
   aria-haspopup="true"
   aria-expanded="false"
@@ -23,14 +23,14 @@ const options = [
 </button>
 
 <div
-  class="invisible absolute top-full right-0 z-10 w-36 rounded-2xl bg-white p-2 text-sm opacity-0 shadow-md blur-[5px] transition-[opacity,filter,visibility] duration-200 data-open:visible data-open:opacity-100 data-open:blur-none dark:bg-black"
+  class="invisible absolute top-full right-1 z-10 w-36 rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,visibility] duration-200 data-open:visible data-open:opacity-100 data-open:blur-none"
   data-theme-popup
 >
   {
     options.map((option) => (
       <button
         type="button"
-        class="flex w-full items-center justify-between gap-2 rounded-lg px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+        class="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
         aria-label={`Switch to ${option.value} theme`}
         data-theme-option={option.value}
       >

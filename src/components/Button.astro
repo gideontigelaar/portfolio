@@ -1,17 +1,30 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-type Props = Omit<HTMLAttributes<'a'>, 'type'>;
+type Props = Omit<HTMLAttributes<'a'>, 'type'> & {
+  variant?: 'primary' | 'secondary';
+};
 
-const { href, class: className, ...attributes } = Astro.props;
+const { href, variant = 'secondary', class: className, ...attributes } = Astro.props;
 
 const Tag = href ? 'a' : 'button';
+
+const variants = {
+  primary:
+    'bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-600',
+  secondary:
+    'bg-zinc-200/70 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700',
+};
 ---
 
 <Tag
   href={href}
   type={href ? undefined : 'button'}
-  class:list={['w-fit rounded-full bg-zinc-200 px-4 py-2 text-center dark:bg-zinc-800', className]}
+  class:list={[
+    'inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-center text-sm font-semibold whitespace-nowrap transition-[background-color,scale] duration-200 active:scale-95',
+    variants[variant],
+    className,
+  ]}
   {...attributes}
 >
   <slot />
