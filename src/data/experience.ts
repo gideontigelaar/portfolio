@@ -11,6 +11,7 @@ export interface ExperienceEntry {
   href: string;
   logo: ImageMetadata;
   logoAlt: string;
+  details: string;
 }
 
 export const work: ExperienceEntry[] = [
@@ -21,6 +22,8 @@ export const work: ExperienceEntry[] = [
     href: 'https://www.dotsimpel.nl/',
     logo: dotsimpelLogo,
     logoAlt: 'Dotsimpel Logo',
+    details:
+      'Building and maintaining websites, webshops and CMS features for a wide range of clients, mostly with PHP, MySQL and JavaScript.',
   },
   {
     title: 'Assistant Store Manager',
@@ -29,6 +32,8 @@ export const work: ExperienceEntry[] = [
     href: 'https://www.aldi.nl/',
     logo: aldiNordLogo,
     logoAlt: 'ALDI Nord Logo',
+    details:
+      'Supporting the store manager in running the store, from planning and guiding the team to keeping daily operations on track.',
   },
 ];
 
@@ -40,6 +45,8 @@ export const education: ExperienceEntry[] = [
     href: 'https://www.hanze.nl/',
     logo: hanzeLogo,
     logoAlt: 'Hanze Logo',
+    details:
+      'Studying software engineering in Groningen, with a focus on designing, building and testing software in real-world projects.',
   },
   {
     title: 'MBO 4, Software Development',
@@ -48,5 +55,7 @@ export const education: ExperienceEntry[] = [
     href: 'https://www.alfa-college.nl/',
     logo: alfaCollegeLogo,
     logoAlt: 'Alfa-college Logo',
+    details:
+      'Learned the fundamentals of software development, from programming and databases to building projects for real clients.',
   },
 ];

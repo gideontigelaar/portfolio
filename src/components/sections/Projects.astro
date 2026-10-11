@@ -1,5 +1,7 @@
 ---
+import Gallery from '../Gallery.astro';
 import ProjectCard from '../ProjectCard.astro';
+import ProjectDetail from '../ProjectDetail.astro';
 import { projects } from '../../data/projects';
 ---
 
@@ -10,4 +12,8 @@ import { projects } from '../../data/projects';
   <div class="grid grid-cols-1 gap-6 sm:gap-2">
     {projects.map((project) => <ProjectCard {...project} />)}
   </div>
+
+  <Gallery name="projects" label="Projects" count={projects.length} crossfade class="max-w-lg">
+    {projects.map((project) => <ProjectDetail {...project} />)}
+  </Gallery>
 </section>

@@ -1,0 +1,32 @@
+---
+import { Image } from 'astro:assets';
+import Badge from './Badge.astro';
+import Button from './Button.astro';
+import Card from './Card.astro';
+import type { ExperienceEntry } from '../data/experience';
+
+type Props = ExperienceEntry;
+
+const { title, organization, period, href, logo, logoAlt, details } = Astro.props;
+---
+
+<Card class="flex flex-col items-start gap-4 p-6" data-gallery-item>
+  <Image
+    src={logo}
+    alt={logoAlt}
+    width={72}
+    height={72}
+    class="rounded-full bg-white ring-1 ring-line"
+  />
+  <div class="flex flex-col gap-2">
+    <h3 class="text-xl font-semibold tracking-tight">{title}</h3>
+    <div class="flex items-center gap-2">
+      <Badge>{period}</Badge>
+      <span class="text-muted">{organization}</span>
+    </div>
+  </div>
+  <p class="text-muted">{details}</p>
+  <Button href={href} target="_blank" rel="noopener noreferrer" class="mt-auto">
+    Visit website
+  </Button>
+</Card>

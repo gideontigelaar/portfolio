@@ -1,5 +1,7 @@
 ---
+import ExperienceDetail from '../ExperienceDetail.astro';
 import ExperienceItem from '../ExperienceItem.astro';
+import Gallery from '../Gallery.astro';
 import { education, work } from '../../data/experience';
 ---
 
@@ -21,10 +23,18 @@ import { education, work } from '../../data/experience';
 
     <div class="col-span-2 flex flex-col gap-3 sm:col-span-1">
       <h3 class="text-xl font-semibold tracking-tight">Work Experience</h3>
-      {work.map((entry) => <ExperienceItem {...entry} />)}
+      {work.map((entry) => <ExperienceItem {...entry} gallery="work" />)}
 
       <h3 class="mt-4 text-xl font-semibold tracking-tight">Education</h3>
-      {education.map((entry) => <ExperienceItem {...entry} />)}
+      {education.map((entry) => <ExperienceItem {...entry} gallery="education" />)}
     </div>
   </div>
+
+  <Gallery name="work" label="Work experience" count={work.length} crossfade class="max-w-md">
+    {work.map((entry) => <ExperienceDetail {...entry} />)}
+  </Gallery>
+
+  <Gallery name="education" label="Education" count={education.length} crossfade class="max-w-md">
+    {education.map((entry) => <ExperienceDetail {...entry} />)}
+  </Gallery>
 </section>

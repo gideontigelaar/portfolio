@@ -49,7 +49,12 @@
 
 @layer base {
   html {
+    scrollbar-gutter: stable;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  html:has(dialog[open]) {
+    overflow: hidden;
   }
 
   button:not(:disabled) {

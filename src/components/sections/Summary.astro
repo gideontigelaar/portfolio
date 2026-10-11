@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import Button from '../Button.astro';
 import Card from '../Card.astro';
 import CopyEmailButton from '../CopyEmailButton.astro';
+import Gallery from '../Gallery.astro';
 
 import instagramIcon from '../../assets/icons/skill-icons/instagram.svg';
 import whispLogo from '../../assets/images/logos/whisp.webp';
@@ -79,11 +80,11 @@ import { site } from '../../data/site';
     <div class="order-2 grid grid-cols-4 gap-2 md:grid-cols-2 md:gap-3">
       {
         photos.map((photo) => (
-          <a
-            href={site.socials.instagram.url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            aria-label={`Open photo: ${photo.alt}`}
             class="group aspect-square overflow-hidden rounded-xl"
+            data-gallery-open="photos"
           >
             <Image
               src={photo.src}
@@ -93,9 +94,31 @@ import { site } from '../../data/site';
               loading="eager"
               class="size-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
-          </a>
+          </button>
         ))
       }
     </div>
   </Card>
 </section>
+
+<Gallery name="photos" label="Photos" count={photos.length} class="max-w-3xl">
+  {
+    photos.map(({ src, alt }) => {
+      const width = (75 * src.width) / src.height;
+
+      return (
+        <div class="grid place-items-center">
+          <Image
+            src={src}
+            alt={alt}
+            widths={[600, 900, 1200, 1500]}
+            sizes={`(min-aspect-ratio: ${Math.round(width)}/100) ${Math.round(width)}vh, 100vw`}
+            class="rounded-2xl"
+            style={{ width: `min(100%, ${width}svh)` }}
+            data-gallery-item
+          />
+        </div>
+      );
+    })
+  }
+</Gallery>

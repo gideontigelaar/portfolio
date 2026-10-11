@@ -1,44 +1,32 @@
 ---
-import { Image } from 'astro:assets';
+import ProjectScreenshot from './ProjectScreenshot.astro';
 import type { Project } from '../data/projects';
 
 type Props = Project;
 
-const { title, year, description, href, screenshot, screenshotDark } = Astro.props;
-
-const screenshots = [
-  { src: screenshot, visibility: screenshotDark ? 'block dark:hidden' : undefined },
-  ...(screenshotDark ? [{ src: screenshotDark, visibility: 'hidden dark:block' }] : []),
-];
+const { title, year, description, screenshot, screenshotDark } = Astro.props;
 ---
 
-<a
-  href={href}
-  target="_blank"
-  rel="noopener noreferrer"
-  class="group -mx-3 grid grid-cols-3 items-center gap-4 rounded-3xl p-3 transition-colors duration-200 hover:bg-zinc-200/50 active:bg-zinc-200/50 sm:gap-5 dark:hover:bg-zinc-900 dark:active:bg-zinc-900"
+<button
+  type="button"
+  class="group -mx-3 grid grid-cols-3 items-center gap-4 rounded-3xl p-3 text-left transition-colors duration-200 hover:bg-zinc-200/50 active:bg-zinc-200/50 sm:gap-5 dark:hover:bg-zinc-900 dark:active:bg-zinc-900"
+  data-gallery-open="projects"
 >
-  <div class="col-span-3 overflow-hidden rounded-2xl border border-line shadow-xs sm:col-span-1">
-    {
-      screenshots.map(({ src, visibility }) => (
-        <Image
-          src={src}
-          alt={`${title} screenshot`}
-          widths={[430, 860]}
-          sizes="(min-width: 640px) 215px, calc(100vw - 48px)"
-          class:list={[
-            'w-full',
-            visibility,
-          ]}
-        />
-      ))
-    }
-  </div>
-  <div class="col-span-3 flex flex-col gap-1 sm:col-span-2">
+  <span class="col-span-3 overflow-hidden rounded-2xl border border-line shadow-xs sm:col-span-1">
+    <ProjectScreenshot
+      title={title}
+      screenshot={screenshot}
+      screenshotDark={screenshotDark}
+      widths={[430, 860]}
+      sizes="(min-width: 640px) 215px, calc(100vw - 48px)"
+      class="w-full"
+    />
+  </span>
+  <span class="col-span-3 flex flex-col gap-1 sm:col-span-2">
     <span class="flex items-baseline gap-2 text-lg font-semibold tracking-tight">
       <span class="underline-grow">{title}</span>
       <span class="text-sm font-medium text-muted tabular-nums">{year}</span>
     </span>
     <span class="text-muted">{description}</span>
-  </div>
-</a>
+  </span>
+</button>

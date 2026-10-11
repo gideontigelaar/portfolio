@@ -2,16 +2,15 @@
 import { Image } from 'astro:assets';
 import type { ExperienceEntry } from '../data/experience';
 
-type Props = ExperienceEntry;
+type Props = ExperienceEntry & { gallery: string };
 
-const { title, organization, period, href, logo, logoAlt } = Astro.props;
+const { title, organization, period, logo, logoAlt, gallery } = Astro.props;
 ---
 
-<a
-  href={href}
-  target="_blank"
-  rel="noopener noreferrer"
-  class="group -mx-3 flex items-center gap-3 rounded-2xl px-3 py-2 transition-colors duration-200 hover:bg-zinc-200/50 active:bg-zinc-200/50 dark:hover:bg-zinc-900 dark:active:bg-zinc-900"
+<button
+  type="button"
+  class="group -mx-3 flex items-center gap-3 rounded-2xl px-3 py-2 text-left transition-colors duration-200 hover:bg-zinc-200/50 active:bg-zinc-200/50 dark:hover:bg-zinc-900 dark:active:bg-zinc-900"
+  data-gallery-open={gallery}
 >
   <Image
     src={logo}
@@ -20,11 +19,11 @@ const { title, organization, period, href, logo, logoAlt } = Astro.props;
     height={48}
     class="shrink-0 rounded-full bg-white ring-1 ring-line"
   />
-  <div class="flex w-full flex-col">
+  <span class="flex w-full flex-col">
     <span class="w-fit underline-grow">{title}</span>
-    <div class="flex items-baseline justify-between gap-2 text-muted">
+    <span class="flex items-baseline justify-between gap-2 text-muted">
       <span>{organization}</span>
       <span class="text-sm tabular-nums">{period}</span>
-    </div>
-  </div>
-</a>
+    </span>
+  </span>
+</button>

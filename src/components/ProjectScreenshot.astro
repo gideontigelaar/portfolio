@@ -1,0 +1,29 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+
+type Props = Pick<Project, 'title' | 'screenshot' | 'screenshotDark'> & {
+  widths: number[];
+  sizes: string;
+  class?: string;
+};
+
+const { title, screenshot, screenshotDark, widths, sizes, class: className } = Astro.props;
+
+const screenshots = [
+  { src: screenshot, visibility: screenshotDark ? 'block dark:hidden' : undefined },
+  ...(screenshotDark ? [{ src: screenshotDark, visibility: 'hidden dark:block' }] : []),
+];
+---
+
+{
+  screenshots.map(({ src, visibility }) => (
+    <Image
+      src={src}
+      alt={`${title} screenshot`}
+      widths={widths}
+      sizes={sizes}
+      class:list={[className, visibility]}
+    />
+  ))
+}
