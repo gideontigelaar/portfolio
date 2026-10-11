@@ -1,0 +1,20 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  email: string;
+}
+
+const { email } = Astro.props;
+---
+
+<Button data-copy-email={email}>Email me</Button>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-email]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(button.dataset.copyEmail ?? '');
+      alert('Email copied to clipboard!');
+    });
+  });
+</script>
