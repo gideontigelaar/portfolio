@@ -1,6 +1,8 @@
 ---
 import { Font } from 'astro:assets';
 import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import Navbar from '../components/Navbar.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -21,12 +23,26 @@ const { title = site.name, description = site.description } = Astro.props;
     <link rel="icon" href="/favicon.ico" />
     <title>{title}</title>
     <Font cssVariable="--font-manrope" preload={[{ weight: 500 }, { weight: 700 }]} />
+    <script is:inline>
+      (() => {
+        const theme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (theme === 'dark' || (!theme && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
-  <body id="home" class="bg-zinc-50 font-medium text-zinc-950">
+  <body
+    id="home"
+    class="bg-zinc-50 font-medium text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50"
+  >
     <div class="mx-auto w-full max-w-[700px] px-6 sm:px-3">
+      <Navbar />
       <main>
         <slot />
       </main>
+      <Footer />
     </div>
   </body>
 </html>

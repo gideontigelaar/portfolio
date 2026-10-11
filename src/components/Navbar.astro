@@ -1,0 +1,11 @@
+---
+import HouseIcon from '@phosphor-icons/core/assets/regular/house.svg';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<nav class="sticky top-0 z-50 flex justify-between bg-zinc-50 py-4 dark:bg-zinc-950">
+  <a href="/#home" aria-label="Home" class="flex items-center opacity-75">
+    <HouseIcon class="size-6" />
+  </a>
+  <ThemeToggle />
+</nav>

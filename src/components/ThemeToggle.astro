@@ -1,0 +1,98 @@
+---
+import CheckIcon from '@phosphor-icons/core/assets/regular/check.svg';
+import MoonIcon from '@phosphor-icons/core/assets/regular/moon.svg';
+import SunIcon from '@phosphor-icons/core/assets/regular/sun.svg';
+
+const options = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System' },
+];
+---
+
+<button
+  type="button"
+  class="flex items-center opacity-75"
+  aria-label="Toggle theme"
+  aria-haspopup="true"
+  aria-expanded="false"
+  data-theme-toggle
+>
+  <MoonIcon class="hidden size-6 dark:block" />
+  <SunIcon class="size-6 dark:hidden" />
+</button>
+
+<div
+  class="invisible absolute top-full right-0 z-10 w-36 rounded-2xl bg-white p-2 text-sm opacity-0 shadow-md blur-[5px] transition-[opacity,filter,visibility] duration-200 data-open:visible data-open:opacity-100 data-open:blur-none dark:bg-black"
+  data-theme-popup
+>
+  {
+    options.map((option) => (
+      <button
+        type="button"
+        class="flex w-full items-center justify-between gap-2 rounded-lg px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+        aria-label={`Switch to ${option.value} theme`}
+        data-theme-option={option.value}
+      >
+        <span>{option.label}</span>
+        <CheckIcon class="hidden size-4" aria-hidden="true" data-theme-check={option.value} />
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  type Theme = 'light' | 'dark' | 'system';
+
+  const root = document.documentElement;
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const popup = document.querySelector<HTMLElement>('[data-theme-popup]');
+  const options = document.querySelectorAll<HTMLButtonElement>('[data-theme-option]');
+  const checks = document.querySelectorAll<SVGElement>('[data-theme-check]');
+
+  const getStoredTheme = (): Theme => {
+    const stored = localStorage.getItem('theme');
+    return stored === 'light' || stored === 'dark' ? stored : 'system';
+  };
+
+  const applyTheme = (theme: Theme) => {
+    const isDark = theme === 'dark' || (theme === 'system' && media.matches);
+    root.classList.toggle('dark', isDark);
+    checks.forEach((check) => {
+      check.classList.toggle('hidden', check.dataset.themeCheck !== theme);
+    });
+  };
+
+  const setPopupOpen = (open: boolean) => {
+    popup?.toggleAttribute('data-open', open);
+    toggle?.setAttribute('aria-expanded', String(open));
+  };
+
+  toggle?.addEventListener('click', () => {
+    setPopupOpen(!popup?.hasAttribute('data-open'));
+  });
+
+  options.forEach((option) => {
+    option.addEventListener('click', () => {
+      const theme = option.dataset.themeOption as Theme;
+
+      if (theme === 'system') {
+        localStorage.removeItem('theme');
+      } else {
+        localStorage.setItem('theme', theme);
+      }
+
+      applyTheme(theme);
+      setPopupOpen(false);
+    });
+  });
+
+  media.addEventListener('change', () => {
+    if (getStoredTheme() === 'system') {
+      applyTheme('system');
+    }
+  });
+
+  applyTheme(getStoredTheme());
+</script>

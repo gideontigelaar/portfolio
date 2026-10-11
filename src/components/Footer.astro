@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="flex items-center justify-center py-4 text-sm opacity-75">
+  <span>
+    &copy;{' '}
+    <button type="button" class="touch-manipulation select-none" data-year>{year}</button>
+    {' '}- {site.name}
+  </span>
+</footer>
+
+<script>
+  const year = document.querySelector<HTMLElement>('[data-year]');
+
+  year?.addEventListener('click', () => {
+    year.textContent = String(Number(year.textContent) + 1);
+  });
+</script>
