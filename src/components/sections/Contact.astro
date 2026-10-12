@@ -13,10 +13,10 @@ const contacts = [
 ---
 
 <section id="contact" class="py-14 sm:py-20">
-  <h2 class="mb-3 text-2xl font-semibold tracking-tight">Contact</h2>
-  <p class="mb-6 text-muted">Feel free to reach out to me on any of the following platforms:</p>
+  <h2 class="mb-3 text-2xl font-semibold tracking-tight" data-reveal>Contact</h2>
+  <p class="mb-6 text-muted" data-reveal style="--delay: 1">Feel free to reach out to me on any of the following platforms:</p>
 
-  <ul class="flex flex-col gap-3">
+  <ul class="flex flex-col gap-3" data-reveal style="--delay: 2">
     {
       contacts.map(({ icon: Icon, label, url }) => (
         <li>

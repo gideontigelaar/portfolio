@@ -6,10 +6,10 @@ import { education, work } from '../../data/experience';
 ---
 
 <section id="about" class="py-14 sm:py-20">
-  <h2 class="mb-3 text-2xl font-semibold tracking-tight">About</h2>
+  <h2 class="mb-3 text-2xl font-semibold tracking-tight" data-reveal>About</h2>
 
   <div class="grid grid-cols-2 gap-12 sm:gap-6">
-    <p class="col-span-2 text-muted sm:col-span-1">
+    <p class="col-span-2 text-muted sm:col-span-1" data-reveal style="--delay: 1">
       I'm Gideon, a software engineering student from the Netherlands, studying at Hanze
       University of Applied Sciences in Groningen. Alongside my studies, I work as a PHP
       developer at Dotsimpel, where I apply my skills in the real world. I'm also actively
@@ -21,7 +21,7 @@ import { education, work } from '../../data/experience';
       wanted to turn my passion into a career.
     </p>
 
-    <div class="col-span-2 flex flex-col gap-3 sm:col-span-1">
+    <div class="col-span-2 flex flex-col gap-3 sm:col-span-1" data-reveal style="--delay: 2">
       <h3 class="text-xl font-semibold tracking-tight">Work Experience</h3>
       {work.map((entry) => <ExperienceItem {...entry} gallery="work" />)}
 
