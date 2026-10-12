@@ -7,15 +7,183 @@ const year = new Date().getFullYear();
 <footer class="flex items-center justify-center py-6 text-sm text-muted">
   <span>
     &copy;{' '}
-    <button type="button" class="touch-manipulation select-none" data-year>{year}</button>
+    <span class="relative inline-block" data-year-scope>
+      <button type="button" class="touch-manipulation select-none tabular-nums" data-year>{year}</button>
+      <span
+        class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap opacity-0"
+        role="status"
+        data-year-toast
+      ></span>
+    </span>
     {' '}- {site.name}
   </span>
 </footer>
 
 <script>
-  const year = document.querySelector<HTMLElement>('[data-year]');
+  import { reducedMotion } from '../scripts/motion';
 
-  year?.addEventListener('click', () => {
+  const scope = document.querySelector<HTMLElement>('[data-year-scope]')!;
+  const year = scope.querySelector<HTMLElement>('[data-year]')!;
+  const toast = scope.querySelector<HTMLElement>('[data-year-toast]')!;
+  const cooldown = 5000;
+  const grace = 400;
+  const settle = 250;
+  const milestones = new Map<number, [string, number]>([
+    [10, ['Warming up', 0]],
+    [25, ['On fire! 🔥', 0.23]],
+    [50, ['Unstoppable', 0.38]],
+    [100, ['Legendary 🏆', 0.56]],
+    [250, ['Maybe take a break?', 0.75]],
+  ]);
+  let heat = 0;
+  let streak = 0;
+  let last = 0;
+  let lastClick = 0;
+  let frame = 0;
+
+  const original = Number(year.textContent);
+  let settleTimer = 0;
+  let rewind = 0;
+
+  const stopRewind = () => {
+    cancelAnimationFrame(rewind);
+    rewind = 0;
+  };
+
+  const startRewind = () => {
+    const from = Number(year.textContent);
+    if (from === original) return;
+    const duration = reducedMotion.matches ? 1 : Math.min(1800, 500 + (from - original) * 12);
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      year.textContent = String(Math.round(from - (from - original) * eased));
+      if (t < 1) {
+        rewind = requestAnimationFrame(tick);
+      } else {
+        rewind = 0;
+        if (!reducedMotion.matches) {
+          year.animate(
+            { scale: ['1.1', '1'] },
+            { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+          );
+        }
+      }
+    };
+    rewind = requestAnimationFrame(tick);
+  };
+
+  const cool = (time: number) => {
+    if (time - lastClick > grace) heat = Math.max(0, heat - (time - last) / cooldown);
+    last = time;
+    scope.style.setProperty('--heat', heat.toFixed(3));
+    year.toggleAttribute('data-hot', heat > 0.5);
+    if (!heat) {
+      streak = 0;
+      settleTimer = window.setTimeout(startRewind, settle);
+    }
+    frame = heat > 0 ? requestAnimationFrame(cool) : 0;
+  };
+
+  const celebrate = ([message, intensity]: [string, number]) => {
+    toast.textContent = `${streak}× ${message}`;
+    toast.style.setProperty('--intensity', String(intensity));
+    toast.toggleAttribute('data-shake', intensity > 0);
+    toast
+      .getAnimations()
+      .filter((animation) => !(animation instanceof CSSAnimation))
+      .forEach((animation) => animation.cancel());
+    const animation = toast.animate(
+      reducedMotion.matches
+        ? { opacity: [0, 1, 1, 0] }
+        : {
+            opacity: [0, 1, 1, 0],
+            transform: [
+              'translateY(0) scale(0.6)',
+              'translateY(-1.5rem) scale(1)',
+              'translateY(-1.75rem) scale(1)',
+              'translateY(-2.25rem) scale(0.95)',
+            ],
+            offset: [0, 0.2, 0.75, 1],
+          },
+      { duration: 2400, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    );
+    animation.onfinish = () => toast.removeAttribute('data-shake');
+  };
+
+  year.addEventListener('click', () => {
+    stopRewind();
+    clearTimeout(settleTimer);
     year.textContent = String(Number(year.textContent) + 1);
+    heat = Math.min(1, heat + 0.07);
+    lastClick = performance.now();
+    streak += 1;
+    const milestone = milestones.get(streak);
+    if (milestone) celebrate(milestone);
+    year.animate(
+      { translate: ['0 0.6em', '0 0'], opacity: [0, 1], filter: ['blur(3px)', 'blur(0)'] },
+      { duration: 400, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+    );
+    if (!frame) {
+      last = performance.now();
+      frame = requestAnimationFrame(cool);
+    }
   });
 </script>
+
+<style>
+  [data-year-scope] {
+    --heat: 0;
+    --fire: color-mix(in oklab, #f97316, #dc2626 calc(max(var(--heat) * 2 - 1, 0) * 100%));
+  }
+
+  [data-year],
+  [data-year-toast] {
+    color: color-mix(in oklab, currentColor, var(--fire) calc(min(var(--heat) * 2, 1) * 100%));
+  }
+
+  [data-year] {
+    text-shadow: 0 0 calc(var(--heat) * 12px) rgb(239 68 68 / calc(var(--heat) * 0.9));
+  }
+
+  [data-year-toast] {
+    background: color-mix(in oklab, currentColor 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, currentColor 30%, transparent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-year][data-hot] {
+      animation: burn 0.12s linear infinite;
+    }
+
+    [data-year-toast][data-shake] {
+      animation: rattle 0.1s linear infinite;
+    }
+  }
+
+  @keyframes rattle {
+    25% {
+      translate: calc(-50% - var(--intensity) * 4px) 0;
+      rotate: calc(var(--intensity) * -8deg);
+    }
+
+    75% {
+      translate: calc(-50% + var(--intensity) * 4px) 0;
+      rotate: calc(var(--intensity) * 8deg);
+    }
+  }
+
+  @keyframes burn {
+    25% {
+      translate: calc(var(--heat) * -2px) calc(var(--heat) * 1px);
+      rotate: calc(var(--heat) * -5deg);
+    }
+
+    75% {
+      translate: calc(var(--heat) * 2px) calc(var(--heat) * -1px);
+      rotate: calc(var(--heat) * 5deg);
+    }
+  }
+</style>
