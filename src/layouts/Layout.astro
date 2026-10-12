@@ -45,7 +45,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body
     id="home"
-    class="bg-zinc-50 font-medium text-zinc-950 antialiased select-none dark:bg-zinc-950 dark:text-zinc-50"
+    class="bg-zinc-50 font-medium text-zinc-950 antialiased dark:bg-zinc-950 dark:text-zinc-50"
   >
     <div class="mx-auto w-full max-w-[700px] px-6 sm:px-3">
       <Navbar />
@@ -59,6 +59,8 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <Konami />
     <Console />
     <script>
+      import '../scripts/no-copy';
+
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach(({ isIntersecting, boundingClientRect, target }) => {

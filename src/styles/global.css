@@ -61,8 +61,9 @@
     cursor: pointer;
   }
 
-  ::selection {
-    @apply bg-blue-500/20;
+  * {
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   :focus-visible {
@@ -129,6 +130,20 @@
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+
+  to {
+    clip-path: circle(var(--theme-radius, 150vmax) at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
 }
 
 html[data-custom-cursor],

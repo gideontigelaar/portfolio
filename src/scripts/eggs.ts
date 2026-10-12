@@ -47,6 +47,6 @@ export const found = (egg: Egg) => {
     localStorage.setItem(storageKey, JSON.stringify([...discovered]));
   } catch {}
   toast(`Easter egg found (${count()}/${total()})`);
-  if (count() === total()) toast('You found them all 🏆');
+  if (count() === total()) toast('You found them all');
   golden();
 };

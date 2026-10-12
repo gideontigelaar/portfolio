@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
   <span>
     &copy;{' '}
     <span class="relative inline-block" data-year-scope>
-      <button type="button" class="touch-manipulation select-none tabular-nums" data-year>{year}</button>
+      <button type="button" class="touch-manipulation tabular-nums" data-year>{year}</button>
       <span
         class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap opacity-0"
         role="status"
@@ -34,9 +34,9 @@ const year = new Date().getFullYear();
   const resetDuration = 1500;
   const milestones = new Map<number, [string, number]>([
     [10, ['Warming up', 0]],
-    [25, ['On fire! 🔥', 0.23]],
+    [25, ['On fire!', 0.23]],
     [50, ['Unstoppable', 0.38]],
-    [100, ['Legendary 🏆', 0.56]],
+    [100, ['Legendary', 0.56]],
     [250, ['Maybe take a break?', 0.75]],
   ]);
   const visited = new Set<number>();
@@ -134,7 +134,7 @@ const year = new Date().getFullYear();
     streak = 0;
     scope.style.setProperty('--heat', '0');
     year.removeAttribute('data-hot');
-    pop('Time machine reset ⏳');
+    pop('Time machine reset');
     startRewind(resetDuration, easeOut);
   };
 
@@ -150,7 +150,7 @@ const year = new Date().getFullYear();
       glitch();
       pop('Year 3000. Still coding PHP.');
     } else {
-      pop('Welcome to the future 🚀');
+      pop('Welcome to the future');
     }
     return true;
   };

@@ -5,11 +5,13 @@ import { toast } from './toast';
 const root = document.documentElement;
 const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
 const spreeWindow = 3000;
-const spreeLength = 6;
-const rapidToggle = 1500;
+const spreeLength = 10;
+const rapidToggle = 600;
 const discoDuration = 5000;
 const discoFade = 600;
+const revealProperties = ['--theme-x', '--theme-y', '--theme-radius'];
 let spree: number[] = [];
+let transition: ViewTransition | undefined;
 
 const applyTheme = (dark: boolean) => root.classList.toggle('dark', dark);
 
@@ -23,8 +25,17 @@ const storeTheme = (dark: boolean) => {
   } catch {}
 };
 
+const clearReveal = () => revealProperties.forEach((property) => root.style.removeProperty(property));
+
+const endTransition = () => {
+  transition?.skipTransition();
+  transition = undefined;
+  clearReveal();
+};
+
 const setTheme = (dark: boolean, x: number, y: number, instant: boolean) => {
   storeTheme(dark);
+  endTransition();
 
   if (instant || !('startViewTransition' in document) || reducedMotion.matches) {
     applyTheme(dark);
@@ -32,21 +43,25 @@ const setTheme = (dark: boolean, x: number, y: number, instant: boolean) => {
   }
 
   const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  root.style.setProperty('--theme-x', `${x}px`);
+  root.style.setProperty('--theme-y', `${y}px`);
+  root.style.setProperty('--theme-radius', `${radius}px`);
 
-  document.startViewTransition(() => applyTheme(dark)).ready.then(() => {
-    root.animate(
-      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-      {
-        duration: 600,
-        easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
-        pseudoElement: '::view-transition-new(root)',
-      },
-    );
-  });
+  const current = document.startViewTransition(() => applyTheme(dark));
+  transition = current;
+  current.ready.catch(() => {});
+  current.finished.then(
+    () => {
+      if (transition !== current) return;
+      transition = undefined;
+      clearReveal();
+    },
+    () => {},
+  );
 };
 
 const disco = () => {
-  toast('Disco mode 🪩');
+  toast('Disco mode');
   found('disco');
   if (reducedMotion.matches) return;
 

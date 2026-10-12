@@ -11,30 +11,32 @@ import { site } from '../data/site';
       This page doesn't exist or has been moved.
     </p>
     <Button href="/" variant="primary" data-home-button>Back to home</Button>
-    <div
-      role="application"
-      aria-label="Catch the dot. Press Space when the dot is in the center."
-      aria-describedby="game-score"
-      tabindex="0"
-      class="group relative mt-10 h-56 w-full max-w-md touch-manipulation overflow-hidden rounded-3xl border border-dashed border-line"
-      data-game
-    >
-      <span
-        aria-hidden="true"
-        class="absolute top-1/2 left-1/2 size-16 -translate-1/2 rounded-full border-2 border-dashed border-transparent transition-colors group-focus-visible:border-blue-500/40"
-      ></span>
-      <span
-        aria-hidden="true"
-        class="absolute top-0 left-0 grid size-10 place-items-center"
-        data-game-dot
+    <div class="mt-10 flex w-full flex-col items-center gap-3" data-game-wrap>
+      <div
+        role="application"
+        aria-label="Catch the dot. Press Space when the dot is in the center."
+        aria-describedby="game-score"
+        tabindex="0"
+        class="group relative h-56 w-full max-w-md overflow-hidden rounded-3xl border border-dashed border-line"
+        data-game
       >
         <span
-          class="size-3.5 rounded-full bg-zinc-950/35 transition-[scale] duration-300 ease-spring dark:bg-white/45"
-          data-game-core
+          aria-hidden="true"
+          class="absolute top-1/2 left-1/2 size-16 -translate-1/2 rounded-full border-2 border-dashed border-transparent transition-colors group-focus-visible:border-blue-500/40"
         ></span>
-      </span>
+        <span
+          aria-hidden="true"
+          class="absolute top-0 left-0 grid size-8 place-items-center"
+          data-game-dot
+        >
+          <span
+            class="size-3.5 rounded-full bg-zinc-950/35 transition-[scale] duration-300 ease-spring dark:bg-white/45"
+            data-game-core
+          ></span>
+        </span>
+      </div>
+      <p id="game-score" class="text-sm text-muted" aria-live="polite" data-game-score>Hover or focus the box to play</p>
     </div>
-    <p id="game-score" class="text-sm text-muted" aria-live="polite" data-game-score>Hover, tap or focus the box to play</p>
   </section>
 </Layout>
 
@@ -47,13 +49,17 @@ import { site } from '../data/site';
   const core = dot.querySelector<HTMLElement>('[data-game-core]')!;
   const score = document.querySelector<HTMLElement>('[data-game-score]')!;
   const home = document.querySelector<HTMLElement>('[data-home-button]') ?? document.querySelector<HTMLElement>('main a[href="/"]');
-  const goal = 5;
-  const zone = 32;
+  const goal = 6;
+  const zone = 24;
   let caught = 0;
   let playing = false;
   let timer = 0;
 
-  const speed = () => Math.max(350, 1300 - caught * 190);
+  const speed = () => Math.max(320, 1100 - caught * 150);
+
+  const shrink = () => {
+    core.style.scale = String(1 - caught * 0.1);
+  };
 
   const place = (x: number, y: number) => {
     dot.style.translate = `${x}px ${y}px`;
@@ -67,7 +73,7 @@ import { site } from '../data/site';
   const move = () => {
     if (!playing) return;
     const middle = center();
-    const near = Math.random() < 0.35;
+    const near = Math.random() < 0.25;
     const x = near ? middle.x + (Math.random() - 0.5) * 20 : Math.random() * middle.x * 2;
     const y = near ? middle.y + (Math.random() - 0.5) * 20 : Math.random() * middle.y * 2;
     dot.style.transitionDuration = `${speed()}ms`;
@@ -82,10 +88,22 @@ import { site } from '../data/site';
     move();
   };
 
+  const miss = () => {
+    if (!playing || !caught) return;
+    caught -= 1;
+    shrink();
+    score.textContent = `Missed! Caught: ${caught}`;
+    if (reducedMotion.matches) return;
+    area.animate(
+      { translate: ['0 0', '-4px 0', '4px 0', '-2px 0', '0 0'] },
+      { duration: 250, easing: 'ease-out' },
+    );
+  };
+
   const catchDot = () => {
     if (!playing) return;
     caught += 1;
-    core.style.scale = String(1 - caught * 0.1);
+    shrink();
     dot.animate({ scale: [1.8, 1] }, { duration: 300, easing: 'ease-out' });
 
     if (caught < goal) {
@@ -97,7 +115,7 @@ import { site } from '../data/site';
 
     playing = false;
     window.clearTimeout(timer);
-    score.textContent = 'You win! Now go home 🏠';
+    score.textContent = 'You win! Now go home.';
     found('catch-the-dot');
     if (reducedMotion.matches) return;
     home?.animate(
@@ -120,6 +138,7 @@ import { site } from '../data/site';
 
   dot.addEventListener('pointerdown', (event) => {
     event.preventDefault();
+    event.stopPropagation();
     if (!playing) {
       start();
       return;
@@ -127,7 +146,13 @@ import { site } from '../data/site';
     catchDot();
   });
 
-  area.addEventListener('pointerdown', start);
+  area.addEventListener('pointerdown', () => {
+    if (playing) {
+      miss();
+      return;
+    }
+    start();
+  });
 
   area.addEventListener('keydown', (event) => {
     if (event.key !== ' ') return;
@@ -142,6 +167,18 @@ import { site } from '../data/site';
       dotRect.left + dotRect.width / 2 - (zoneRect.left + zoneRect.width / 2),
       dotRect.top + dotRect.height / 2 - (zoneRect.top + zoneRect.height / 2),
     );
-    if (distance <= zone) catchDot();
+    if (distance <= zone) {
+      catchDot();
+    } else {
+      miss();
+    }
   });
 </script>
+
+<style>
+  @media (hover: none) and (pointer: coarse) {
+    [data-game-wrap] {
+      display: none;
+    }
+  }
+</style>

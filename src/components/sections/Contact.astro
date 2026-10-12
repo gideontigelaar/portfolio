@@ -24,16 +24,16 @@ const contacts = [
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            class="group inline-flex items-center gap-3"
+            class="group inline-flex touch-manipulation items-center gap-3 transition-[scale] duration-200 ease-smooth active:scale-95"
           >
-            <span class="grid size-9 place-items-center rounded-xl border border-line bg-surface shadow-xs transition duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-6 group-hover:border-blue-600 group-hover:bg-blue-600 group-hover:text-white">
+            <span class="grid size-9 place-items-center rounded-xl border border-line bg-surface shadow-xs transition duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-6 group-hover:border-zinc-950 group-hover:bg-zinc-950 group-hover:text-white group-active:scale-90 group-active:-rotate-12 group-active:border-zinc-950 group-active:bg-zinc-950 group-active:text-white dark:group-hover:border-white dark:group-hover:bg-white dark:group-hover:text-zinc-950 dark:group-active:border-white dark:group-active:bg-white dark:group-active:text-zinc-950">
               <Icon class="size-4" aria-hidden="true" />
             </span>
-            <span class="underline-grow text-blue-600 group-hover:translate-x-1 dark:text-blue-400">
+            <span class="underline-grow text-blue-600 group-hover:translate-x-1 group-active:translate-x-1 dark:text-blue-400">
               {label}
             </span>
             <ArrowUpRightIcon
-              class="size-4 -translate-x-1 text-blue-600 opacity-0 transition duration-300 ease-smooth group-hover:translate-x-1 group-hover:opacity-100 dark:text-blue-400"
+              class="size-4 -translate-x-1 text-blue-600 opacity-0 transition duration-300 ease-smooth group-hover:translate-x-1 group-hover:opacity-100 group-active:translate-x-1 group-active:opacity-100 dark:text-blue-400"
               aria-hidden="true"
             />
           </a>

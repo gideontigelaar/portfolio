@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import HandWavingIcon from '@phosphor-icons/core/assets/fill/hand-waving-fill.svg';
 import Zzz from '../easter-eggs/Zzz.astro';
 import { site } from '../../data/site';
 ---
@@ -34,10 +35,10 @@ import { site } from '../../data/site';
     </button>
     <span
       aria-hidden="true"
-      class="pointer-events-none absolute -right-3 -bottom-1 origin-[70%_80%] text-3xl opacity-0"
+      class="pointer-events-none absolute -right-3 -bottom-1 origin-[70%_80%] text-amber-400 opacity-0"
       data-wave
     >
-      👋
+      <HandWavingIcon class="size-8" />
     </span>
     <Zzz place="hero" class="-top-1 left-full ml-1" />
   </div>
@@ -63,8 +64,11 @@ import { site } from '../../data/site';
   const hand = hero.querySelector<HTMLElement>('[data-wave]')!;
   const name = hero.querySelector<HTMLElement>('[data-name]')!;
   const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*+=?';
+  const spinsNeeded = 5;
+  const spinGap = 2000;
   let flip: Animation | undefined;
-  let clicks: number[] = [];
+  let spins = 0;
+  let lastSpin = 0;
   let waving = false;
 
   const inView = (element: Element) => {
@@ -83,7 +87,7 @@ import { site } from '../../data/site';
   };
 
   const popHat = async () => {
-    clicks = [];
+    spins = 0;
     if (!reducedMotion.matches) {
       await hat.animate(
         { translate: ['0 0', '1.5rem -3rem'], rotate: ['-20deg', '200deg'], opacity: [1, 0] },
@@ -99,18 +103,23 @@ import { site } from '../../data/site';
       return;
     }
 
+    if (!reducedMotion.matches && flip?.playState === 'running') return;
+
     const now = performance.now();
-    clicks = [...clicks.filter((time) => now - time < 3000), now];
-    if (clicks.length >= 5 && hat.hasAttribute('hidden')) {
-      clicks = [];
-      dropHat();
+    spins = now - lastSpin > spinGap ? 1 : spins + 1;
+    lastSpin = now;
+
+    if (!reducedMotion.matches) {
+      flip = avatar.animate(
+        { transform: ['perspective(400px) rotateY(0deg)', 'perspective(400px) rotateY(360deg)'] },
+        { duration: 900, easing: spring },
+      );
     }
 
-    if (reducedMotion.matches || flip?.playState === 'running') return;
-    flip = avatar.animate(
-      { transform: ['perspective(400px) rotateY(0deg)', 'perspective(400px) rotateY(360deg)'] },
-      { duration: 900, easing: spring },
-    );
+    if (spins >= spinsNeeded && hat.hasAttribute('hidden')) {
+      spins = 0;
+      dropHat();
+    }
   });
 
   const decode = () =>

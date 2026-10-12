@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import EnvelopeSimpleIcon from '@phosphor-icons/core/assets/regular/envelope-simple.svg';
-import TrophyIcon from '@phosphor-icons/core/assets/fill/trophy-fill.svg';
+import HeartIcon from '@phosphor-icons/core/assets/fill/heart-fill.svg';
 import Button from '../Button.astro';
 import Card from '../Card.astro';
 import CopyEmailButton from '../CopyEmailButton.astro';
@@ -22,9 +22,6 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   class="grid grid-cols-2 gap-4 pb-14 sm:grid-cols-3 sm:grid-rows-2 sm:gap-5 sm:pb-20"
 >
   <Card
-    href={site.socials.github.url}
-    target="_blank"
-    rel="noopener noreferrer"
     class="col-span-2 flex flex-col justify-between gap-6 p-5 sm:px-7 sm:py-8"
     data-enter
     style="--delay: 3"
@@ -33,18 +30,24 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
     <div class="flex justify-between">
       {
         languages.map((language) => (
-          <Image
-            src={language.icon}
-            alt={language.name}
-            data-language
-            width={50}
-            height={50}
-            loading="eager"
+          <button
+            type="button"
+            aria-label={language.name}
+            data-language={language.name}
             class:list={[
-              'size-10 transition-transform duration-500 ease-spring hover:-translate-y-1.5 sm:size-12.5',
+              'touch-manipulation rounded-xl transition-transform duration-500 ease-spring hover:-translate-y-1.5',
               language.hiddenOnMobile && 'hidden md:block',
             ]}
-          />
+          >
+            <Image
+              src={language.icon}
+              alt=""
+              width={50}
+              height={50}
+              loading="eager"
+              class="size-10 sm:size-12.5"
+            />
+          </button>
         ))
       }
     </div>
@@ -159,21 +162,9 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   }
 </Gallery>
 
-<div
-  role="status"
-  class="fixed right-4 bottom-20 z-70 flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 pr-5 shadow-lg sm:right-6"
-  data-achievement
-  hidden
->
-  <span class="grid size-10 place-items-center rounded-xl bg-amber-400/20 text-amber-500">
-    <TrophyIcon class="size-6" aria-hidden="true" />
-  </span>
-  <span class="flex flex-col leading-tight">
-    <span class="text-xs font-semibold tracking-wide text-muted uppercase">Achievement unlocked</span>
-    <span class="font-bold">Full-stack whisperer</span>
-    <span class="text-sm text-muted">You found a secret combo</span>
-  </span>
-</div>
+<template data-heart-template>
+  <HeartIcon class="size-4" aria-hidden="true" />
+</template>
 
 <script>
   import { found } from '../../scripts/eggs';
@@ -197,82 +188,109 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
     });
   });
 
-  const languageIcons = [...document.querySelectorAll<HTMLImageElement>('[data-language]')];
-  const achievement = document.querySelector<HTMLElement>('[data-achievement]')!;
+  const languageButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-language]')];
   const secret = ['PHP', 'MySQL', 'PHP', 'Python'];
   const spring = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
-  const spinTime = 600;
   const comboStep = 900;
   let progress = 0;
-  let pending = 0;
-  let showing = false;
+  let lastPress = 0;
+  let lastTrick = -1;
 
-  const openLink = (link: HTMLAnchorElement) => window.open(link.href, link.target || '_blank', 'noopener');
+  const tricks: [PropertyIndexedKeyframes, KeyframeAnimationOptions][] = [
+    [
+      {
+        transform: ['scale(1) rotate(0deg)', 'scale(1.35) rotate(-15deg)', 'scale(1) rotate(360deg)'],
+        offset: [0, 0.3, 1],
+      },
+      { duration: 600, easing: spring },
+    ],
+    [
+      { transform: ['perspective(300px) rotateY(0deg)', 'perspective(300px) rotateY(360deg)'] },
+      { duration: 700, easing: spring },
+    ],
+    [
+      { transform: ['perspective(300px) rotateX(0deg)', 'perspective(300px) rotateX(360deg)'] },
+      { duration: 700, easing: spring },
+    ],
+    [
+      {
+        transform: [
+          'translateY(0) scale(1, 1)',
+          'translateY(-1.25rem) scale(0.9, 1.15)',
+          'translateY(0) scale(1.2, 0.8)',
+          'translateY(0) scale(1, 1)',
+        ],
+        offset: [0, 0.4, 0.75, 1],
+      },
+      { duration: 650, easing: 'ease-out' },
+    ],
+    [
+      { transform: ['rotate(0deg)', 'rotate(-18deg)', 'rotate(14deg)', 'rotate(-10deg)', 'rotate(6deg)', 'rotate(0deg)'] },
+      { duration: 700, easing: 'ease-in-out' },
+    ],
+    [
+      { transform: ['scale(1)', 'scale(1.6)', 'scale(0.85)', 'scale(1.15)', 'scale(1)'] },
+      { duration: 600, easing: 'ease-out' },
+    ],
+  ];
 
-  const unlock = async () => {
-    found('language-combo');
-    if (!reducedMotion.matches) {
-      languageIcons.forEach((icon, i) =>
-        icon.animate({ translate: ['0 0', '0 -0.75rem', '0 0'] }, { duration: 450, delay: i * 80, easing: spring }),
+  const ripple = (source: number) =>
+    languageButtons.forEach((button, index) => {
+      if (index === source) return;
+      button.animate(
+        { translate: ['0 0', '0 -0.5rem', '0 0'] },
+        { duration: 450, delay: Math.abs(index - source) * 70, easing: spring },
       );
-    }
-    if (showing) return;
-    showing = true;
-    achievement.hidden = false;
-    const motion = reducedMotion.matches
-      ? { opacity: [0, 1] }
-      : { translate: ['calc(100% + 2rem) 0', '0 0'], opacity: [0, 1] };
-    try {
-      await achievement.animate(motion, { duration: 500, easing: spring }).finished;
-      await new Promise((resolve) => window.setTimeout(resolve, 3000));
-      await achievement.animate(motion, { duration: 400, direction: 'reverse', easing: 'ease-in', fill: 'forwards' })
-        .finished;
-    } catch {}
-    achievement.getAnimations().forEach((animation) => animation.cancel());
-    achievement.hidden = true;
-    showing = false;
+    });
+
+  const celebrate = () => {
+    found('language-combo');
+    if (reducedMotion.matches) return;
+    languageButtons.forEach((button, index) =>
+      button.animate(
+        {
+          transform: ['scale(1) rotate(0deg)', 'scale(1.3) rotate(180deg)', 'scale(1) rotate(360deg)'],
+          offset: [0, 0.5, 1],
+        },
+        { duration: 800, delay: index * 90, easing: spring },
+      ),
+    );
   };
 
-  languageIcons.forEach((icon) => {
-    let spin: Animation | undefined;
+  languageButtons.forEach((button, index) => {
+    let playing: Animation | undefined;
 
-    icon.addEventListener('click', (event) => {
-      const link = icon.closest('a');
-      if (!link || event.metaKey || event.ctrlKey || event.shiftKey) return;
-      event.preventDefault();
-      window.clearTimeout(pending);
+    button.addEventListener('click', () => {
+      const now = performance.now();
+      if (now - lastPress > comboStep) progress = 0;
+      lastPress = now;
 
-      if (icon.alt === secret[progress]) {
+      if (button.dataset.language === secret[progress]) {
         progress += 1;
       } else {
-        progress = icon.alt === secret[0] ? 1 : 0;
-      }
-
-      if (!reducedMotion.matches && spin?.playState !== 'running') {
-        spin = icon.animate(
-          {
-            transform: ['scale(1) rotate(0deg)', 'scale(1.35) rotate(-15deg)', 'scale(1) rotate(360deg)'],
-            offset: [0, 0.3, 1],
-          },
-          { duration: spinTime, easing: spring },
-        );
+        progress = button.dataset.language === secret[0] ? 1 : 0;
       }
 
       if (progress === secret.length) {
         progress = 0;
-        unlock();
+        celebrate();
         return;
       }
 
-      const delay = progress ? comboStep : reducedMotion.matches ? 0 : spinTime;
-      pending = window.setTimeout(() => {
-        progress = 0;
-        openLink(link);
-      }, delay);
+      if (reducedMotion.matches || playing?.playState === 'running') return;
+
+      let next = Math.floor(Math.random() * tricks.length);
+      if (next === lastTrick) next = (next + 1) % tricks.length;
+      lastTrick = next;
+
+      const [keyframes, options] = tricks[next];
+      playing = button.animate(keyframes, options);
+      ripple(index);
     });
   });
 
   const hearts = ['text-pink-500', 'text-fuchsia-500', 'text-orange-400'];
+  const heartIcon = document.querySelector<HTMLTemplateElement>('[data-heart-template]')!.content.firstElementChild!;
 
   document.querySelectorAll<HTMLAnchorElement>('[data-instagram-follow]').forEach((button) => {
     button.addEventListener('click', (event) => {
@@ -280,12 +298,14 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
       event.preventDefault();
 
       for (let i = 0; i < 7; i++) {
-        const heart = document.createElement('span');
+        const heart = heartIcon.cloneNode(true) as SVGElement;
         const angle = Math.PI + (Math.PI * (i + 0.5)) / 7;
         const distance = 36 + Math.random() * 24;
-        heart.textContent = '♥';
-        heart.ariaHidden = 'true';
-        heart.className = `pointer-events-none absolute top-1/2 left-1/2 text-base ${hearts[i % hearts.length]}`;
+        heart.setAttribute('aria-hidden', 'true');
+        heart.setAttribute(
+          'class',
+          `pointer-events-none absolute top-1/2 left-1/2 size-4 ${hearts[i % hearts.length]}`,
+        );
         button.append(heart);
         heart
           .animate(
