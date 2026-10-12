@@ -69,3 +69,9 @@
     @apply outline-2 outline-offset-2 outline-blue-500;
   }
 }
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}

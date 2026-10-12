@@ -28,7 +28,10 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <Font cssVariable="--font-manrope" preload={[{ weight: 500 }, { weight: 700 }]} />
     <script is:inline>
       (() => {
-        const theme = localStorage.getItem('theme');
+        let theme = null;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch {}
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (theme === 'dark' || (!theme && prefersDark)) {
           document.documentElement.classList.add('dark');
