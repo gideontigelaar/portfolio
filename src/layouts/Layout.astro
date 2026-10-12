@@ -24,7 +24,7 @@ const person = {
   name: site.name,
   url: Astro.site?.href,
   description: site.description,
-  jobTitle: 'PHP Web Developer',
+  jobTitle: site.jobTitle,
   sameAs: Object.values(site.socials).map(({ url }) => url),
 };
 ---

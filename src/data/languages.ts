@@ -17,6 +17,6 @@ export const languages: Language[] = [
   { name: 'MySQL', icon: mysqlIcon },
   { name: 'C++', icon: cppIcon },
   { name: 'Java', icon: javaIcon },
-  { name: 'Python', icon: pythonIcon },
-  { name: 'C#', icon: csIcon, hiddenOnMobile: true },
+  { name: 'Python', icon: pythonIcon, hiddenOnMobile: true },
+  { name: 'C#', icon: csIcon },
 ];

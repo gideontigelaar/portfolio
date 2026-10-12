@@ -5,7 +5,7 @@ import HouseIcon from '@phosphor-icons/core/assets/regular/house.svg';
 import LinkedinLogoIcon from '@phosphor-icons/core/assets/fill/linkedin-logo-fill.svg';
 import MoonIcon from '@phosphor-icons/core/assets/regular/moon.svg';
 import SunIcon from '@phosphor-icons/core/assets/regular/sun.svg';
-import Button from './Button.astro';
+import Button from './ui/Button.astro';
 import { site } from '../data/site';
 
 const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800';
@@ -23,11 +23,10 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
     href={site.socials.linkedin.url}
     target="_blank"
     rel="noopener noreferrer"
-    aria-label={`${site.name} on LinkedIn`}
     class={item}
   >
     <span class="relative shrink-0 transition-transform duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-6">
-      <Image src={site.avatar} alt="" width={32} height={32} loading="eager" class="rounded-full" />
+      <Image src={site.avatar} alt="" width={32} height={32} class="rounded-full" />
       <LinkedinLogoIcon
         class="absolute -right-1 -bottom-1 size-4 rounded-sm bg-white text-[#0a66c2]"
         aria-hidden="true"
@@ -39,7 +38,7 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
     </span>
   </a>
   <div role="separator" class="my-1 h-px bg-line"></div>
-  <a role="menuitem" href="/#home" aria-label="Home" class={item}>
+  <a role="menuitem" href="/#home" class={item}>
     <HouseIcon class="size-4 transition-transform duration-300 ease-spring group-hover:-translate-y-0.5 group-hover:scale-125" aria-hidden="true" />
     Home
   </a>

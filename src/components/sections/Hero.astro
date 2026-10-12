@@ -45,17 +45,14 @@ import { site } from '../../data/site';
   <h1 class="relative mt-2 text-4xl font-bold tracking-tight" data-enter="text" style="--delay: 1">
     <span data-name>{site.name}</span>
   </h1>
-  <p class="max-w-[500px] text-muted" data-enter="text" style="--delay: 2">
-    I'm Gideon, a software engineering student from the Netherlands, studying at Hanze
-    University of Applied Sciences in Groningen. Alongside my studies, I work as a PHP
-    developer at Dotsimpel, where I apply my skills in the real world.
-  </p>
+  <p class="max-w-[500px] text-muted" data-enter="text" style="--delay: 2">{site.intro}</p>
 </section>
 
 <script>
   import { found } from '../../scripts/eggs';
   import { onSequence } from '../../scripts/keys';
   import { reducedMotion, smooth, spring } from '../../scripts/motion';
+  import { inViewport } from '../../scripts/viewport';
 
   const hero = document.querySelector<HTMLElement>('#hero')!;
   const avatar = hero.querySelector<HTMLButtonElement>('[data-avatar]')!;
@@ -69,11 +66,6 @@ import { site } from '../../data/site';
   let spins = 0;
   let lastSpin = 0;
   let waving = false;
-
-  const inView = (element: Element) => {
-    const { top, bottom } = element.getBoundingClientRect();
-    return bottom > 0 && top < innerHeight;
-  };
 
   const dropHat = () => {
     hat.removeAttribute('hidden');
@@ -167,7 +159,7 @@ import { site } from '../../data/site';
     if (waving) return;
     waving = true;
     try {
-      if (!inView(hero)) {
+      if (!inViewport(hero.getBoundingClientRect())) {
         window.scrollTo({ top: 0, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
         await new Promise((resolve) => {
           window.addEventListener('scrollend', resolve, { once: true });

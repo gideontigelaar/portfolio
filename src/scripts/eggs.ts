@@ -16,7 +16,7 @@ const registry = {
   'language-combo': 'all',
 } as const;
 
-export type Egg = keyof typeof registry;
+type Egg = keyof typeof registry;
 
 const ids = Object.keys(registry) as Egg[];
 const discovered = new Set<Egg>();

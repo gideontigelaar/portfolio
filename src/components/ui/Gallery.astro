@@ -1,0 +1,113 @@
+---
+import CaretLeftIcon from '@phosphor-icons/core/assets/regular/caret-left.svg';
+import CaretRightIcon from '@phosphor-icons/core/assets/regular/caret-right.svg';
+import XIcon from '@phosphor-icons/core/assets/regular/x.svg';
+
+interface Props {
+  name: string;
+  label: string;
+  count: number;
+  crossfade?: boolean;
+  class?: string;
+}
+
+const { name, label, count, crossfade = false, class: className } = Astro.props;
+
+const navigation = [
+  { icon: CaretLeftIcon, label: 'Previous', direction: -1, position: '-left-16', nudge: 'group-hover:-translate-x-0.5' },
+  { icon: CaretRightIcon, label: 'Next', direction: 1, position: '-right-16', nudge: 'group-hover:translate-x-0.5' },
+];
+---
+
+<dialog
+  id={`${name}-gallery`}
+  aria-label={label}
+  tabindex="-1"
+  class="isolate m-0 size-full max-h-none max-w-none flex-col items-center justify-center-safe gap-5 overflow-y-auto overscroll-contain bg-transparent p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] text-zinc-950 outline-none backdrop:bg-transparent open:flex sm:pb-4 dark:text-zinc-50"
+  data-gallery={name}
+  data-crossfade={crossfade || undefined}
+>
+  <div class="fixed inset-0 -z-10 bg-zinc-950/50 backdrop-blur-sm" data-gallery-backdrop data-gallery-fade></div>
+  <button
+    type="button"
+    aria-label="Close"
+    class="group fixed right-0 bottom-[max(1rem,env(safe-area-inset-bottom))] left-0 z-10 mx-auto grid size-12 touch-manipulation place-items-center rounded-full bg-white/15 text-white shadow-lg backdrop-blur-md transition-colors sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:mx-0 sm:size-10 sm:bg-white/10 sm:shadow-none sm:hover:bg-white/20"
+    data-gallery-close
+    data-gallery-fade
+    data-press
+  >
+    <XIcon class="size-5 transition-transform duration-300 ease-spring group-hover:rotate-90" aria-hidden="true" />
+  </button>
+  <div class:list={['relative w-full shrink-0', className]}>
+    <div
+      class:list={[
+        'flex w-full snap-x snap-mandatory [scrollbar-width:none] gap-6 overflow-x-auto overscroll-x-contain *:w-full *:shrink-0 *:snap-center',
+        count > 1 && 'cursor-grab active:cursor-grabbing',
+      ]}
+      data-gallery-track
+    >
+      <slot />
+    </div>
+    {
+      count > 1 &&
+        navigation.map(({ icon: Icon, label, direction, position, nudge }) => (
+          <button
+            type="button"
+            aria-label={label}
+            class:list={[
+              'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20 lg:pointer-fine:grid',
+              position,
+            ]}
+            data-gallery-shift={direction}
+            data-gallery-fade
+            data-press
+          >
+            <Icon class:list={['size-5 transition-transform duration-300 ease-spring', nudge]} aria-hidden="true" />
+          </button>
+        ))
+    }
+  </div>
+  {
+    count > 1 && (
+      <div class="flex gap-2" data-gallery-dots data-gallery-fade>
+        {Array.from({ length: count }, (_, i) => (
+          <button
+            type="button"
+            aria-label={`Show ${i + 1} of ${count}`}
+            class="h-2 w-2 rounded-full bg-white/40 transition-all duration-300 hover:bg-white/70 aria-[current=true]:w-6 aria-[current=true]:bg-white"
+          />
+        ))}
+      </div>
+    )
+  }
+</dialog>
+
+<script>
+  import '../../scripts/gallery';
+</script>
+
+<style>
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-gallery-track] > :global(*) {
+        animation-name: swipe;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+        animation-timeline: view(inline);
+      }
+    }
+  }
+
+  @keyframes swipe {
+    0%,
+    100% {
+      opacity: 0.4;
+      scale: 0.92;
+    }
+
+    50% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+</style>

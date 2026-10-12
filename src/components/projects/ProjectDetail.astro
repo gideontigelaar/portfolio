@@ -1,9 +1,9 @@
 ---
-import Badge from './Badge.astro';
-import Button from './Button.astro';
-import Card from './Card.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import Card from '../ui/Card.astro';
 import ProjectScreenshot from './ProjectScreenshot.astro';
-import type { Project } from '../data/projects';
+import type { Project } from '../../data/projects';
 
 type Props = Project;
 
@@ -25,10 +25,10 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
         {title}
         <span class="text-sm font-medium text-muted tabular-nums">{year}</span>
       </h3>
-      <ul class="flex flex-wrap gap-1.5" aria-label="Tech" data-tech>
+      <ul class="flex flex-wrap gap-1.5" aria-label="Tech">
         {
           tech.map((item) => (
-            <li class="flex touch-manipulation transition-transform duration-500 ease-spring hover:-translate-y-1">
+            <li class="flex">
               <Badge>{item}</Badge>
             </li>
           ))

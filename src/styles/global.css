@@ -15,7 +15,6 @@
 }
 
 :root {
-  --launch-duration: 150ms;
   --surface: var(--color-white);
   --line: var(--color-zinc-200);
   --muted: var(--color-zinc-600);
@@ -43,8 +42,7 @@
     }
   }
 
-  :where(.group):focus-visible &,
-  :where(.group)[data-launching] & {
+  :where(.group):focus-visible & {
     background-size: 100% 1px;
   }
 }
@@ -128,8 +126,8 @@
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {
-  [data-launching]:not([data-press='inner']) {
-    animation: launch var(--launch-duration) ease-out;
+  [data-launching] {
+    animation: launch 150ms ease-out;
   }
 }
 

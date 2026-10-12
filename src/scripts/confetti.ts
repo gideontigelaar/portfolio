@@ -1,7 +1,8 @@
 const colors = ['#3b82f6', '#60a5fa', '#f59e0b', '#f43f5e', '#10b981', '#a855f7'];
 const steps = 12;
+const pieces = 60;
 
-export const confetti = (pieces = 60) => {
+export const confetti = () => {
   const layer = document.createElement('div');
   layer.ariaHidden = 'true';
   layer.className = 'pointer-events-none fixed inset-0 z-70 overflow-hidden';

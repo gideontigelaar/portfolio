@@ -21,6 +21,7 @@ const { class: className, place } = Astro.props;
 <script>
   import { found } from '../../scripts/eggs';
   import { reducedMotion } from '../../scripts/motion';
+  import { inViewport } from '../../scripts/viewport';
 
   const idleAfter = 45000;
   const zzzs = [...document.querySelectorAll<HTMLElement>('[data-zzz]')];
@@ -29,11 +30,7 @@ const { class: className, place } = Astro.props;
   let timer = 0;
   let sleeper: HTMLElement | undefined;
 
-  const avatarInView = () => {
-    if (!avatar) return false;
-    const { top, bottom } = avatar.getBoundingClientRect();
-    return bottom > 0 && top < innerHeight;
-  };
+  const avatarInView = () => (avatar ? inViewport(avatar.getBoundingClientRect()) : false);
 
   const arm = (delay = idleAfter) => {
     window.clearTimeout(timer);
@@ -78,7 +75,7 @@ const { class: className, place } = Astro.props;
     if (sleeper) wake();
   };
 
-  ['pointermove', 'pointerdown', 'keydown', 'scroll', 'wheel', 'touchstart'].forEach((type) =>
+  ['pointermove', 'pointerdown', 'keydown', 'scroll', 'wheel'].forEach((type) =>
     window.addEventListener(type, activity, { passive: true }),
   );
 

@@ -1,5 +1,5 @@
 ---
-import Button from '../components/Button.astro';
+import Button from '../components/ui/Button.astro';
 import Layout from '../layouts/Layout.astro';
 import { site } from '../data/site';
 ---
@@ -48,7 +48,7 @@ import { site } from '../data/site';
   const dot = area.querySelector<HTMLElement>('[data-game-dot]')!;
   const core = dot.querySelector<HTMLElement>('[data-game-core]')!;
   const score = document.querySelector<HTMLElement>('[data-game-score]')!;
-  const home = document.querySelector<HTMLElement>('[data-home-button]') ?? document.querySelector<HTMLElement>('main a[href="/"]');
+  const home = document.querySelector<HTMLElement>('[data-home-button]');
   const goal = 6;
   const zone = 24;
   let caught = 0;

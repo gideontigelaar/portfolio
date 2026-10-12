@@ -1,11 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import EnvelopeSimpleIcon from '@phosphor-icons/core/assets/regular/envelope-simple.svg';
-import HeartIcon from '@phosphor-icons/core/assets/fill/heart-fill.svg';
-import Button from '../Button.astro';
-import Card from '../Card.astro';
-import CopyEmailButton from '../CopyEmailButton.astro';
-import Gallery from '../Gallery.astro';
+import Button from '../ui/Button.astro';
+import Card from '../ui/Card.astro';
+import CopyEmailButton from '../ui/CopyEmailButton.astro';
+import Gallery from '../ui/Gallery.astro';
 
 import instagramIcon from '../../assets/icons/skill-icons/instagram.svg';
 import whispLogo from '../../assets/images/logos/whisp.webp';
@@ -72,7 +71,6 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
     rel="noopener noreferrer"
     class="relative aspect-square"
     data-tilt
-    data-press
     data-enter
     style="--delay: 5"
   >
@@ -103,14 +101,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
         </button>
         <span class="text-base text-muted">{site.socials.instagram.label}</span>
       </div>
-      <Button
-        href={site.socials.instagram.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="relative order-3"
-        style="--launch-duration: 400ms"
-        data-instagram-follow
-      >
+      <Button href={site.socials.instagram.url} target="_blank" rel="noopener noreferrer" class="order-3">
         Follow me!
       </Button>
     </div>
@@ -164,14 +155,9 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   }
 </Gallery>
 
-<template data-heart-template>
-  <HeartIcon class="size-4" aria-hidden="true" />
-</template>
-
 <script>
   import { found } from '../../scripts/eggs';
-  import { reducedMotion, smooth, spring } from '../../scripts/motion';
-  import { launch } from '../../scripts/press';
+  import { reducedMotion, spring } from '../../scripts/motion';
 
   const maxTilt = 10;
 
@@ -192,7 +178,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   });
 
   const languageButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-language]')];
-  const secret = ['PHP', 'MySQL', 'PHP', 'Python'];
+  const secret = ['C#', 'C++', 'PHP', 'Java'];
   const comboStep = 900;
   let progress = 0;
   let lastPress = 0;
@@ -236,19 +222,24 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
     ],
   ];
 
-  const ripple = (source: number) =>
-    languageButtons.forEach((button, index) => {
-      if (index === source) return;
+  const shown = () => languageButtons.filter((button) => button.offsetParent !== null);
+
+  const ripple = (source: HTMLButtonElement) => {
+    const row = shown();
+    const origin = row.indexOf(source);
+    row.forEach((button, index) => {
+      if (button === source) return;
       button.animate(
         { translate: ['0 0', '0 -0.5rem', '0 0'] },
-        { duration: 450, delay: Math.abs(index - source) * 70, easing: spring },
+        { duration: 450, delay: Math.abs(index - origin) * 70, easing: spring },
       );
     });
+  };
 
   const celebrate = () => {
     found('language-combo');
     if (reducedMotion.matches) return;
-    languageButtons.forEach((button, index) =>
+    shown().forEach((button, index) =>
       button.animate(
         {
           transform: ['scale(1) rotate(0deg)', 'scale(1.3) rotate(180deg)', 'scale(1) rotate(360deg)'],
@@ -259,7 +250,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
     );
   };
 
-  languageButtons.forEach((button, index) => {
+  languageButtons.forEach((button) => {
     let playing: Animation | undefined;
 
     button.addEventListener('click', () => {
@@ -287,12 +278,9 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
 
       const [keyframes, options] = tricks[next];
       playing = button.animate(keyframes, options);
-      ripple(index);
+      ripple(button);
     });
   });
-
-  const hearts = ['text-pink-500', 'text-fuchsia-500', 'text-orange-400'];
-  const heartIcon = document.querySelector<HTMLTemplateElement>('[data-heart-template]')!.content.firstElementChild!;
 
   document.querySelectorAll<HTMLElement>('[data-instagram-logo]').forEach((logo) => {
     logo.addEventListener('click', () => {
@@ -304,40 +292,6 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
         },
         { duration: 700, easing: spring },
       );
-    });
-  });
-
-  document.querySelectorAll<HTMLAnchorElement>('[data-instagram-follow]').forEach((button) => {
-    button.addEventListener('click', (event) => {
-      if (reducedMotion.matches || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      event.preventDefault();
-      if (button.hasAttribute('data-launching')) return;
-
-      for (let i = 0; i < 7; i++) {
-        const heart = heartIcon.cloneNode(true) as SVGElement;
-        const angle = Math.PI + (Math.PI * (i + 0.5)) / 7;
-        const distance = 36 + Math.random() * 24;
-        heart.setAttribute('aria-hidden', 'true');
-        heart.setAttribute(
-          'class',
-          `pointer-events-none absolute top-1/2 left-1/2 size-4 ${hearts[i % hearts.length]}`,
-        );
-        button.append(heart);
-        heart
-          .animate(
-            {
-              transform: [
-                'translate(-50%, -50%) scale(0.3)',
-                `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) scale(1.1) rotate(${(Math.random() - 0.5) * 60}deg)`,
-              ],
-              opacity: [1, 1, 0],
-            },
-            { duration: 700, easing: smooth },
-          )
-          .finished.then(() => heart.remove());
-      }
-
-      launch(button);
     });
   });
 </script>

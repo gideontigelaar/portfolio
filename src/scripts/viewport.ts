@@ -1,0 +1,1 @@
+export const inViewport = ({ top, bottom }: DOMRect) => bottom > 0 && top < innerHeight;
