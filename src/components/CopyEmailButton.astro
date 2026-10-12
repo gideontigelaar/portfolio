@@ -1,4 +1,5 @@
 ---
+import CheckIcon from '@phosphor-icons/core/assets/regular/check.svg';
 import CopyIcon from '@phosphor-icons/core/assets/regular/copy.svg';
 import Button from './Button.astro';
 
@@ -9,16 +10,36 @@ interface Props {
 const { email } = Astro.props;
 ---
 
-<Button data-copy-email={email}>
-  Email me
-  <CopyIcon class="size-4" aria-hidden="true" />
+<Button class="group" data-copy-email={email}>
+  <span class="grid *:col-start-1 *:row-start-1 *:transition *:duration-300 *:ease-smooth">
+    <span class="group-data-copied:-translate-y-3 group-data-copied:opacity-0">Email me</span>
+    <span class="translate-y-3 opacity-0 group-data-copied:translate-y-0 group-data-copied:opacity-100" role="status"></span>
+  </span>
+  <span class="grid *:col-start-1 *:row-start-1 *:size-4 *:transition *:duration-300 *:ease-spring" aria-hidden="true">
+    <CopyIcon class="group-data-copied:scale-0 group-data-copied:opacity-0" />
+    <CheckIcon class="scale-0 opacity-0 group-data-copied:scale-100 group-data-copied:opacity-100" />
+  </span>
 </Button>
 
 <script>
   document.querySelectorAll<HTMLButtonElement>('[data-copy-email]').forEach((button) => {
+    const status = button.querySelector<HTMLElement>('[role="status"]')!;
+    let timeout = 0;
+
     button.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(button.dataset.copyEmail ?? '');
-      alert('Email copied to clipboard!');
+      const email = button.dataset.copyEmail ?? '';
+
+      try {
+        await navigator.clipboard.writeText(email);
+      } catch {
+        window.location.href = `mailto:${email}`;
+        return;
+      }
+
+      status.textContent = 'Copied!';
+      button.setAttribute('data-copied', '');
+      clearTimeout(timeout);
+      timeout = window.setTimeout(() => button.removeAttribute('data-copied'), 2000);
     });
   });
 </script>
