@@ -1,0 +1,65 @@
+<div
+  aria-hidden="true"
+  class="group pointer-events-none fixed top-0 left-0 z-70 opacity-0 transition-opacity duration-300 data-visible:opacity-100"
+  data-cursor
+>
+  <div
+    class="size-3.5 -translate-1/2 rounded-full bg-zinc-950/35 transition-[scale,background-color] duration-300 ease-spring group-data-hover:scale-225 group-data-hover:bg-zinc-950/15 group-data-press:scale-70 group-data-hover:group-data-press:scale-180 dark:bg-white/45 dark:group-data-hover:bg-white/20"
+  ></div>
+</div>
+
+<script>
+  import { keepAboveDialogs } from '../scripts/top-layer';
+
+  const cursor = document.querySelector<HTMLElement>('[data-cursor]')!;
+  const root = document.documentElement;
+  const interactive =
+    'a, button, [role="button"], [role="menuitem"], label, summary, input, select, textarea';
+  const target = { x: 0, y: 0 };
+  const current = { x: 0, y: 0 };
+  let frame = 0;
+
+  const setVisible = (visible: boolean) => {
+    cursor.toggleAttribute('data-visible', visible);
+    root.toggleAttribute('data-custom-cursor', visible);
+  };
+
+  const render = () => {
+    current.x += (target.x - current.x) * 0.3;
+    current.y += (target.y - current.y) * 0.3;
+    cursor.style.translate = `${current.x}px ${current.y}px`;
+    const settled = Math.abs(target.x - current.x) + Math.abs(target.y - current.y) < 0.1;
+    frame = settled ? 0 : requestAnimationFrame(render);
+  };
+
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (event.pointerType !== 'mouse') {
+        setVisible(false);
+        return;
+      }
+      target.x = event.clientX;
+      target.y = event.clientY;
+      if (!cursor.hasAttribute('data-visible')) {
+        Object.assign(current, target);
+        setVisible(true);
+      }
+      frame ||= requestAnimationFrame(render);
+    },
+    { passive: true },
+  );
+
+  window.addEventListener('pointerover', (event) => {
+    cursor.toggleAttribute('data-hover', !!(event.target as Element).closest(interactive));
+  });
+
+  window.addEventListener('pointerdown', (event) => {
+    cursor.toggleAttribute('data-press', event.pointerType === 'mouse');
+  });
+
+  window.addEventListener('pointerup', () => cursor.removeAttribute('data-press'));
+  window.addEventListener('blur', () => setVisible(false));
+  root.addEventListener('mouseleave', () => setVisible(false));
+  keepAboveDialogs(cursor);
+</script>

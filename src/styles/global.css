@@ -75,3 +75,8 @@
   animation: none;
   mix-blend-mode: normal;
 }
+
+html[data-custom-cursor],
+html[data-custom-cursor] * {
+  cursor: none;
+}
