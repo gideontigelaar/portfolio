@@ -4,6 +4,7 @@ import '../styles/global.css';
 import ContextMenu from '../components/ContextMenu.astro';
 import Cursor from '../components/Cursor.astro';
 import Console from '../components/easter-eggs/Console.astro';
+import Disco from '../components/easter-eggs/Disco.astro';
 import Konami from '../components/easter-eggs/Konami.astro';
 import Footer from '../components/Footer.astro';
 import Navbar from '../components/Navbar.astro';
@@ -84,23 +85,11 @@ const person = {
     <ContextMenu />
     <Cursor />
     <Konami />
+    <Disco />
     <Console />
     <script>
-      import '../scripts/no-copy';
       import '../scripts/press';
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach(({ isIntersecting, boundingClientRect, target }) => {
-            if (!isIntersecting && boundingClientRect.top > 0) return;
-            target.setAttribute('data-revealed', '');
-            observer.unobserve(target);
-          });
-        },
-        { rootMargin: '0px 0px 10% 0px' },
-      );
-
-      document.querySelectorAll('[data-reveal]').forEach((element) => observer.observe(element));
+      import '../scripts/reveal';
     </script>
   </body>
 </html>

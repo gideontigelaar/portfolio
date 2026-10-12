@@ -30,6 +30,10 @@
   @apply rounded-full text-muted transition-[color,background-color] duration-200 not-data-pressing:hover:bg-zinc-200/60 not-data-pressing:hover:text-zinc-950 dark:not-data-pressing:hover:bg-zinc-800/60 dark:not-data-pressing:hover:text-zinc-50;
 }
 
+@utility interactive-row {
+  @apply transition-colors duration-200 hover:bg-zinc-200/50 active:bg-zinc-200/50 dark:hover:bg-zinc-900 dark:active:bg-zinc-900;
+}
+
 @utility underline-grow {
   background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
   transition:
@@ -70,6 +74,7 @@
   * {
     -webkit-user-select: none;
     user-select: none;
+    touch-action: manipulation;
   }
 
   :focus-visible {

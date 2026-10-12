@@ -53,7 +53,12 @@ const links = [
   const nav = document.querySelector<HTMLElement>('[data-nav]')!;
   const pill = nav.querySelector<HTMLElement>('[data-nav-pill]')!;
   const navLinks = [...nav.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
-  const sections = new Map(navLinks.map((link) => [link, document.getElementById(link.hash.slice(1))]));
+  const sections = new Map(
+    navLinks.flatMap((link) => {
+      const section = document.getElementById(link.hash.slice(1));
+      return section ? [[link, section] as const] : [];
+    }),
+  );
   const visible = new Set<Element>();
   const releaseDistance = 4;
   let active: HTMLAnchorElement | undefined;
@@ -78,9 +83,10 @@ const links = [
       pinned = undefined;
       settledAt = undefined;
     }
-    const next = atBottom()
-      ? navLinks[navLinks.length - 1]
-      : navLinks.find((link) => visible.has(sections.get(link)!));
+    const next =
+      sections.size && atBottom()
+        ? navLinks.at(-1)
+        : [...sections].find(([, section]) => visible.has(section))?.[0];
     if (next !== active) setActive(next);
   };
 
@@ -98,7 +104,7 @@ const links = [
     { rootMargin: '-45% 0px -50% 0px' },
   );
 
-  sections.forEach((section) => section && spy.observe(section));
+  sections.forEach((section) => spy.observe(section));
 
   navLinks.forEach((link) =>
     link.addEventListener('click', () => {

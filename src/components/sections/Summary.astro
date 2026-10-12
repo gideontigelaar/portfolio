@@ -34,7 +34,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
             aria-label={language.name}
             data-language={language.name}
             class:list={[
-              'touch-manipulation rounded-xl transition-transform duration-500 ease-spring hover:-translate-y-1.5',
+              'rounded-xl transition-transform duration-500 ease-spring hover:-translate-y-1.5',
               language.hiddenOnMobile && 'hidden md:block',
             ]}
           >
@@ -94,7 +94,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
         <button
           type="button"
           aria-label="Instagram"
-          class="shrink-0 touch-manipulation rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
+          class="shrink-0 rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
           data-instagram-logo
         >
           <Image src={instagramIcon} alt="" loading="eager" width={35} height={35} />
@@ -157,7 +157,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
 
 <script>
   import { found } from '../../scripts/eggs';
-  import { reducedMotion, spring } from '../../scripts/motion';
+  import { playOnce, reducedMotion, spring } from '../../scripts/motion';
 
   const maxTilt = 10;
 
@@ -283,15 +283,15 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   });
 
   document.querySelectorAll<HTMLElement>('[data-instagram-logo]').forEach((logo) => {
-    logo.addEventListener('click', () => {
-      if (reducedMotion.matches || logo.getAnimations().some((animation) => animation.playState === 'running')) return;
-      logo.animate(
+    logo.addEventListener('click', () =>
+      playOnce(
+        logo,
         {
           transform: ['rotate(0deg) scale(1)', 'rotate(-20deg) scale(1.3)', 'rotate(360deg) scale(1)'],
           offset: [0, 0.3, 1],
         },
         { duration: 700, easing: spring },
-      );
-    });
+      ),
+    );
   });
 </script>

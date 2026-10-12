@@ -1,0 +1,64 @@
+<style is:global>
+  html[data-disco]::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    pointer-events: none;
+    background:
+      radial-gradient(65% 55% at 12% 8%, #f43f5e, transparent 70%),
+      radial-gradient(60% 55% at 92% 18%, #3b82f6, transparent 70%),
+      radial-gradient(65% 60% at 88% 96%, #a855f7, transparent 70%),
+      radial-gradient(60% 55% at 8% 92%, #10b981, transparent 70%);
+    opacity: 0.28;
+    transition: opacity 0.6s ease-out;
+    animation:
+      disco-in 0.6s ease-out backwards,
+      disco-hue 4s linear infinite,
+      disco-beat 1.2s ease-in-out infinite alternate;
+  }
+
+  html.dark[data-disco]::before {
+    opacity: 0.36;
+  }
+
+  html[data-disco='off']::before {
+    opacity: 0;
+  }
+
+  html[data-disco] [data-theme-toggle] > svg {
+    animation: disco-spin 0.8s linear infinite;
+  }
+
+  @keyframes disco-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes disco-hue {
+    to {
+      filter: hue-rotate(360deg);
+    }
+  }
+
+  @keyframes disco-beat {
+    from {
+      scale: 1;
+    }
+
+    to {
+      scale: 1.15;
+    }
+  }
+
+  @keyframes disco-spin {
+    from {
+      rotate: 0deg;
+    }
+
+    to {
+      rotate: 360deg;
+    }
+  }
+</style>
