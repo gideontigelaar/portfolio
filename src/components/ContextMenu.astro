@@ -1,0 +1,133 @@
+---
+import { Image } from 'astro:assets';
+import HouseIcon from '@phosphor-icons/core/assets/regular/house.svg';
+import LinkedinLogoIcon from '@phosphor-icons/core/assets/fill/linkedin-logo-fill.svg';
+import MoonIcon from '@phosphor-icons/core/assets/regular/moon.svg';
+import SunIcon from '@phosphor-icons/core/assets/regular/sun.svg';
+import { site } from '../data/site';
+
+const item = 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800';
+---
+
+<div
+  role="menu"
+  aria-label="Quick menu"
+  tabindex="-1"
+  class="invisible fixed top-0 left-0 z-60 flex w-56 origin-top-left scale-95 flex-col rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,scale,visibility] duration-200 outline-none data-open:visible data-open:scale-100 data-open:opacity-100 data-open:blur-none data-open:transition-[opacity,filter,scale]"
+  data-context-menu
+>
+  <a
+    role="menuitem"
+    href={site.socials.linkedin.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`${site.name} on LinkedIn`}
+    class={item}
+  >
+    <span class="relative shrink-0">
+      <Image src={site.avatar} alt="" width={32} height={32} loading="eager" class="rounded-full" />
+      <LinkedinLogoIcon
+        class="absolute -right-1 -bottom-1 size-4 rounded-sm bg-white text-[#0a66c2]"
+        aria-hidden="true"
+      />
+    </span>
+    <span class="flex flex-col leading-tight">
+      <span class="font-semibold">{site.name}</span>
+      <span class="text-xs text-muted">View on LinkedIn</span>
+    </span>
+  </a>
+  <div role="separator" class="my-1 h-px bg-line"></div>
+  <a role="menuitem" href="/#home" aria-label="Home" class={item}>
+    <HouseIcon class="size-4" aria-hidden="true" />
+    Home
+  </a>
+  <button type="button" role="menuitem" class={item} data-context-theme>
+    <MoonIcon class="size-4 dark:hidden" aria-hidden="true" />
+    <SunIcon class="hidden size-4 dark:block" aria-hidden="true" />
+    <span class="dark:hidden">Dark mode</span>
+    <span class="hidden dark:inline">Light mode</span>
+  </button>
+</div>
+
+<script>
+  import { toggleTheme } from '../scripts/theme';
+  import { keepAboveDialogs } from '../scripts/top-layer';
+
+  const menu = document.querySelector<HTMLElement>('[data-context-menu]')!;
+  const themeItem = menu.querySelector<HTMLButtonElement>('[data-context-theme]')!;
+  const items = [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')];
+  const margin = 8;
+  const maxDistance = 120;
+  let pointerType = 'mouse';
+  let returnFocus: HTMLElement | null = null;
+
+  const isOpen = () => menu.hasAttribute('data-open');
+
+  const hide = () => {
+    if (!isOpen()) return;
+    menu.removeAttribute('data-open');
+    if (menu.contains(document.activeElement)) returnFocus?.focus({ preventScroll: true });
+  };
+
+  const show = (x: number, y: number) => {
+    menu.style.left = `${Math.min(x, innerWidth - menu.offsetWidth - margin)}px`;
+    menu.style.top = `${Math.min(y, innerHeight - menu.offsetHeight - margin)}px`;
+    returnFocus = document.activeElement as HTMLElement | null;
+    menu.setAttribute('data-open', '');
+    menu.focus({ preventScroll: true });
+  };
+
+  document.addEventListener('contextmenu', (event) => {
+    if (pointerType !== 'mouse' || event.shiftKey) {
+      hide();
+      return;
+    }
+    event.preventDefault();
+    show(event.clientX, event.clientY);
+  });
+
+  window.addEventListener('pointerdown', (event) => {
+    pointerType = event.pointerType;
+    if (!menu.contains(event.target as Node)) hide();
+  });
+
+  window.addEventListener(
+    'pointermove',
+    ({ clientX, clientY }) => {
+      if (!isOpen()) return;
+      const { left, top, right, bottom } = menu.getBoundingClientRect();
+      const dx = Math.max(left - clientX, 0, clientX - right);
+      const dy = Math.max(top - clientY, 0, clientY - bottom);
+      if (Math.hypot(dx, dy) > maxDistance) hide();
+    },
+    { passive: true },
+  );
+
+  themeItem.addEventListener('click', ({ clientX, clientY }) => toggleTheme(clientX, clientY));
+
+  menu.addEventListener('click', hide);
+  keepAboveDialogs(menu);
+  window.addEventListener('scroll', hide, { passive: true });
+  window.addEventListener('resize', hide);
+  window.addEventListener('blur', hide);
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !isOpen()) return;
+    event.preventDefault();
+    hide();
+  });
+
+  menu.addEventListener('keydown', (event) => {
+    const index = items.indexOf(document.activeElement as HTMLElement);
+    const targets: Record<string, number> = {
+      ArrowDown: index + 1,
+      ArrowUp: Math.max(index, 0) - 1,
+      Home: 0,
+      End: items.length - 1,
+    };
+
+    if (event.key === 'Tab') hide();
+    if (!(event.key in targets)) return;
+    event.preventDefault();
+    items[(targets[event.key] + items.length) % items.length].focus();
+  });
+</script>
