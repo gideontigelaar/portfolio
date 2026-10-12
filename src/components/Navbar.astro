@@ -12,21 +12,23 @@ const links = [
 <nav
   class="sticky top-0 z-50 -mx-3 flex justify-between bg-zinc-50/80 px-1 py-3 backdrop-blur-md dark:bg-zinc-950/80"
 >
-  <a
-    href="/#home"
-    aria-label="Home"
-    data-home
-    class="flex items-center nav-item p-2"
-  >
+  <a href="/#home" aria-label="Home" data-home class="flex nav-item items-center p-2">
     <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
   </a>
-  <ul class="flex items-center gap-1">
+  <ul class="relative isolate flex items-center gap-1" data-nav>
+    <li
+      aria-hidden="true"
+      class="absolute top-0 left-0 -z-10 rounded-full bg-zinc-200/70 opacity-0 transition-[translate,width,opacity] duration-500 ease-spring dark:bg-zinc-800"
+      data-nav-pill
+    >
+    </li>
     {
       links.map((link) => (
         <li>
           <a
             href={link.href}
-            class="nav-item px-3 py-1.5"
+            class="nav-item px-3 py-1.5 aria-[current=true]:text-zinc-950 dark:aria-[current=true]:text-zinc-50"
+            data-nav-link
           >
             {link.label}
           </a>
@@ -41,9 +43,79 @@ const links = [
   import { reducedMotion } from '../scripts/motion';
 
   const home = document.querySelector<HTMLAnchorElement>('[data-home]')!;
+  const nav = document.querySelector<HTMLElement>('[data-nav]')!;
+  const pill = nav.querySelector<HTMLElement>('[data-nav-pill]')!;
+  const navLinks = [...nav.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+  const sections = new Map(navLinks.map((link) => [link, document.getElementById(link.hash.slice(1))]));
+  const visible = new Set<Element>();
+  const releaseDistance = 4;
+  let active: HTMLAnchorElement | undefined;
+  let pinned: HTMLAnchorElement | undefined;
+  let settledAt: number | undefined;
+
+  const setActive = (link?: HTMLAnchorElement) => {
+    active = link;
+    navLinks.forEach((item) => item.setAttribute('aria-current', String(item === link)));
+    pill.style.opacity = link ? '1' : '0';
+    if (!link) return;
+    pill.style.width = `${link.offsetWidth}px`;
+    pill.style.height = `${link.offsetHeight}px`;
+    pill.style.translate = `${link.offsetLeft}px ${link.offsetTop}px`;
+  };
+
+  const atBottom = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+
+  const update = () => {
+    if (pinned) {
+      if (settledAt === undefined || Math.abs(window.scrollY - settledAt) < releaseDistance) return;
+      pinned = undefined;
+      settledAt = undefined;
+    }
+    const next = atBottom()
+      ? navLinks[navLinks.length - 1]
+      : navLinks.find((link) => visible.has(sections.get(link)!));
+    if (next !== active) setActive(next);
+  };
+
+  const spy = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (isIntersecting) {
+          visible.add(target);
+        } else {
+          visible.delete(target);
+        }
+      });
+      update();
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+
+  sections.forEach((section) => section && spy.observe(section));
+
+  navLinks.forEach((link) =>
+    link.addEventListener('click', () => {
+      setActive(link);
+      pinned = link;
+      settledAt = undefined;
+      const settle = () => {
+        if (pinned === link) settledAt = window.scrollY;
+      };
+      window.addEventListener('scrollend', settle, { once: true });
+      window.setTimeout(settle, 1200);
+      if (reducedMotion.matches) return;
+      link.setAttribute('data-pressing', '');
+      pill.animate({ scale: [1, 0.85, 1.06, 1] }, { duration: 450, easing: 'ease-out' });
+      window.setTimeout(() => link.removeAttribute('data-pressing'), 450);
+    }),
+  );
+
+  window.addEventListener('resize', () => setActive(active));
+  window.addEventListener('scroll', update, { passive: true });
 
   home.addEventListener('click', () => {
     if (reducedMotion.matches) return;
+    home.setAttribute('data-pressing', '');
     home.firstElementChild?.animate(
       {
         transform: [
@@ -57,5 +129,6 @@ const links = [
       },
       { duration: 650, easing: 'ease-out' },
     );
+    window.setTimeout(() => home.removeAttribute('data-pressing'), 650);
   });
 </script>

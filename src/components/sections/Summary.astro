@@ -102,7 +102,8 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
         href={site.socials.instagram.url}
         target="_blank"
         rel="noopener noreferrer"
-        class="order-3"
+        class="relative order-3"
+        data-instagram-follow
       >
         Follow me!
       </Button>
@@ -195,6 +196,40 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
       );
       await spin.finished;
       window.open(link.href, link.target || '_blank', 'noopener');
+    });
+  });
+
+  const hearts = ['text-pink-500', 'text-fuchsia-500', 'text-orange-400'];
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-instagram-follow]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      if (reducedMotion.matches || event.metaKey || event.ctrlKey || event.shiftKey) return;
+      event.preventDefault();
+
+      for (let i = 0; i < 7; i++) {
+        const heart = document.createElement('span');
+        const angle = Math.PI + (Math.PI * (i + 0.5)) / 7;
+        const distance = 36 + Math.random() * 24;
+        heart.textContent = '♥';
+        heart.ariaHidden = 'true';
+        heart.className = `pointer-events-none absolute top-1/2 left-1/2 text-base ${hearts[i % hearts.length]}`;
+        button.append(heart);
+        heart
+          .animate(
+            {
+              transform: [
+                'translate(-50%, -50%) scale(0.3)',
+                `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) scale(1.1) rotate(${(Math.random() - 0.5) * 60}deg)`,
+              ],
+              opacity: [1, 1, 0],
+            },
+            { duration: 700, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+          )
+          .finished.then(() => heart.remove());
+      }
+
+      button.animate({ scale: [1, 0.88, 1.08, 1] }, { duration: 450, easing: 'ease-out' });
+      window.setTimeout(() => window.open(button.href, button.target || '_blank', 'noopener'), 450);
     });
   });
 </script>
