@@ -20,14 +20,18 @@ const year = new Date().getFullYear();
 </footer>
 
 <script>
+  import { found } from '../scripts/eggs';
   import { reducedMotion } from '../scripts/motion';
 
-  const scope = document.querySelector<HTMLElement>('[data-year-scope]')!;
+  const footer = document.querySelector<HTMLElement>('footer')!;
+  const scope = footer.querySelector<HTMLElement>('[data-year-scope]')!;
   const year = scope.querySelector<HTMLElement>('[data-year]')!;
   const toast = scope.querySelector<HTMLElement>('[data-year-toast]')!;
+  const original = Number(year.textContent);
   const cooldown = 5000;
   const grace = 400;
   const settle = 250;
+  const resetDuration = 1500;
   const milestones = new Map<number, [string, number]>([
     [10, ['Warming up', 0]],
     [25, ['On fire! 🔥', 0.23]],
@@ -35,42 +39,45 @@ const year = new Date().getFullYear();
     [100, ['Legendary 🏆', 0.56]],
     [250, ['Maybe take a break?', 0.75]],
   ]);
+  const visited = new Set<number>();
   let heat = 0;
   let streak = 0;
   let last = 0;
   let lastClick = 0;
   let frame = 0;
-
-  const original = Number(year.textContent);
   let settleTimer = 0;
   let rewind = 0;
+  let resetting = false;
+
+  const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
+  const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
   const stopRewind = () => {
     cancelAnimationFrame(rewind);
     rewind = 0;
   };
 
-  const startRewind = () => {
+  const startRewind = (duration?: number, ease = easeInOut) => {
+    stopRewind();
     const from = Number(year.textContent);
-    if (from === original) return;
-    const duration = reducedMotion.matches ? 1 : Math.min(1800, 500 + (from - original) * 12);
+    if (from === original) {
+      resetting = false;
+      return;
+    }
+    const length = reducedMotion.matches ? 1 : (duration ?? Math.min(1800, 500 + (from - original) * 12));
     const start = performance.now();
 
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      year.textContent = String(Math.round(from - (from - original) * eased));
+      const t = Math.min(1, (now - start) / length);
+      year.textContent = String(Math.round(from - (from - original) * ease(t)));
       if (t < 1) {
         rewind = requestAnimationFrame(tick);
-      } else {
-        rewind = 0;
-        if (!reducedMotion.matches) {
-          year.animate(
-            { scale: ['1.1', '1'] },
-            { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-          );
-        }
+        return;
       }
+      rewind = 0;
+      resetting = false;
+      if (reducedMotion.matches) return;
+      year.animate({ scale: ['1.1', '1'] }, { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
     };
     rewind = requestAnimationFrame(tick);
   };
@@ -82,13 +89,15 @@ const year = new Date().getFullYear();
     year.toggleAttribute('data-hot', heat > 0.5);
     if (!heat) {
       streak = 0;
-      settleTimer = window.setTimeout(startRewind, settle);
+      settleTimer = window.setTimeout(() => {
+        if (!rewind) startRewind();
+      }, settle);
     }
     frame = heat > 0 ? requestAnimationFrame(cool) : 0;
   };
 
-  const celebrate = ([message, intensity]: [string, number]) => {
-    toast.textContent = `${streak}× ${message}`;
+  const pop = (message: string, intensity = 0) => {
+    toast.textContent = message;
     toast.style.setProperty('--intensity', String(intensity));
     toast.toggleAttribute('data-shake', intensity > 0);
     toast
@@ -113,15 +122,50 @@ const year = new Date().getFullYear();
     animation.onfinish = () => toast.removeAttribute('data-shake');
   };
 
+  const glitch = () => {
+    if (reducedMotion.matches) return;
+    footer.setAttribute('data-glitch', '');
+    window.setTimeout(() => footer.removeAttribute('data-glitch'), 600);
+  };
+
+  const timeMachine = () => {
+    resetting = true;
+    heat = 0;
+    streak = 0;
+    scope.style.setProperty('--heat', '0');
+    year.removeAttribute('data-hot');
+    pop('Time machine reset ⏳');
+    startRewind(resetDuration, easeOut);
+  };
+
+  const travel = (value: number) => {
+    if (value === 9999) {
+      timeMachine();
+      return true;
+    }
+    if (visited.has(value) || (value !== 2100 && value !== 3000)) return false;
+    visited.add(value);
+    found('time-travel');
+    if (value === 3000) {
+      glitch();
+      pop('Year 3000. Still coding PHP.');
+    } else {
+      pop('Welcome to the future 🚀');
+    }
+    return true;
+  };
+
   year.addEventListener('click', () => {
+    if (resetting) return;
     stopRewind();
-    clearTimeout(settleTimer);
-    year.textContent = String(Number(year.textContent) + 1);
+    window.clearTimeout(settleTimer);
+    const value = Number(year.textContent) + 1;
+    year.textContent = String(value);
     heat = Math.min(1, heat + 0.07);
     lastClick = performance.now();
     streak += 1;
     const milestone = milestones.get(streak);
-    if (milestone) celebrate(milestone);
+    if (!travel(value) && milestone) pop(`${streak}× ${milestone[0]}`, milestone[1]);
     year.animate(
       { translate: ['0 0.6em', '0 0'], opacity: [0, 1], filter: ['blur(3px)', 'blur(0)'] },
       { duration: 400, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
@@ -148,6 +192,14 @@ const year = new Date().getFullYear();
     text-shadow: 0 0 calc(var(--heat) * 12px) rgb(239 68 68 / calc(var(--heat) * 0.9));
   }
 
+  :global(html[data-golden]) [data-year-scope] {
+    color: #d97706;
+  }
+
+  :global(html.dark[data-golden]) [data-year-scope] {
+    color: #fbbf24;
+  }
+
   [data-year-toast] {
     background: color-mix(in oklab, currentColor 14%, transparent);
     box-shadow: inset 0 0 0 1px color-mix(in oklab, currentColor 30%, transparent);
@@ -160,6 +212,46 @@ const year = new Date().getFullYear();
 
     [data-year-toast][data-shake] {
       animation: rattle 0.1s linear infinite;
+    }
+
+    footer[data-glitch] > span {
+      animation: glitch 0.6s steps(2) both;
+    }
+  }
+
+  @keyframes glitch {
+    0%,
+    100% {
+      translate: 0;
+      text-shadow: none;
+    }
+
+    20% {
+      translate: -3px 0;
+      text-shadow:
+        2px 0 #f43f5e,
+        -2px 0 #06b6d4;
+    }
+
+    40% {
+      translate: 3px 0;
+      text-shadow:
+        -3px 0 #f43f5e,
+        3px 0 #06b6d4;
+    }
+
+    60% {
+      translate: -2px 0;
+      text-shadow:
+        2px 1px #f43f5e,
+        -2px -1px #06b6d4;
+    }
+
+    80% {
+      translate: 2px 0;
+      text-shadow:
+        -1px 0 #f43f5e,
+        1px 0 #06b6d4;
     }
   }
 

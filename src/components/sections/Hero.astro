@@ -1,29 +1,49 @@
 ---
 import { Image } from 'astro:assets';
+import Zzz from '../easter-eggs/Zzz.astro';
 import { site } from '../../data/site';
 ---
 
 <section id="hero" class="flex flex-col gap-3 py-14 sm:py-20">
-  <button
-    type="button"
-    aria-label="Flip profile picture"
-    class="w-fit rounded-full"
-    data-avatar
-    data-enter
-  >
-    <Image
-      src={site.avatar}
-      alt={site.name}
-      width={100}
-      height={100}
-      widths={[200, 300, 400]}
-      sizes="100px"
-      quality={90}
-      priority
-      class="rounded-full shadow-sm ring-1 ring-line transition-transform duration-500 ease-spring hover:scale-110 hover:-rotate-6"
-    />
-  </button>
-  <h1 class="mt-2 text-4xl font-bold tracking-tight" data-enter="text" style="--delay: 1">{site.name}</h1>
+  <div class="relative w-fit" data-enter>
+    <button
+      type="button"
+      aria-label="Flip profile picture"
+      class="group relative block rounded-full transition-transform duration-500 ease-spring hover:scale-110 hover:-rotate-6"
+      data-avatar
+    >
+      <Image
+        src={site.avatar}
+        alt={site.name}
+        width={100}
+        height={100}
+        widths={[200, 300, 400]}
+        sizes="100px"
+        quality={90}
+        priority
+        class="rounded-full shadow-sm ring-1 ring-line transition-[filter] duration-700 group-data-sleeping:brightness-60 group-data-sleeping:saturate-50"
+      />
+      <span class="absolute -top-10 left-1 w-11 origin-bottom -rotate-20" data-hat hidden>
+        <svg viewBox="0 0 48 56" aria-hidden="true">
+          <path d="M24 2 44 52H4Z" fill="#3b82f6"></path>
+          <path d="m15.6 23 16.8 0 3 8H12.6Zm-6.4 16h29.6l3 8H6.2Z" fill="#f59e0b"></path>
+          <path d="M3 50h42a2 2 0 0 1 0 4H3a2 2 0 0 1 0-4Z" fill="#1d4ed8"></path>
+          <circle cx="24" cy="4" r="4" fill="#f43f5e"></circle>
+        </svg>
+      </span>
+    </button>
+    <span
+      aria-hidden="true"
+      class="pointer-events-none absolute -right-3 -bottom-1 origin-[70%_80%] text-3xl opacity-0"
+      data-wave
+    >
+      👋
+    </span>
+    <Zzz place="hero" class="-top-1 left-full ml-1" />
+  </div>
+  <h1 class="relative mt-2 text-4xl font-bold tracking-tight" data-enter="text" style="--delay: 1">
+    <span data-name>{site.name}</span>
+  </h1>
   <p class="max-w-[500px] text-muted" data-enter="text" style="--delay: 2">
     I'm Gideon, a software engineering student from the Netherlands, studying at Hanze
     University of Applied Sciences in Groningen. Alongside my studies, I work as a PHP
@@ -32,16 +52,124 @@ import { site } from '../../data/site';
 </section>
 
 <script>
+  import { found } from '../../scripts/eggs';
+  import { onSequence } from '../../scripts/keys';
   import { reducedMotion } from '../../scripts/motion';
 
-  const avatar = document.querySelector<HTMLButtonElement>('[data-avatar]')!;
+  const spring = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+  const hero = document.querySelector<HTMLElement>('#hero')!;
+  const avatar = hero.querySelector<HTMLButtonElement>('[data-avatar]')!;
+  const hat = hero.querySelector<HTMLElement>('[data-hat]')!;
+  const hand = hero.querySelector<HTMLElement>('[data-wave]')!;
+  const name = hero.querySelector<HTMLElement>('[data-name]')!;
+  const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*+=?';
   let flip: Animation | undefined;
+  let clicks: number[] = [];
+  let waving = false;
 
-  avatar.addEventListener('click', () => {
+  const inView = (element: Element) => {
+    const { top, bottom } = element.getBoundingClientRect();
+    return bottom > 0 && top < innerHeight;
+  };
+
+  const dropHat = () => {
+    hat.removeAttribute('hidden');
+    found('party-hat');
+    if (reducedMotion.matches) return;
+    hat.animate(
+      { translate: ['0 -6rem', '0 0'], opacity: [0, 1] },
+      { duration: 700, delay: 150, easing: 'cubic-bezier(0.34, 1.8, 0.64, 1)', fill: 'backwards' },
+    );
+  };
+
+  const popHat = async () => {
+    clicks = [];
+    if (!reducedMotion.matches) {
+      await hat.animate(
+        { translate: ['0 0', '1.5rem -3rem'], rotate: ['-20deg', '200deg'], opacity: [1, 0] },
+        { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+      ).finished.catch(() => {});
+    }
+    hat.setAttribute('hidden', '');
+  };
+
+  avatar.addEventListener('click', (event) => {
+    if ((event.target as Element).closest('[data-hat]')) {
+      popHat();
+      return;
+    }
+
+    const now = performance.now();
+    clicks = [...clicks.filter((time) => now - time < 3000), now];
+    if (clicks.length >= 5 && hat.hasAttribute('hidden')) {
+      clicks = [];
+      dropHat();
+    }
+
     if (reducedMotion.matches || flip?.playState === 'running') return;
     flip = avatar.animate(
       { transform: ['perspective(400px) rotateY(0deg)', 'perspective(400px) rotateY(360deg)'] },
-      { duration: 900, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+      { duration: 900, easing: spring },
     );
+  });
+
+  const decode = () =>
+    new Promise<void>((resolve) => {
+      const text = name.textContent ?? '';
+      const copy = document.createElement('span');
+      copy.ariaHidden = 'true';
+      copy.className = 'absolute inset-0';
+      name.style.color = 'transparent';
+      name.after(copy);
+      const start = performance.now();
+
+      const frame = (now: number) => {
+        const progress = Math.min(1, (now - start) / 600);
+        const settled = Math.floor(progress * text.length);
+        copy.textContent = [...text]
+          .map((char, i) => (i < settled || char === ' ' ? char : glyphs[Math.floor(Math.random() * glyphs.length)]))
+          .join('');
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+          return;
+        }
+        copy.remove();
+        name.style.removeProperty('color');
+        resolve();
+      };
+
+      requestAnimationFrame(frame);
+    });
+
+  const wave = async () => {
+    if (reducedMotion.matches) {
+      await hand.animate({ opacity: [0, 1, 1, 0] }, { duration: 1800 }).finished;
+      return;
+    }
+    hand.animate({ opacity: [0, 1], scale: [0, 1] }, { duration: 400, easing: spring, fill: 'forwards' });
+    await hand.animate(
+      { rotate: ['0deg', '22deg', '-8deg', '22deg', '-8deg', '22deg', '-8deg', '22deg', '-8deg', '0deg'] },
+      { duration: 1500, delay: 150, easing: 'ease-in-out' },
+    ).finished;
+    await hand.animate({ opacity: [1, 0], scale: [1, 0.6] }, { duration: 300, fill: 'forwards' }).finished;
+    hand.getAnimations().forEach((animation) => animation.cancel());
+  };
+
+  onSequence([...'gideon'], 3000, async () => {
+    if (waving) return;
+    waving = true;
+    try {
+      if (!inView(hero)) {
+        window.scrollTo({ top: 0, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+        await new Promise((resolve) => {
+          window.addEventListener('scrollend', resolve, { once: true });
+          window.setTimeout(resolve, 900);
+        });
+      }
+      found('name-wave');
+      await Promise.all([wave(), reducedMotion.matches ? undefined : decode()]);
+    } finally {
+      waving = false;
+    }
   });
 </script>

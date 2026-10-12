@@ -1,7 +1,15 @@
+import { found } from './eggs';
 import { reducedMotion } from './motion';
+import { toast } from './toast';
 
 const root = document.documentElement;
 const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+const spreeWindow = 3000;
+const spreeLength = 6;
+const rapidToggle = 1500;
+const discoDuration = 5000;
+const discoFade = 600;
+let spree: number[] = [];
 
 const applyTheme = (dark: boolean) => root.classList.toggle('dark', dark);
 
@@ -15,11 +23,10 @@ const storeTheme = (dark: boolean) => {
   } catch {}
 };
 
-export const toggleTheme = (x: number, y: number) => {
-  const dark = !root.classList.contains('dark');
+const setTheme = (dark: boolean, x: number, y: number, instant: boolean) => {
   storeTheme(dark);
 
-  if (!('startViewTransition' in document) || reducedMotion.matches) {
+  if (instant || !('startViewTransition' in document) || reducedMotion.matches) {
     applyTheme(dark);
     return;
   }
@@ -36,6 +43,33 @@ export const toggleTheme = (x: number, y: number) => {
       },
     );
   });
+};
+
+const disco = () => {
+  toast('Disco mode 🪩');
+  found('disco');
+  if (reducedMotion.matches) return;
+
+  root.setAttribute('data-disco', '');
+  window.setTimeout(() => {
+    root.setAttribute('data-disco', 'off');
+    window.setTimeout(() => root.removeAttribute('data-disco'), discoFade);
+  }, discoDuration);
+};
+
+export const toggleTheme = (x: number, y: number) => {
+  if (root.hasAttribute('data-disco')) return;
+
+  const now = performance.now();
+  spree = spree.filter((time) => now - time < spreeWindow);
+  const rapid = now - (spree.at(-1) ?? -Infinity) < rapidToggle;
+  spree.push(now);
+
+  setTheme(!root.classList.contains('dark'), x, y, rapid);
+
+  if (spree.length < spreeLength) return;
+  spree = [];
+  disco();
 };
 
 systemDark.addEventListener('change', ({ matches }) => {

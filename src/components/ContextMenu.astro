@@ -1,9 +1,11 @@
 ---
 import { Image } from 'astro:assets';
+import CodeIcon from '@phosphor-icons/core/assets/regular/code.svg';
 import HouseIcon from '@phosphor-icons/core/assets/regular/house.svg';
 import LinkedinLogoIcon from '@phosphor-icons/core/assets/fill/linkedin-logo-fill.svg';
 import MoonIcon from '@phosphor-icons/core/assets/regular/moon.svg';
 import SunIcon from '@phosphor-icons/core/assets/regular/sun.svg';
+import Button from './Button.astro';
 import { site } from '../data/site';
 
 const item = 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800';
@@ -47,15 +49,48 @@ const item = 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left tran
     <span class="dark:hidden">Dark mode</span>
     <span class="hidden dark:inline">Light mode</span>
   </button>
+  <div role="separator" class="my-1 h-px bg-line" data-secret hidden></div>
+  <button type="button" role="menuitem" class={item} data-secret data-context-source hidden>
+    <CodeIcon class="size-4" aria-hidden="true" />
+    Secret menu
+  </button>
 </div>
 
+<dialog
+  aria-labelledby="about-site-title"
+  class="group m-auto w-[min(100%-2rem,24rem)] overflow-visible bg-transparent p-0 text-zinc-950 opacity-0 transition-[opacity,display,overlay] transition-discrete duration-300 backdrop:bg-zinc-950/50 backdrop:opacity-0 backdrop:backdrop-blur-sm backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-300 open:opacity-100 open:backdrop:opacity-100 motion-reduce:transition-none dark:text-zinc-50 starting:open:opacity-0 starting:open:backdrop:opacity-0"
+  data-about
+>
+  <div
+    class="scale-95 rounded-3xl border border-line bg-surface p-6 shadow-xl transition-[scale] duration-300 ease-spring group-open:scale-100 motion-reduce:transition-none starting:group-open:scale-95"
+  >
+    <h2 id="about-site-title" class="text-xl font-bold tracking-tight">About this site</h2>
+    <p class="mt-2 text-sm text-muted">
+      Built with Astro and Tailwind CSS. No trackers, just a lot of small details.
+    </p>
+    <p class="mt-4 rounded-2xl bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-800">
+      Easter eggs found: <strong data-about-count>0</strong>
+    </p>
+    <div class="mt-6 flex gap-2">
+      <Button href={`${site.socials.github.url}/portfolio`} target="_blank" rel="noopener noreferrer" variant="primary">
+        View on GitHub
+      </Button>
+      <Button data-about-close>Close</Button>
+    </div>
+  </div>
+</dialog>
+
 <script>
+  import { count, found, total } from '../scripts/eggs';
   import { toggleTheme } from '../scripts/theme';
   import { keepAboveDialogs } from '../scripts/top-layer';
 
   const menu = document.querySelector<HTMLElement>('[data-context-menu]')!;
   const themeItem = menu.querySelector<HTMLButtonElement>('[data-context-theme]')!;
-  const items = [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')];
+  const secrets = [...menu.querySelectorAll<HTMLElement>('[data-secret]')];
+  const about = document.querySelector<HTMLDialogElement>('[data-about]')!;
+  const aboutCount = about.querySelector<HTMLElement>('[data-about-count]')!;
+  const items = () => [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')].filter((element) => !element.hidden);
   const margin = 8;
   const maxDistance = 120;
   let pointerType = 'mouse';
@@ -83,6 +118,7 @@ const item = 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left tran
       return;
     }
     event.preventDefault();
+    secrets.forEach((element) => (element.hidden = !event.altKey));
     show(event.clientX, event.clientY);
   });
 
@@ -105,6 +141,18 @@ const item = 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left tran
 
   themeItem.addEventListener('click', ({ clientX, clientY }) => toggleTheme(clientX, clientY));
 
+  menu.querySelector('[data-context-source]')!.addEventListener('click', () => {
+    found('secret-menu');
+    aboutCount.textContent = `${count()}/${total()}`;
+    about.showModal();
+  });
+
+  about.addEventListener('click', ({ target, clientX, clientY }) => {
+    const { left, right, top, bottom } = about.getBoundingClientRect();
+    const outside = clientX < left || clientX > right || clientY < top || clientY > bottom;
+    if (outside || (target as Element).closest('[data-about-close]')) about.close();
+  });
+
   menu.addEventListener('click', hide);
   keepAboveDialogs(menu);
   window.addEventListener('scroll', hide, { passive: true });
@@ -117,17 +165,18 @@ const item = 'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left tran
   });
 
   menu.addEventListener('keydown', (event) => {
-    const index = items.indexOf(document.activeElement as HTMLElement);
+    const visibleItems = items();
+    const index = visibleItems.indexOf(document.activeElement as HTMLElement);
     const targets: Record<string, number> = {
       ArrowDown: index + 1,
       ArrowUp: Math.max(index, 0) - 1,
       Home: 0,
-      End: items.length - 1,
+      End: visibleItems.length - 1,
     };
 
     if (event.key === 'Tab') hide();
     if (!(event.key in targets)) return;
     event.preventDefault();
-    items[(targets[event.key] + items.length) % items.length].focus();
+    visibleItems[(targets[event.key] + visibleItems.length) % visibleItems.length].focus();
   });
 </script>

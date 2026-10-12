@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import EnvelopeSimpleIcon from '@phosphor-icons/core/assets/regular/envelope-simple.svg';
+import TrophyIcon from '@phosphor-icons/core/assets/fill/trophy-fill.svg';
 import Button from '../Button.astro';
 import Card from '../Card.astro';
 import CopyEmailButton from '../CopyEmailButton.astro';
@@ -158,7 +159,24 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   }
 </Gallery>
 
+<div
+  role="status"
+  class="fixed right-4 bottom-20 z-70 flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 pr-5 shadow-lg sm:right-6"
+  data-achievement
+  hidden
+>
+  <span class="grid size-10 place-items-center rounded-xl bg-amber-400/20 text-amber-500">
+    <TrophyIcon class="size-6" aria-hidden="true" />
+  </span>
+  <span class="flex flex-col leading-tight">
+    <span class="text-xs font-semibold tracking-wide text-muted uppercase">Achievement unlocked</span>
+    <span class="font-bold">Full-stack whisperer</span>
+    <span class="text-sm text-muted">You found a secret combo</span>
+  </span>
+</div>
+
 <script>
+  import { found } from '../../scripts/eggs';
   import { reducedMotion } from '../../scripts/motion';
 
   const maxTilt = 10;
@@ -179,23 +197,78 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
     });
   });
 
-  document.querySelectorAll<HTMLImageElement>('[data-language]').forEach((icon) => {
+  const languageIcons = [...document.querySelectorAll<HTMLImageElement>('[data-language]')];
+  const achievement = document.querySelector<HTMLElement>('[data-achievement]')!;
+  const secret = ['PHP', 'MySQL', 'PHP', 'Python'];
+  const spring = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+  const spinTime = 600;
+  const comboStep = 900;
+  let progress = 0;
+  let pending = 0;
+  let showing = false;
+
+  const openLink = (link: HTMLAnchorElement) => window.open(link.href, link.target || '_blank', 'noopener');
+
+  const unlock = async () => {
+    found('language-combo');
+    if (!reducedMotion.matches) {
+      languageIcons.forEach((icon, i) =>
+        icon.animate({ translate: ['0 0', '0 -0.75rem', '0 0'] }, { duration: 450, delay: i * 80, easing: spring }),
+      );
+    }
+    if (showing) return;
+    showing = true;
+    achievement.hidden = false;
+    const motion = reducedMotion.matches
+      ? { opacity: [0, 1] }
+      : { translate: ['calc(100% + 2rem) 0', '0 0'], opacity: [0, 1] };
+    try {
+      await achievement.animate(motion, { duration: 500, easing: spring }).finished;
+      await new Promise((resolve) => window.setTimeout(resolve, 3000));
+      await achievement.animate(motion, { duration: 400, direction: 'reverse', easing: 'ease-in', fill: 'forwards' })
+        .finished;
+    } catch {}
+    achievement.getAnimations().forEach((animation) => animation.cancel());
+    achievement.hidden = true;
+    showing = false;
+  };
+
+  languageIcons.forEach((icon) => {
     let spin: Animation | undefined;
 
-    icon.addEventListener('click', async (event) => {
+    icon.addEventListener('click', (event) => {
       const link = icon.closest('a');
-      if (!link || reducedMotion.matches || event.metaKey || event.ctrlKey || event.shiftKey) return;
+      if (!link || event.metaKey || event.ctrlKey || event.shiftKey) return;
       event.preventDefault();
-      if (spin?.playState === 'running') return;
-      spin = icon.animate(
-        {
-          transform: ['scale(1) rotate(0deg)', 'scale(1.35) rotate(-15deg)', 'scale(1) rotate(360deg)'],
-          offset: [0, 0.3, 1],
-        },
-        { duration: 600, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
-      );
-      await spin.finished;
-      window.open(link.href, link.target || '_blank', 'noopener');
+      window.clearTimeout(pending);
+
+      if (icon.alt === secret[progress]) {
+        progress += 1;
+      } else {
+        progress = icon.alt === secret[0] ? 1 : 0;
+      }
+
+      if (!reducedMotion.matches && spin?.playState !== 'running') {
+        spin = icon.animate(
+          {
+            transform: ['scale(1) rotate(0deg)', 'scale(1.35) rotate(-15deg)', 'scale(1) rotate(360deg)'],
+            offset: [0, 0.3, 1],
+          },
+          { duration: spinTime, easing: spring },
+        );
+      }
+
+      if (progress === secret.length) {
+        progress = 0;
+        unlock();
+        return;
+      }
+
+      const delay = progress ? comboStep : reducedMotion.matches ? 0 : spinTime;
+      pending = window.setTimeout(() => {
+        progress = 0;
+        openLink(link);
+      }, delay);
     });
   });
 

@@ -18,6 +18,22 @@
   const target = { x: 0, y: 0 };
   const current = { x: 0, y: 0 };
   let frame = 0;
+  let lastTrail = 0;
+  let hue = 0;
+
+  const trail = (x: number, y: number) => {
+    const dot = document.createElement('div');
+    dot.className = 'pointer-events-none fixed top-0 left-0 z-70 size-2.5 rounded-full';
+    dot.style.translate = `calc(${x}px - 50%) calc(${y}px - 50%)`;
+    dot.style.background = `hsl(${(hue += 35) % 360} 90% 60%)`;
+    cursor.before(dot);
+    dot
+      .animate({ opacity: [0.9, 0], scale: [1, 0.2] }, { duration: 600, easing: 'ease-out' })
+      .finished.then(
+        () => dot.remove(),
+        () => dot.remove(),
+      );
+  };
 
   const setVisible = (visible: boolean) => {
     cursor.toggleAttribute('data-visible', visible);
@@ -46,6 +62,9 @@
         setVisible(true);
       }
       frame ||= requestAnimationFrame(render);
+      if (root.getAttribute('data-disco') !== '' || event.timeStamp - lastTrail < 40) return;
+      lastTrail = event.timeStamp;
+      trail(event.clientX, event.clientY);
     },
     { passive: true },
   );

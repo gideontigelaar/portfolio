@@ -1,0 +1,126 @@
+---
+interface Props {
+  class?: string;
+  place: 'hero' | 'nav';
+}
+
+const { class: className, place } = Astro.props;
+---
+
+<span
+  aria-hidden="true"
+  class:list={['pointer-events-none absolute flex items-end gap-0.5 font-bold text-blue-500', className]}
+  data-zzz={place}
+  hidden
+>
+  <span class="text-xs">z</span>
+  <span class="text-sm">z</span>
+  <span class="text-base">Z</span>
+</span>
+
+<script>
+  import { found } from '../../scripts/eggs';
+  import { reducedMotion } from '../../scripts/motion';
+
+  const idleAfter = 45000;
+  const zzzs = [...document.querySelectorAll<HTMLElement>('[data-zzz]')];
+  const avatar = document.querySelector<HTMLElement>('[data-avatar]');
+  let lastActivity = performance.now();
+  let timer = 0;
+  let sleeper: HTMLElement | undefined;
+
+  const avatarInView = () => {
+    if (!avatar) return false;
+    const { top, bottom } = avatar.getBoundingClientRect();
+    return bottom > 0 && top < innerHeight;
+  };
+
+  const arm = (delay = idleAfter) => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(check, delay);
+  };
+
+  const check = () => {
+    if (sleeper) return;
+    const idle = performance.now() - lastActivity;
+    if (idle < idleAfter) {
+      arm(idleAfter - idle);
+      return;
+    }
+    sleeper = zzzs.find((zzz) => zzz.dataset.zzz === (avatarInView() ? 'hero' : 'nav'));
+    sleeper?.removeAttribute('hidden');
+    avatar?.setAttribute('data-sleeping', '');
+  };
+
+  const wake = () => {
+    const zzz = sleeper;
+    sleeper = undefined;
+    avatar?.removeAttribute('data-sleeping');
+    arm();
+    if (!zzz) return;
+    found('sleep');
+
+    const hide = () => zzz.setAttribute('hidden', '');
+    if (reducedMotion.matches) {
+      hide();
+      return;
+    }
+    zzz.animate({ opacity: [1, 0], scale: [1, 1.6] }, { duration: 250, easing: 'ease-out' }).finished.then(hide, hide);
+    if (zzz.dataset.zzz !== 'hero') return;
+    avatar?.animate(
+      { translate: ['0 0', '-4px -3px', '4px 0', '-3px 0', '2px 0', '0 0'] },
+      { duration: 400, easing: 'ease-out' },
+    );
+  };
+
+  const activity = () => {
+    lastActivity = performance.now();
+    if (sleeper) wake();
+  };
+
+  ['pointermove', 'pointerdown', 'keydown', 'scroll', 'wheel', 'touchstart'].forEach((type) =>
+    window.addEventListener(type, activity, { passive: true }),
+  );
+
+  document.addEventListener('visibilitychange', () => {
+    window.clearTimeout(timer);
+    if (document.hidden) return;
+    lastActivity = performance.now();
+    if (!sleeper) arm();
+  });
+
+  arm();
+</script>
+
+<style>
+  @media (prefers-reduced-motion: no-preference) {
+    [data-zzz] > span {
+      animation: float 2.4s ease-in-out infinite backwards;
+    }
+
+    [data-zzz] > span:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+
+    [data-zzz] > span:nth-child(3) {
+      animation-delay: 0.8s;
+    }
+  }
+
+  @keyframes float {
+    0% {
+      opacity: 0;
+      translate: 0 0.4rem;
+    }
+
+    30%,
+    60% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      translate: 0.25rem -0.75rem;
+    }
+  }
+</style>
