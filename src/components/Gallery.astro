@@ -93,7 +93,9 @@ const navigation = [
 
   document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((dialog) => {
     const track = dialog.querySelector<HTMLElement>('[data-gallery-track]')!;
-    const slides = [...track.children] as HTMLElement[];
+    const slides = [...track.children].filter(
+      (child): child is HTMLElement => child instanceof HTMLElement && !child.matches('script, style, template'),
+    );
     const items = [...track.querySelectorAll<HTMLElement>('[data-gallery-item]')];
     const dots = [...dialog.querySelectorAll<HTMLButtonElement>('[data-gallery-dots] button')];
     const fades = [...dialog.querySelectorAll<HTMLElement>('[data-gallery-fade]')];
@@ -112,77 +114,89 @@ const navigation = [
       !!target.closest('[data-gallery-close]') ||
       (target.parentElement === track && !target.hasAttribute('data-gallery-item'));
 
+    const clamp = (value: number) =>
+      Number.isFinite(value) ? Math.max(0, Math.min(Math.round(value), slides.length - 1)) : 0;
+
     const slideWidth = () =>
-      slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth;
+      (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : 0) || track.clientWidth || 1;
 
     const select = (next: number) => {
-      index = next;
-      dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === next)));
+      index = clamp(next);
+      dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
     };
 
     const go = (next: number, behavior: ScrollBehavior = 'smooth') => {
-      track.scrollTo({ left: Math.max(0, Math.min(next, slides.length - 1)) * slideWidth(), behavior });
+      track.scrollTo({ left: clamp(next) * slideWidth(), behavior });
     };
 
     const animate = async (opening: boolean) => {
       busy = true;
       const item = items[index];
       const trigger = triggers[index];
-      const source = trigger.getBoundingClientRect();
-      const target = item.getBoundingClientRect();
-      const options: KeyframeAnimationOptions = {
-        duration: reducedMotion.matches ? 150 : opening ? 550 : 450,
-        easing: opening ? 'cubic-bezier(0.32, 0.72, 0, 1)' : 'cubic-bezier(1, 0, 0.68, 0.28)',
-        direction: opening ? 'normal' : 'reverse',
-        fill: 'both',
-      };
-      const animations = fades.map((element) => element.animate({ opacity: [0, 1] }, options));
       let ghost: HTMLElement | undefined;
+      let animations: Animation[] = [];
 
-      if (reducedMotion.matches || !isVisible(source) || !target.width) {
-        animations.push(item.animate({ opacity: [0, 1], scale: [0.95, 1] }, options));
-      } else {
-        const scale = Math.max(source.width / target.width, source.height / target.height);
-        const x = source.x + source.width / 2 - target.x - target.width / 2;
-        const y = source.y + source.height / 2 - target.y - target.height / 2;
-        const insetX = (target.width - source.width / scale) / 2;
-        const insetY = (target.height - source.height / scale) / 2;
+      try {
+        const options: KeyframeAnimationOptions = {
+          duration: reducedMotion.matches ? 150 : opening ? 550 : 450,
+          easing: opening ? 'cubic-bezier(0.32, 0.72, 0, 1)' : 'cubic-bezier(1, 0, 0.68, 0.28)',
+          direction: opening ? 'normal' : 'reverse',
+          fill: 'both',
+        };
+        const source = trigger?.getBoundingClientRect();
+        const target = item?.getBoundingClientRect();
+        animations = fades.map((element) => element.animate({ opacity: [0, 1] }, options));
 
-        ghost = item.cloneNode(true) as HTMLElement;
-        Object.assign(ghost.style, {
-          position: 'fixed',
-          top: `${target.top}px`,
-          left: `${target.left}px`,
-          width: `${target.width}px`,
-          height: `${target.height}px`,
-          margin: '0',
-          pointerEvents: 'none',
-        });
-        dialog.append(ghost);
-        item.style.visibility = 'hidden';
-        if (!crossfade) trigger.style.visibility = 'hidden';
+        if (item && (!trigger || !source || !target || reducedMotion.matches || !isVisible(source) || !target.width)) {
+          animations.push(item.animate({ opacity: [0, 1], scale: [0.95, 1] }, options));
+        } else if (item && trigger && source && target) {
+          const scale = Math.max(source.width / target.width, source.height / target.height);
+          const x = source.x + source.width / 2 - target.x - target.width / 2;
+          const y = source.y + source.height / 2 - target.y - target.height / 2;
+          const insetX = (target.width - source.width / scale) / 2;
+          const insetY = (target.height - source.height / scale) / 2;
 
-        animations.push(
-          ghost.animate(
-            {
-              transform: [`translate(${x}px, ${y}px) scale(${scale})`, 'none'],
-              clipPath: [
-                `inset(${insetY}px ${insetX}px round ${radius(trigger) / scale}px)`,
-                `inset(0px 0px round ${radius(item)}px)`,
-              ],
-              opacity: crossfade ? [0, 1] : [1, 1],
-            },
-            options,
-          ),
-        );
+          ghost = item.cloneNode(true) as HTMLElement;
+          Object.assign(ghost.style, {
+            position: 'fixed',
+            top: `${target.top}px`,
+            left: `${target.left}px`,
+            width: `${target.width}px`,
+            height: `${target.height}px`,
+            margin: '0',
+            pointerEvents: 'none',
+          });
+          ghost.setAttribute('aria-hidden', 'true');
+          ghost.inert = true;
+          dialog.append(ghost);
+          item.style.visibility = 'hidden';
+          if (!crossfade) trigger.style.visibility = 'hidden';
+
+          animations.push(
+            ghost.animate(
+              {
+                transform: [`translate(${x}px, ${y}px) scale(${scale})`, 'none'],
+                clipPath: [
+                  `inset(${insetY}px ${insetX}px round ${radius(trigger) / scale}px)`,
+                  `inset(0px 0px round ${radius(item)}px)`,
+                ],
+                opacity: crossfade ? [0, 1] : [1, 1],
+              },
+              options,
+            ),
+          );
+        }
+
+        await Promise.allSettled(animations.map((animation) => animation.finished));
+      } catch {
+      } finally {
+        if (!opening && dialog.open) dialog.close();
+        ghost?.remove();
+        if (item) item.style.visibility = '';
+        if (trigger) trigger.style.visibility = '';
+        animations.forEach((animation) => animation.cancel());
+        busy = false;
       }
-
-      await Promise.all(animations.map((animation) => animation.finished));
-      if (!opening) dialog.close();
-      ghost?.remove();
-      item.style.visibility = trigger.style.visibility = '';
-      animations.forEach((animation) => animation.cancel());
-      busy = false;
     };
 
     const open = (next: number) => {
@@ -249,7 +263,7 @@ const navigation = [
     track.addEventListener(
       'scroll',
       () => {
-        const next = Math.round(track.scrollLeft / slideWidth());
+        const next = clamp(track.scrollLeft / slideWidth());
         if (next !== index) select(next);
       },
       { passive: true },

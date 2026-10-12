@@ -17,6 +17,16 @@ interface Props {
 
 const { title = site.name, description = site.description, noindex = false } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: Astro.site?.href,
+  description: site.description,
+  jobTitle: 'PHP Web Developer',
+  sameAs: Object.values(site.socials).map(({ url }) => url),
+};
 ---
 
 <!doctype html>
@@ -27,7 +37,9 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonicalUrl.href} />}
     <meta name="theme-color" content="#fafafa" />
+    <meta name="color-scheme" content="light dark" />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -36,6 +48,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <title>{title}</title>
+    {!noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(person)} />}
     <Font cssVariable="--font-manrope" preload={[{ weight: 500 }, { weight: 700 }]} />
     <script is:inline>
       (() => {
@@ -55,9 +68,15 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     id="home"
     class="bg-zinc-50 font-medium text-zinc-950 antialiased dark:bg-zinc-950 dark:text-zinc-50"
   >
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-100 focus:rounded-full focus:bg-zinc-900 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white dark:focus:bg-zinc-50 dark:focus:text-zinc-900"
+    >
+      Skip to content
+    </a>
     <Navbar />
     <div class="mx-auto w-full max-w-[700px] px-6 sm:px-3">
-      <main>
+      <main id="main" tabindex="-1" class="outline-none">
         <slot />
       </main>
       <Footer />

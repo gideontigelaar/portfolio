@@ -21,7 +21,7 @@ export const launch = async (link: HTMLAnchorElement) => {
   await press(link);
 
   if (link.target === '_blank') {
-    window.open(link.href, '_blank', 'noopener');
+    window.open(link.href, '_blank', 'noopener,noreferrer');
     return;
   }
 
@@ -47,6 +47,11 @@ document.addEventListener('click', (event) => {
     event.shiftKey ||
     event.altKey
   ) {
+    return;
+  }
+
+  if (element.target === '_blank') {
+    press(element);
     return;
   }
 

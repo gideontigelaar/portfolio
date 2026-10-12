@@ -105,8 +105,8 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
   };
 
   const show = (x: number, y: number) => {
-    menu.style.left = `${Math.min(x, innerWidth - menu.offsetWidth - margin)}px`;
-    menu.style.top = `${Math.min(y, innerHeight - menu.offsetHeight - margin)}px`;
+    menu.style.left = `${Math.max(margin, Math.min(x, innerWidth - menu.offsetWidth - margin))}px`;
+    menu.style.top = `${Math.max(margin, Math.min(y, innerHeight - menu.offsetHeight - margin))}px`;
     returnFocus = document.activeElement as HTMLElement | null;
     menu.setAttribute('data-open', '');
     menu.focus({ preventScroll: true });

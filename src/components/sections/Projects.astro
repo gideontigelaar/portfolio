@@ -23,3 +23,25 @@ import { projects } from '../../data/projects';
     {projects.map((project) => <ProjectDetail {...project} />)}
   </Gallery>
 </section>
+
+<script>
+  import { reducedMotion, spring } from '../../scripts/motion';
+
+  document.querySelectorAll<HTMLElement>('#projects [data-tech]').forEach((list) => {
+    const items = [...list.children] as HTMLElement[];
+    const badges = items.map((item) => item.firstElementChild as HTMLElement);
+
+    items.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        if (reducedMotion.matches) return;
+        badges.forEach((other, otherIndex) => {
+          const source = otherIndex === index;
+          other.animate(
+            { transform: ['translateY(0)', source ? 'translateY(-0.75rem)' : 'translateY(-0.5rem)', 'translateY(0)'] },
+            { duration: 450, delay: Math.abs(otherIndex - index) * 70, easing: spring },
+          );
+        });
+      });
+    });
+  });
+</script>
