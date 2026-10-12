@@ -15,6 +15,7 @@
 }
 
 :root {
+  --launch-duration: 150ms;
   --surface: var(--color-white);
   --line: var(--color-zinc-200);
   --muted: var(--color-zinc-600);
@@ -27,7 +28,7 @@
 }
 
 @utility nav-item {
-  @apply rounded-full text-muted transition-[color,background-color,scale] duration-200 not-data-pressing:hover:bg-zinc-200/60 not-data-pressing:hover:text-zinc-950 active:scale-95 dark:not-data-pressing:hover:bg-zinc-800/60 dark:not-data-pressing:hover:text-zinc-50;
+  @apply rounded-full text-muted transition-[color,background-color] duration-200 not-data-pressing:hover:bg-zinc-200/60 not-data-pressing:hover:text-zinc-950 dark:not-data-pressing:hover:bg-zinc-800/60 dark:not-data-pressing:hover:text-zinc-50;
 }
 
 @utility underline-grow {
@@ -42,15 +43,22 @@
     }
   }
 
-  :where(.group):focus-visible & {
+  :where(.group):focus-visible &,
+  :where(.group)[data-launching] & {
     background-size: 100% 1px;
   }
 }
 
 @layer base {
   html {
+    color-scheme: light;
     scrollbar-gutter: stable;
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   html:has(dialog[open]) {
@@ -100,6 +108,28 @@
 @media screen and (prefers-reduced-motion: no-preference) and (scripting: enabled) {
   [data-reveal]:not([data-revealed]) {
     opacity: 0;
+  }
+}
+
+@keyframes launch {
+  0% {
+    scale: 1;
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--press, currentColor) 45%, transparent);
+  }
+
+  45% {
+    scale: 0.9;
+  }
+
+  100% {
+    scale: 1;
+    box-shadow: 0 0 0 0.4rem color-mix(in oklab, var(--press, currentColor) 0%, transparent);
+  }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  [data-launching]:not([data-press='inner']) {
+    animation: launch var(--launch-duration) ease-out;
   }
 }
 

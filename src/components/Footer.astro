@@ -21,7 +21,7 @@ const year = new Date().getFullYear();
 
 <script>
   import { found } from '../scripts/eggs';
-  import { reducedMotion } from '../scripts/motion';
+  import { reducedMotion, smooth, spring } from '../scripts/motion';
 
   const footer = document.querySelector<HTMLElement>('footer')!;
   const scope = footer.querySelector<HTMLElement>('[data-year-scope]')!;
@@ -77,7 +77,7 @@ const year = new Date().getFullYear();
       rewind = 0;
       resetting = false;
       if (reducedMotion.matches) return;
-      year.animate({ scale: ['1.1', '1'] }, { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+      year.animate({ scale: ['1.1', '1'] }, { duration: 450, easing: smooth });
     };
     rewind = requestAnimationFrame(tick);
   };
@@ -117,7 +117,7 @@ const year = new Date().getFullYear();
             ],
             offset: [0, 0.2, 0.75, 1],
           },
-      { duration: 2400, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+      { duration: 2400, easing: smooth },
     );
     animation.onfinish = () => toast.removeAttribute('data-shake');
   };
@@ -168,13 +168,24 @@ const year = new Date().getFullYear();
     if (!travel(value) && milestone) pop(`${streak}× ${milestone[0]}`, milestone[1]);
     year.animate(
       { translate: ['0 0.6em', '0 0'], opacity: [0, 1], filter: ['blur(3px)', 'blur(0)'] },
-      { duration: 400, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+      { duration: 400, easing: spring },
     );
     if (!frame) {
       last = performance.now();
       frame = requestAnimationFrame(cool);
     }
   });
+
+  window.setYear = (value: number) => {
+    if (!Number.isFinite(value)) return 'Pass a number, for example setYear(2099)';
+    const next = Math.round(value);
+    stopRewind();
+    window.clearTimeout(settleTimer);
+    resetting = false;
+    year.textContent = String(next);
+    travel(next);
+    return `Counter set to ${next}`;
+  };
 </script>
 
 <style>

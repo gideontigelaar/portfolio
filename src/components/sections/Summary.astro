@@ -72,6 +72,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
     rel="noopener noreferrer"
     class="relative aspect-square"
     data-tilt
+    data-press
     data-enter
     style="--delay: 5"
   >
@@ -92,14 +93,14 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   >
     <div class="contents md:flex md:h-full md:flex-col md:justify-between">
       <div class="flex items-center gap-3 md:w-60">
-        <Image
-          src={instagramIcon}
-          alt="Instagram"
-          loading="eager"
-          width={35}
-          height={35}
-          class="transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
-        />
+        <button
+          type="button"
+          aria-label="Instagram"
+          class="shrink-0 touch-manipulation rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
+          data-instagram-logo
+        >
+          <Image src={instagramIcon} alt="" loading="eager" width={35} height={35} />
+        </button>
         <span class="text-base text-muted">{site.socials.instagram.label}</span>
       </div>
       <Button
@@ -107,6 +108,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
         target="_blank"
         rel="noopener noreferrer"
         class="relative order-3"
+        style="--launch-duration: 400ms"
         data-instagram-follow
       >
         Follow me!
@@ -168,7 +170,8 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
 
 <script>
   import { found } from '../../scripts/eggs';
-  import { reducedMotion } from '../../scripts/motion';
+  import { reducedMotion, smooth, spring } from '../../scripts/motion';
+  import { launch } from '../../scripts/press';
 
   const maxTilt = 10;
 
@@ -190,7 +193,6 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
 
   const languageButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-language]')];
   const secret = ['PHP', 'MySQL', 'PHP', 'Python'];
-  const spring = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
   const comboStep = 900;
   let progress = 0;
   let lastPress = 0;
@@ -292,10 +294,24 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   const hearts = ['text-pink-500', 'text-fuchsia-500', 'text-orange-400'];
   const heartIcon = document.querySelector<HTMLTemplateElement>('[data-heart-template]')!.content.firstElementChild!;
 
+  document.querySelectorAll<HTMLElement>('[data-instagram-logo]').forEach((logo) => {
+    logo.addEventListener('click', () => {
+      if (reducedMotion.matches || logo.getAnimations().some((animation) => animation.playState === 'running')) return;
+      logo.animate(
+        {
+          transform: ['rotate(0deg) scale(1)', 'rotate(-20deg) scale(1.3)', 'rotate(360deg) scale(1)'],
+          offset: [0, 0.3, 1],
+        },
+        { duration: 700, easing: spring },
+      );
+    });
+  });
+
   document.querySelectorAll<HTMLAnchorElement>('[data-instagram-follow]').forEach((button) => {
     button.addEventListener('click', (event) => {
-      if (reducedMotion.matches || event.metaKey || event.ctrlKey || event.shiftKey) return;
+      if (reducedMotion.matches || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
+      if (button.hasAttribute('data-launching')) return;
 
       for (let i = 0; i < 7; i++) {
         const heart = heartIcon.cloneNode(true) as SVGElement;
@@ -316,13 +332,12 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
               ],
               opacity: [1, 1, 0],
             },
-            { duration: 700, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+            { duration: 700, easing: smooth },
           )
           .finished.then(() => heart.remove());
       }
 
-      button.animate({ scale: [1, 0.88, 1.08, 1] }, { duration: 450, easing: 'ease-out' });
-      window.setTimeout(() => window.open(button.href, button.target || '_blank', 'noopener'), 450);
+      launch(button);
     });
   });
 </script>

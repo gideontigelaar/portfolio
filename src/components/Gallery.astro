@@ -14,8 +14,8 @@ interface Props {
 const { name, label, count, crossfade = false, class: className } = Astro.props;
 
 const navigation = [
-  { icon: CaretLeftIcon, label: 'Previous', direction: -1, position: '-left-16' },
-  { icon: CaretRightIcon, label: 'Next', direction: 1, position: '-right-16' },
+  { icon: CaretLeftIcon, label: 'Previous', direction: -1, position: '-left-16', nudge: 'group-hover:-translate-x-0.5' },
+  { icon: CaretRightIcon, label: 'Next', direction: 1, position: '-right-16', nudge: 'group-hover:translate-x-0.5' },
 ];
 ---
 
@@ -23,7 +23,7 @@ const navigation = [
   id={`${name}-gallery`}
   aria-label={label}
   tabindex="-1"
-  class="isolate m-0 size-full max-h-none max-w-none flex-col items-center justify-center-safe gap-5 overflow-y-auto overscroll-contain bg-transparent p-4 pb-24 text-zinc-950 outline-none backdrop:bg-transparent open:flex sm:pb-4 dark:text-zinc-50"
+  class="isolate m-0 size-full max-h-none max-w-none flex-col items-center justify-center-safe gap-5 overflow-y-auto overscroll-contain bg-transparent p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] text-zinc-950 outline-none backdrop:bg-transparent open:flex sm:pb-4 dark:text-zinc-50"
   data-gallery={name}
   data-crossfade={crossfade || undefined}
 >
@@ -31,11 +31,12 @@ const navigation = [
   <button
     type="button"
     aria-label="Close"
-    class="fixed right-0 bottom-[max(1rem,env(safe-area-inset-bottom))] left-0 mx-auto grid size-12 touch-manipulation place-items-center rounded-full bg-white/15 text-white shadow-lg backdrop-blur-md transition active:scale-90 sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:mx-0 sm:size-10 sm:bg-white/10 sm:shadow-none sm:hover:bg-white/20"
+    class="group fixed right-0 bottom-[max(1rem,env(safe-area-inset-bottom))] left-0 z-10 mx-auto grid size-12 touch-manipulation place-items-center rounded-full bg-white/15 text-white shadow-lg backdrop-blur-md transition-colors sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:mx-0 sm:size-10 sm:bg-white/10 sm:shadow-none sm:hover:bg-white/20"
     data-gallery-close
     data-gallery-fade
+    data-press
   >
-    <XIcon class="size-5" aria-hidden="true" />
+    <XIcon class="size-5 transition-transform duration-300 ease-spring group-hover:rotate-90" aria-hidden="true" />
   </button>
   <div class:list={['relative w-full shrink-0', className]}>
     <div
@@ -49,18 +50,19 @@ const navigation = [
     </div>
     {
       count > 1 &&
-        navigation.map(({ icon: Icon, label, direction, position }) => (
+        navigation.map(({ icon: Icon, label, direction, position, nudge }) => (
           <button
             type="button"
             aria-label={label}
             class:list={[
-              'absolute top-1/2 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 active:scale-90 lg:pointer-fine:grid',
+              'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20 lg:pointer-fine:grid',
               position,
             ]}
             data-gallery-shift={direction}
             data-gallery-fade
+            data-press
           >
-            <Icon class="size-5" aria-hidden="true" />
+            <Icon class:list={['size-5 transition-transform duration-300 ease-spring', nudge]} aria-hidden="true" />
           </button>
         ))
     }

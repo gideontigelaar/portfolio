@@ -100,6 +100,18 @@ import { site } from '../data/site';
     );
   };
 
+  const win = () => {
+    playing = false;
+    window.clearTimeout(timer);
+    score.textContent = 'You win! Now go home.';
+    found('catch-the-dot');
+    if (reducedMotion.matches) return;
+    home?.animate(
+      { scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgb(59 130 246 / 0.5)', '0 0 0 12px rgb(59 130 246 / 0)', 'none'] },
+      { duration: 1000, iterations: 4, easing: 'ease-out' },
+    );
+  };
+
   const catchDot = () => {
     if (!playing) return;
     caught += 1;
@@ -113,15 +125,14 @@ import { site } from '../data/site';
       return;
     }
 
-    playing = false;
-    window.clearTimeout(timer);
-    score.textContent = 'You win! Now go home.';
-    found('catch-the-dot');
-    if (reducedMotion.matches) return;
-    home?.animate(
-      { scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgb(59 130 246 / 0.5)', '0 0 0 12px rgb(59 130 246 / 0)', 'none'] },
-      { duration: 1000, iterations: 4, easing: 'ease-out' },
-    );
+    win();
+  };
+
+  window.winGame = () => {
+    caught = goal;
+    shrink();
+    win();
+    return 'Game won';
   };
 
   const middle = center();

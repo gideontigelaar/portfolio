@@ -25,8 +25,14 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
         {title}
         <span class="text-sm font-medium text-muted tabular-nums">{year}</span>
       </h3>
-      <ul class="flex flex-wrap gap-1.5" aria-label="Tech">
-        {tech.map((item) => <li class="flex"><Badge>{item}</Badge></li>)}
+      <ul class="flex flex-wrap gap-1.5" aria-label="Tech" data-tech>
+        {
+          tech.map((item) => (
+            <li class="flex touch-manipulation transition-transform duration-500 ease-spring hover:-translate-y-1">
+              <Badge>{item}</Badge>
+            </li>
+          ))
+        }
       </ul>
     </div>
     <p class="text-muted">{description} {details}</p>
@@ -35,3 +41,25 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
     </Button>
   </div>
 </Card>
+
+<script>
+  import { reducedMotion, spring } from '../scripts/motion';
+
+  document.querySelectorAll<HTMLElement>('[data-tech]').forEach((list) => {
+    const items = [...list.children] as HTMLElement[];
+    const badges = items.map((item) => item.firstElementChild as HTMLElement);
+
+    items.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        if (reducedMotion.matches) return;
+        badges.forEach((other, otherIndex) => {
+          const source = otherIndex === index;
+          other.animate(
+            { transform: ['translateY(0)', source ? 'translateY(-0.75rem)' : 'translateY(-0.5rem)', 'translateY(0)'] },
+            { duration: 450, delay: Math.abs(otherIndex - index) * 70, easing: spring },
+          );
+        });
+      });
+    });
+  });
+</script>

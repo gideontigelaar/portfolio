@@ -10,36 +10,41 @@ const links = [
 ];
 ---
 
-<nav
-  class="sticky top-0 z-50 -mx-3 flex justify-between bg-zinc-50/80 px-1 py-3 backdrop-blur-md dark:bg-zinc-950/80"
->
-  <a href="/#home" aria-label="Home" data-home class="relative flex nav-item items-center p-2">
-    <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
-    <Zzz place="nav" class="top-0 left-full" />
-  </a>
-  <ul class="relative isolate flex items-center gap-1" data-nav>
-    <li
-      aria-hidden="true"
-      class="absolute top-0 left-0 -z-10 rounded-full bg-zinc-200/70 opacity-0 transition-[translate,width,opacity] duration-500 ease-spring dark:bg-zinc-800"
-      data-nav-pill
-    >
-    </li>
-    {
-      links.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            class="nav-item px-3 py-1.5 aria-[current=true]:text-zinc-950 dark:aria-[current=true]:text-zinc-50"
-            data-nav-link
-          >
-            {link.label}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-  <ThemeToggle />
-</nav>
+<header class="sticky top-0 z-50 bg-zinc-50 dark:bg-zinc-950">
+  <nav class="mx-auto flex max-w-[700px] justify-between px-4 py-3 sm:px-1">
+    <a href="/#home" aria-label="Home" data-home class="relative flex nav-item items-center p-2">
+      <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
+      <Zzz place="nav" class="top-0 left-full" />
+    </a>
+    <ul class="relative isolate flex items-center gap-1" data-nav>
+      <li
+        aria-hidden="true"
+        class="absolute top-0 left-0 -z-10 rounded-full bg-zinc-200/70 opacity-0 transition-[translate,width,opacity] duration-500 ease-spring dark:bg-zinc-800"
+        data-nav-pill
+      >
+      </li>
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="nav-item px-3 py-1.5 aria-[current=true]:text-zinc-950 dark:aria-[current=true]:text-zinc-50"
+              data-nav-link
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <ThemeToggle />
+  </nav>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-0 top-full h-6 bg-linear-to-b from-zinc-50 to-transparent dark:from-zinc-950"
+  >
+  </div>
+</header>
 
 <script>
   import { reducedMotion } from '../scripts/motion';

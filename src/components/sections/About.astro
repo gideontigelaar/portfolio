@@ -38,3 +38,29 @@ import { education, work } from '../../data/experience';
     {education.map((entry) => <ExperienceDetail {...entry} />)}
   </Gallery>
 </section>
+
+<script>
+  import { reducedMotion, spring } from '../../scripts/motion';
+
+  const spin = (logo: HTMLElement) => {
+    if (reducedMotion.matches || logo.getAnimations().length) return;
+    logo.animate(
+      {
+        transform: ['rotate(0deg) scale(1)', 'rotate(180deg) scale(1.15)', 'rotate(360deg) scale(1)'],
+        offset: [0, 0.5, 1],
+      },
+      { duration: 700, easing: spring },
+    );
+  };
+
+  document.querySelectorAll<HTMLElement>('#about [data-gallery-open]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const logo = trigger.querySelector<HTMLElement>('[data-spin]');
+      if (logo) spin(logo);
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('#about [data-gallery-item] [data-spin]').forEach((logo) => {
+    logo.addEventListener('click', () => spin(logo));
+  });
+</script>

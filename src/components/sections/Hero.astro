@@ -55,9 +55,8 @@ import { site } from '../../data/site';
 <script>
   import { found } from '../../scripts/eggs';
   import { onSequence } from '../../scripts/keys';
-  import { reducedMotion } from '../../scripts/motion';
+  import { reducedMotion, smooth, spring } from '../../scripts/motion';
 
-  const spring = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
   const hero = document.querySelector<HTMLElement>('#hero')!;
   const avatar = hero.querySelector<HTMLButtonElement>('[data-avatar]')!;
   const hat = hero.querySelector<HTMLElement>('[data-hat]')!;
@@ -91,7 +90,7 @@ import { site } from '../../data/site';
     if (!reducedMotion.matches) {
       await hat.animate(
         { translate: ['0 0', '1.5rem -3rem'], rotate: ['-20deg', '200deg'], opacity: [1, 0] },
-        { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+        { duration: 450, easing: smooth },
       ).finished.catch(() => {});
     }
     hat.setAttribute('hidden', '');

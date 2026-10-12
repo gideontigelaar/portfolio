@@ -1,6 +1,6 @@
 ---
 import CheckIcon from '@phosphor-icons/core/assets/regular/check.svg';
-import CopyIcon from '@phosphor-icons/core/assets/regular/copy.svg';
+import PaperPlaneTiltIcon from '@phosphor-icons/core/assets/regular/paper-plane-tilt.svg';
 import Button from './Button.astro';
 
 interface Props {
@@ -16,7 +16,7 @@ const { email } = Astro.props;
     <span class="translate-y-3 opacity-0 group-data-copied:translate-y-0 group-data-copied:opacity-100" role="status"></span>
   </span>
   <span class="grid *:col-start-1 *:row-start-1 *:size-4 *:transition *:duration-300 *:ease-spring" aria-hidden="true">
-    <CopyIcon class="group-data-copied:scale-0 group-data-copied:opacity-0" />
+    <PaperPlaneTiltIcon class="group-data-copied:translate-x-4 group-data-copied:-translate-y-4 group-data-copied:opacity-0" />
     <CheckIcon class="scale-0 opacity-0 group-data-copied:scale-100 group-data-copied:opacity-100" />
   </span>
 </Button>

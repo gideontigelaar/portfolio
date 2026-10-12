@@ -17,6 +17,8 @@ const { title, organization, period, logo, logoAlt, gallery } = Astro.props;
     alt={logoAlt}
     width={48}
     height={48}
+    loading="eager"
+    data-spin
     class="shrink-0 rounded-full bg-white ring-1 ring-line"
   />
   <span class="flex w-full flex-col">

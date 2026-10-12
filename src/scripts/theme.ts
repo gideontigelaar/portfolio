@@ -13,7 +13,12 @@ const revealProperties = ['--theme-x', '--theme-y', '--theme-radius'];
 let spree: number[] = [];
 let transition: ViewTransition | undefined;
 
-const applyTheme = (dark: boolean) => root.classList.toggle('dark', dark);
+const themeColor = document.querySelector('meta[name="theme-color"]');
+
+const applyTheme = (dark: boolean) => {
+  root.classList.toggle('dark', dark);
+  themeColor?.setAttribute('content', dark ? '#09090b' : '#fafafa');
+};
 
 const storeTheme = (dark: boolean) => {
   try {

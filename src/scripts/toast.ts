@@ -1,4 +1,4 @@
-import { reducedMotion } from './motion';
+import { reducedMotion, smooth } from './motion';
 import { keepAboveDialogs } from './top-layer';
 
 let pill: HTMLElement | undefined;
@@ -27,7 +27,7 @@ export const toast = (message: string) => {
               transform: ['translateY(1rem) scale(0.8)', 'none', 'none', 'translateY(0.5rem) scale(0.95)'],
               offset: [0, 0.15, 0.85, 1],
             },
-        { duration: 2200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+        { duration: 2200, easing: smooth },
       )
       .finished.then(
         () => {},
