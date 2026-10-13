@@ -33,6 +33,19 @@ import { site } from '../../data/site';
           <circle cx="24" cy="4" r="4" fill="#f43f5e"></circle>
         </svg>
       </span>
+      <span class="absolute -top-5.5 left-0.5 w-12 origin-bottom -rotate-20" data-crown hidden>
+        <svg viewBox="0 0 56 40" aria-hidden="true">
+          <path d="M7 33 3.5 11 17 21 28 6 39 21 52.5 11 49 33Z" fill="#fbbf24"></path>
+          <path d="M28 6 39 21 52.5 11 49 33H28Z" fill="#f59e0b" opacity="0.55"></path>
+          <rect x="4.5" y="30" width="47" height="7" rx="2" fill="#d97706"></rect>
+          <circle cx="3.5" cy="10" r="3.2" fill="#f43f5e"></circle>
+          <circle cx="28" cy="5" r="3.5" fill="#f43f5e"></circle>
+          <circle cx="52.5" cy="10" r="3.2" fill="#f43f5e"></circle>
+          <circle cx="28" cy="33.5" r="2.4" fill="#3b82f6"></circle>
+          <circle cx="16" cy="33.5" r="1.6" fill="#fef3c7"></circle>
+          <circle cx="40" cy="33.5" r="1.6" fill="#fef3c7"></circle>
+        </svg>
+      </span>
     </button>
     <span
       aria-hidden="true"
@@ -58,24 +71,32 @@ import { site } from '../../data/site';
   const hero = document.querySelector<HTMLElement>('#hero')!;
   const avatar = hero.querySelector<HTMLButtonElement>('[data-avatar]')!;
   const hat = hero.querySelector<HTMLElement>('[data-hat]')!;
+  const crown = hero.querySelector<HTMLElement>('[data-crown]')!;
   const hand = hero.querySelector<HTMLElement>('[data-wave]')!;
   const name = hero.querySelector<HTMLElement>('[data-name]')!;
   const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*+=?';
-  const spinsNeeded = 5;
+  const spinsNeeded = 3;
   const spinGap = 2000;
   let flip: Animation | undefined;
   let spins = 0;
   let lastSpin = 0;
   let waving = false;
 
-  const dropHat = () => {
-    hat.removeAttribute('hidden');
-    found('party-hat');
+  const isGolden = () => document.documentElement.hasAttribute('data-golden');
+
+  const dropIn = (element: HTMLElement) => {
     if (reducedMotion.matches) return;
-    hat.animate(
+    element.animate(
       { translate: ['0 -6rem', '0 0'], opacity: [0, 1] },
       { duration: 700, delay: 150, easing: 'cubic-bezier(0.34, 1.8, 0.64, 1)', fill: 'backwards' },
     );
+  };
+
+  const dropHat = () => {
+    found('party-hat');
+    if (isGolden()) return;
+    hat.removeAttribute('hidden');
+    dropIn(hat);
   };
 
   const popHat = async () => {
@@ -88,6 +109,18 @@ import { site } from '../../data/site';
     }
     hat.setAttribute('hidden', '');
   };
+
+  const placeCrown = (animate: boolean) => {
+    crown.removeAttribute('hidden');
+    if (animate) dropIn(crown);
+  };
+
+  if (isGolden()) placeCrown(false);
+
+  window.addEventListener('eggs-complete', async () => {
+    if (!hat.hasAttribute('hidden')) await popHat();
+    placeCrown(true);
+  });
 
   avatar.addEventListener('click', (event) => {
     if ((event.target as Element).closest('[data-hat]')) {
@@ -108,7 +141,7 @@ import { site } from '../../data/site';
       );
     }
 
-    if (spins >= spinsNeeded && hat.hasAttribute('hidden')) {
+    if (spins >= spinsNeeded && hat.hasAttribute('hidden') && !isGolden()) {
       spins = 0;
       dropHat();
     }

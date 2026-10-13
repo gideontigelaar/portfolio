@@ -15,7 +15,7 @@ const year = new Date().getFullYear();
         data-year-toast
       ></span>
     </span>
-    {' '}- {site.name}
+    {' '}- <span data-footer-name>{site.name}</span>
   </span>
 </footer>
 
@@ -203,11 +203,11 @@ const year = new Date().getFullYear();
     text-shadow: 0 0 calc(var(--heat) * 12px) rgb(239 68 68 / calc(var(--heat) * 0.9));
   }
 
-  :global(html[data-golden]) [data-year-scope] {
+  :global(html[data-golden]) [data-footer-name] {
     color: #d97706;
   }
 
-  :global(html.dark[data-golden]) [data-year-scope] {
+  :global(html.dark[data-golden]) [data-footer-name] {
     color: #fbbf24;
   }
 

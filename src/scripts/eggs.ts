@@ -48,5 +48,5 @@ export const found = (egg: Egg) => {
   } catch {}
   toast(`Easter egg found (${count()}/${total()})`);
   if (count() === total()) toast('You found them all');
-  golden();
+  if (golden()) window.dispatchEvent(new Event('eggs-complete'));
 };

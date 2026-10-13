@@ -5,7 +5,7 @@ import { toast } from './toast';
 const root = document.documentElement;
 const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
 const spreeWindow = 3000;
-const spreeLength = 10;
+const spreeLength = 5;
 const rapidToggle = 600;
 const discoDuration = 5000;
 const discoFade = 800;
