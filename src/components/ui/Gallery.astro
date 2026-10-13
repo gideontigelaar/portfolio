@@ -23,25 +23,15 @@ const navigation = [
   id={`${name}-gallery`}
   aria-label={label}
   tabindex="-1"
-  class="isolate m-0 size-full max-h-none max-w-none flex-col items-center justify-center-safe gap-5 overflow-y-auto overscroll-contain bg-transparent p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] text-zinc-950 outline-none backdrop:bg-transparent open:flex sm:pb-4 dark:text-zinc-50"
+  class="isolate m-0 size-full max-h-none max-w-none flex-col items-center justify-center gap-5 overflow-y-auto overscroll-contain bg-transparent p-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] text-zinc-950 outline-none [--gallery-space:calc(6.25rem+env(safe-area-inset-bottom))] backdrop:bg-transparent open:flex sm:px-18 sm:pb-4 sm:[--gallery-space:3.75rem] dark:text-zinc-50"
   data-gallery={name}
   data-crossfade={crossfade || undefined}
 >
-  <div class="fixed inset-0 -z-10 bg-zinc-950/50 backdrop-blur-sm backdrop-webkit" data-gallery-backdrop data-gallery-fade></div>
-  <button
-    type="button"
-    aria-label="Close"
-    class="group fixed right-0 bottom-[max(1rem,env(safe-area-inset-bottom))] left-0 z-10 mx-auto grid size-12 place-items-center rounded-full bg-white/15 text-white shadow-lg backdrop-blur-md transition-colors backdrop-webkit sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:mx-0 sm:size-10 sm:bg-white/10 sm:shadow-none sm:hover:bg-white/20"
-    data-gallery-close
-    data-gallery-fade
-    data-press
-  >
-    <XIcon class="size-5 transition-transform duration-300 ease-spring group-hover:rotate-90" aria-hidden="true" />
-  </button>
+  <div class="fixed inset-x-0 -inset-y-1/2 -z-10 bg-zinc-950/50 backdrop-blur-sm backdrop-webkit" data-gallery-backdrop data-gallery-fade></div>
   <div class:list={['relative w-full shrink-0', className]}>
     <div
       class:list={[
-        'flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center [&::-webkit-scrollbar]:hidden',
+        'flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:max-h-[calc(100svh-var(--gallery-space))] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
         count > 1 && 'cursor-grab active:cursor-grabbing',
       ]}
       data-gallery-track
@@ -67,19 +57,34 @@ const navigation = [
         ))
     }
   </div>
-  {
-    count > 1 && (
-      <div class="flex gap-2" data-gallery-dots data-gallery-fade>
-        {Array.from({ length: count }, (_, i) => (
-          <button
-            type="button"
-            aria-label={`Show ${i + 1} of ${count}`}
-            class="size-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 hover:bg-white/70 aria-[current=true]:w-6 aria-[current=true]:bg-white"
-          />
-        ))}
-      </div>
-    )
-  }
+  <div
+    class="fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto flex w-fit items-center gap-3 rounded-full bg-zinc-900/70 p-1 shadow-lg ring-1 ring-white/10 backdrop-blur-md backdrop-saturate-150 backdrop-webkit sm:contents"
+    data-gallery-fade
+  >
+    {
+      count > 1 && (
+        <div class="flex gap-4 pl-3 sm:pl-0" data-gallery-dots data-gallery-fade>
+          {Array.from({ length: count }, (_, i) => (
+            <button
+              type="button"
+              aria-label={`Show ${i + 1} of ${count}`}
+              class="relative size-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 after:absolute after:-inset-x-2 after:-inset-y-3 hover:bg-white/70 aria-[current=true]:w-6 aria-[current=true]:bg-white"
+            />
+          ))}
+        </div>
+      )
+    }
+    <button
+      type="button"
+      aria-label="Close"
+      class="group relative grid size-9 place-items-center rounded-full bg-white/15 text-white transition-colors backdrop-webkit after:absolute after:-inset-1 hover:bg-white/25 sm:fixed sm:top-4 sm:right-4 sm:size-10 sm:bg-white/10 sm:backdrop-blur-md sm:hover:bg-white/20"
+      data-gallery-close
+      data-gallery-fade
+      data-press
+    >
+      <XIcon class="size-4.5 transition-transform duration-300 ease-spring group-hover:rotate-90 sm:size-5" aria-hidden="true" />
+    </button>
+  </div>
 </dialog>
 
 <script>

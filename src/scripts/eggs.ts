@@ -8,12 +8,12 @@ const registry = {
   'name-wave': 'desktop',
   console: 'desktop',
   'secret-menu': 'desktop',
-  'catch-the-dot': 'desktop',
   'party-hat': 'all',
   disco: 'all',
   'time-travel': 'all',
   sleep: 'all',
   'language-combo': 'all',
+  'catch-the-dot': 'all',
 } as const;
 
 type Egg = keyof typeof registry;

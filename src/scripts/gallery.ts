@@ -6,10 +6,19 @@ const radius = (element: Element) =>
 
 const isVisible = (rect: DOMRect) => rect.width > 0 && inViewport(rect);
 
+const isBoxed = (element: Element) => getComputedStyle(element).display !== 'contents';
+
+const regionOf = (target: EventTarget | null) =>
+  target instanceof Element ? target.closest<HTMLElement>('[data-gallery-scroll]') : null;
+
+const overflows = (region: HTMLElement | null): region is HTMLElement =>
+  !!region && region.scrollHeight > region.clientHeight;
+
 document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((dialog) => {
   const track = dialog.querySelector<HTMLElement>('[data-gallery-track]')!;
   const slides = [...track.children] as HTMLElement[];
   const items = [...track.querySelectorAll<HTMLElement>('[data-gallery-item]')];
+  const regions = [...track.querySelectorAll<HTMLElement>('[data-gallery-scroll]')];
   const dots = [...dialog.querySelectorAll<HTMLButtonElement>('[data-gallery-dots] button')];
   const fades = [...dialog.querySelectorAll<HTMLElement>('[data-gallery-fade]')];
   const triggers = [
@@ -20,6 +29,11 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   let busy = false;
   let closeQueued = false;
   let dragged = false;
+
+  const fading = () => {
+    const boxed = fades.filter(isBoxed);
+    return boxed.filter((element) => !boxed.some((other) => other !== element && other.contains(element)));
+  };
 
   const dismisses = (target: Element) =>
     target === dialog ||
@@ -66,7 +80,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       };
       const source = trigger?.getBoundingClientRect();
       const target = item?.getBoundingClientRect();
-      animations = fades.map((element) => element.animate({ opacity: [0, 1] }, options));
+      animations = fading().map((element) => element.animate({ opacity: [0, 1] }, options));
 
       if (item && (!trigger || !source || !target || reducedMotion.matches || !isVisible(source) || !target.width)) {
         animations.push(item.animate({ opacity: [0, 1], scale: [0.95, 1] }, options));
@@ -95,6 +109,10 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
           ghost.src = item.currentSrc || trigger.querySelector('img')?.currentSrc || item.src;
         }
         dialog.append(ghost);
+        const ghostRegions = ghost.querySelectorAll<HTMLElement>('[data-gallery-scroll]');
+        item.querySelectorAll<HTMLElement>('[data-gallery-scroll]').forEach((region, i) => {
+          ghostRegions[i].scrollTop = region.scrollTop;
+        });
         item.style.visibility = 'hidden';
         if (!crossfade) trigger.style.visibility = 'hidden';
 
@@ -142,6 +160,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     dialog.showModal();
     dialog.focus({ preventScroll: true });
     dialog.scrollTop = 0;
+    regions.forEach((region) => (region.scrollTop = 0));
     go(next, 'instant');
     select(next);
     animate(true);
@@ -175,9 +194,16 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   });
 
   dialog.addEventListener('keydown', (event) => {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      shift(event.key === 'ArrowRight' ? 1 : -1);
+      return;
+    }
+    if ((event.key !== 'ArrowUp' && event.key !== 'ArrowDown') || regionOf(event.target)) return;
+    const region = slides[index].querySelector<HTMLElement>('[data-gallery-scroll]');
+    if (!overflows(region)) return;
     event.preventDefault();
-    shift(event.key === 'ArrowRight' ? 1 : -1);
+    region.scrollBy({ top: event.key === 'ArrowDown' ? 64 : -64, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
   });
 
   let wheelLocked = false;
@@ -187,7 +213,8 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     'wheel',
     (event) => {
       const vertical = Math.abs(event.deltaY) > Math.abs(event.deltaX);
-      const navigates = vertical && slides.length > 1 && dialog.scrollHeight <= dialog.clientHeight;
+      const navigates =
+        vertical && slides.length > 1 && dialog.scrollHeight <= dialog.clientHeight && !overflows(regionOf(event.target));
       if (!busy && !navigates) return;
       event.preventDefault();
       clearTimeout(wheelTimeout);
@@ -225,6 +252,8 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   track.addEventListener('pointerdown', (event) => {
     dragged = false;
     if (busy || event.pointerType !== 'mouse' || event.button !== 0 || slides.length < 2) return;
+    const region = regionOf(event.target);
+    if (region && region === event.target && event.offsetX >= region.clientWidth) return;
     event.preventDefault();
 
     const start = { x: event.clientX, left: track.scrollLeft, index };

@@ -11,7 +11,7 @@ import { site } from '../data/site';
       This page doesn't exist or has been moved.
     </p>
     <Button href="/" variant="primary" data-home-button>Back to home</Button>
-    <div class="mt-10 flex w-full flex-col items-center gap-3" data-game-wrap>
+    <div class="mt-10 flex w-full flex-col items-center gap-3">
       <div
         role="application"
         aria-label="Catch the dot. Press Space when the dot is in the center."
@@ -26,7 +26,7 @@ import { site } from '../data/site';
         ></span>
         <span
           aria-hidden="true"
-          class="absolute top-0 left-0 grid size-8 place-items-center"
+          class="absolute top-0 left-0 grid size-8 place-items-center pointer-coarse:size-11"
           data-game-dot
         >
           <span
@@ -35,7 +35,10 @@ import { site } from '../data/site';
           ></span>
         </span>
       </div>
-      <p id="game-score" class="text-sm text-muted" aria-live="polite" data-game-score>Hover or focus the box to play</p>
+      <p id="game-score" class="text-sm text-muted" aria-live="polite" data-game-score>
+        <span class="pointer-coarse:hidden">Hover or focus the box to play</span>
+        <span class="hidden pointer-coarse:inline">Tap the box to play</span>
+      </p>
     </div>
   </section>
 </Layout>
@@ -185,11 +188,3 @@ import { site } from '../data/site';
     }
   });
 </script>
-
-<style>
-  @media (hover: none) and (pointer: coarse) {
-    [data-game-wrap] {
-      display: none;
-    }
-  }
-</style>

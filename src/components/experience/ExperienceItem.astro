@@ -9,7 +9,7 @@ const { title, organization, period, logo, logoAlt, gallery } = Astro.props;
 
 <button
   type="button"
-  class="group -mx-3 flex items-center gap-3 interactive-row rounded-2xl px-3 py-2 text-left"
+  class="group -mx-3 flex items-center gap-3 rounded-3xl interactive-row p-3 text-left"
   data-gallery-open={gallery}
 >
   <Image
@@ -25,7 +25,7 @@ const { title, organization, period, logo, logoAlt, gallery } = Astro.props;
     <span class="w-fit underline-grow">{title}</span>
     <span class="flex items-baseline justify-between gap-2 text-muted">
       <span>{organization}</span>
-      <span class="text-sm tabular-nums">{period}</span>
+      <span class="text-sm whitespace-nowrap tabular-nums">{period}</span>
     </span>
   </span>
 </button>

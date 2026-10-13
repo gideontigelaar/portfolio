@@ -10,34 +10,36 @@ type Props = Project;
 const { title, year, description, details, tech, href, screenshot, screenshotDark } = Astro.props;
 ---
 
-<Card class="flex flex-col gap-4 p-3" data-gallery-item>
-  <ProjectScreenshot
-    title={title}
-    screenshot={screenshot}
-    screenshotDark={screenshotDark}
-    widths={[480, 720, 960]}
-    sizes="(min-width: 544px) 486px, calc(100vw - 58px)"
-    class="max-h-[40svh] w-full rounded-xl border border-line object-cover object-top"
-  />
-  <div class="flex grow flex-col gap-3 px-2 pb-2">
-    <div class="flex flex-col gap-2">
-      <h3 class="flex items-baseline gap-2 text-xl font-semibold tracking-tight">
-        {title}
-        <span class="text-sm font-medium text-muted tabular-nums">{year}</span>
-      </h3>
-      <ul class="flex flex-wrap gap-1.5" aria-label="Tech">
-        {
-          tech.map((item) => (
-            <li class="flex">
-              <Badge>{item}</Badge>
-            </li>
-          ))
-        }
-      </ul>
+<Card class="flex flex-col" data-gallery-item>
+  <div class="flex min-h-0 grow flex-col gap-4 overflow-y-auto overscroll-y-contain p-3 pb-0" data-gallery-scroll>
+    <ProjectScreenshot
+      title={title}
+      screenshot={screenshot}
+      screenshotDark={screenshotDark}
+      widths={[480, 720, 960]}
+      sizes="(min-width: 544px) 486px, calc(100vw - 58px)"
+      class="max-h-[clamp(6rem,100svh-20rem,40svh)] w-full shrink-0 rounded-xl border border-line object-cover object-top"
+    />
+    <div class="flex flex-col gap-3 px-2">
+      <div class="flex flex-col gap-2">
+        <h3 class="flex items-baseline gap-2 text-xl font-semibold tracking-tight">
+          {title}
+          <span class="text-sm font-medium text-muted tabular-nums">{year}</span>
+        </h3>
+        <ul class="flex flex-wrap gap-1.5" aria-label="Tech">
+          {
+            tech.map((item) => (
+              <li class="flex">
+                <Badge>{item}</Badge>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <p class="text-muted">{description} {details}</p>
     </div>
-    <p class="text-muted">{description} {details}</p>
-    <Button href={href} target="_blank" rel="noopener noreferrer" class="mt-auto">
-      View on GitHub
-    </Button>
+  </div>
+  <div class="shrink-0 px-5 pt-3 pb-5">
+    <Button href={href} target="_blank" rel="noopener noreferrer">View on GitHub</Button>
   </div>
 </Card>

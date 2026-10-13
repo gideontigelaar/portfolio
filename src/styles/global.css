@@ -58,6 +58,7 @@
 @layer base {
   html {
     color-scheme: light;
+    transition: background-color 0.3s;
     scrollbar-gutter: stable;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
@@ -69,6 +70,11 @@
 
   html:has(dialog[open]) {
     overflow: hidden;
+    background-color: color-mix(in oklab, var(--color-zinc-50), var(--color-zinc-950) 50%);
+  }
+
+  html.dark:has(dialog[open]) {
+    background-color: var(--color-zinc-950);
   }
 
   button:not(:disabled) {
@@ -87,6 +93,16 @@
 
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-blue-500;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
