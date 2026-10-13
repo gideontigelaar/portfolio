@@ -52,6 +52,7 @@ const slides = await Promise.all(
               width={50}
               height={50}
               loading="eager"
+              data-language-icon
               class="size-[min(2.5rem,17cqw)] sm:size-12.5"
             />
           </button>
@@ -66,7 +67,7 @@ const slides = await Promise.all(
     style="--delay: 4"
   >
     <EnvelopeSimpleIcon
-      class="absolute -right-5 -bottom-5 -z-10 hidden size-28 -rotate-12 text-zinc-200 transition duration-700 ease-spring group-hover:-translate-y-2 group-hover:-rotate-3 group-has-data-copied:translate-x-24 group-has-data-copied:-translate-y-24 group-has-data-copied:rotate-12 group-has-data-copied:opacity-0 sm:block dark:text-zinc-800"
+      class="absolute -right-5 -bottom-5 -z-10 hidden size-28 -rotate-14 text-zinc-200 transition duration-700 ease-spring group-hover:-translate-y-2 group-hover:-rotate-3 group-has-data-copied:translate-x-24 group-has-data-copied:-translate-y-24 group-has-data-copied:rotate-14 group-has-data-copied:opacity-0 sm:block dark:text-zinc-800"
       aria-hidden="true"
     />
     <span class="text-[length:min(1.5rem,21cqw)] leading-[calc(4/3)] tracking-tight">Question?</span>
@@ -234,6 +235,8 @@ const slides = await Promise.all(
     ],
   ];
 
+  const iconOf = (button: HTMLButtonElement) => button.querySelector<HTMLElement>('[data-language-icon]')!;
+
   const shown = () => languageButtons.filter((button) => button.offsetParent !== null);
 
   const ripple = (source: HTMLButtonElement) => {
@@ -241,7 +244,7 @@ const slides = await Promise.all(
     const origin = row.indexOf(source);
     row.forEach((button, index) => {
       if (button === source) return;
-      button.animate(
+      iconOf(button).animate(
         { translate: ['0 0', '0 -0.5rem', '0 0'] },
         { duration: 450, delay: Math.abs(index - origin) * 70, easing: spring(), composite: 'add' },
       );
@@ -252,7 +255,7 @@ const slides = await Promise.all(
     found('language-combo');
     if (reducedMotion.matches) return;
     shown().forEach((button, index) =>
-      button.animate(
+      iconOf(button).animate(
         {
           transform: ['scale(1) rotate(0deg)', 'scale(1.3) rotate(180deg)', 'scale(1) rotate(360deg)'],
           offset: [0, 0.5, 1],
@@ -290,7 +293,7 @@ const slides = await Promise.all(
       lastTrick = next;
 
       const [keyframes, options] = list[next];
-      playing = button.animate(keyframes, options);
+      playing = iconOf(button).animate(keyframes, options);
       ripple(button);
     });
   });

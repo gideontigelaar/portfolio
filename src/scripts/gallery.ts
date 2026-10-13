@@ -195,7 +195,9 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   });
 
   dialog.addEventListener('click', (event) => {
-    if (dismisses(event.target as Element)) close();
+    const target = event.target as Element;
+    if (!dismisses(target) || (busy && !target.closest('[data-gallery-close]'))) return;
+    close();
   });
 
   dialog.addEventListener('keydown', (event) => {
