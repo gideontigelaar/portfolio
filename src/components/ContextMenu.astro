@@ -26,7 +26,7 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
     class={item}
   >
     <span class="relative shrink-0 transition-transform duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-6">
-      <Image src={site.avatar} alt="" width={32} height={32} class="rounded-full" />
+      <Image src={site.avatar} alt="" width={32} height={32} densities={[1, 2, 3]} format="webp" class="rounded-full" />
       <LinkedinLogoIcon
         class="absolute -right-1 -bottom-1 size-4 rounded-sm bg-white text-[#0a66c2]"
         aria-hidden="true"
@@ -57,7 +57,7 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
 
 <dialog
   aria-labelledby="about-site-title"
-  class="group m-auto w-[min(100%-2rem,24rem)] overflow-visible bg-transparent p-0 text-zinc-950 opacity-0 transition-[opacity,display,overlay] transition-discrete duration-300 backdrop:bg-zinc-950/50 backdrop:opacity-0 backdrop:backdrop-blur-sm backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-300 open:opacity-100 open:backdrop:opacity-100 motion-reduce:transition-none dark:text-zinc-50 starting:open:opacity-0 starting:open:backdrop:opacity-0"
+  class="group m-auto w-[min(100%-2rem,24rem)] overflow-visible bg-transparent p-0 text-zinc-950 opacity-0 transition-[opacity,display,overlay] transition-discrete duration-300 backdrop:bg-zinc-950/50 backdrop:opacity-0 backdrop:backdrop-blur-sm backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-300 backdrop:backdrop-webkit open:opacity-100 open:backdrop:opacity-100 motion-reduce:transition-none dark:text-zinc-50 starting:open:opacity-0 starting:open:backdrop:opacity-0"
   data-about
 >
   <div
@@ -104,8 +104,11 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
   };
 
   const show = (x: number, y: number) => {
-    menu.style.left = `${Math.max(margin, Math.min(x, innerWidth - menu.offsetWidth - margin))}px`;
-    menu.style.top = `${Math.max(margin, Math.min(y, innerHeight - menu.offsetHeight - margin))}px`;
+    const { offsetWidth, offsetHeight } = menu;
+    const left = Math.max(margin, Math.min(x, innerWidth - offsetWidth - margin));
+    const top = Math.max(margin, Math.min(y, innerHeight - offsetHeight - margin));
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
     returnFocus = document.activeElement as HTMLElement | null;
     menu.setAttribute('data-open', '');
     menu.focus({ preventScroll: true });

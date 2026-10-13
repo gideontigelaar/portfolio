@@ -8,14 +8,21 @@ export default defineConfig({
   },
   image: {
     domains: ['avatars.githubusercontent.com'],
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        avif: { effort: 2 },
+      },
+    },
   },
   fonts: [
     {
       provider: fontProviders.fontsource(),
       name: 'Manrope',
       cssVariable: '--font-manrope',
-      weights: [500, 600, 700],
+      weights: ['500 700'],
       styles: ['normal'],
+      subsets: ['latin'],
     },
   ],
   vite: {

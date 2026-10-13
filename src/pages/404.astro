@@ -49,16 +49,16 @@ import { site } from '../data/site';
   const core = dot.querySelector<HTMLElement>('[data-game-core]')!;
   const score = document.querySelector<HTMLElement>('[data-game-score]')!;
   const home = document.querySelector<HTMLElement>('[data-home-button]');
-  const goal = 6;
-  const zone = 24;
+  const goal = 5;
+  const zone = 28;
   let caught = 0;
   let playing = false;
   let timer = 0;
 
-  const speed = () => Math.max(320, 1100 - caught * 150);
+  const speed = () => 1150 - caught * 140;
 
   const shrink = () => {
-    core.style.scale = String(1 - caught * 0.1);
+    core.style.scale = String(1 - caught * 0.08);
   };
 
   const place = (x: number, y: number) => {
@@ -73,7 +73,7 @@ import { site } from '../data/site';
   const move = () => {
     if (!playing) return;
     const middle = center();
-    const near = Math.random() < 0.25;
+    const near = Math.random() < 0.3;
     const x = near ? middle.x + (Math.random() - 0.5) * 20 : Math.random() * middle.x * 2;
     const y = near ? middle.y + (Math.random() - 0.5) * 20 : Math.random() * middle.y * 2;
     dot.style.transitionDuration = `${speed()}ms`;
@@ -84,7 +84,7 @@ import { site } from '../data/site';
   const start = () => {
     if (playing || caught >= goal) return;
     playing = true;
-    score.textContent = `Caught: ${caught}`;
+    score.textContent = `Caught ${caught} of ${goal}`;
     move();
   };
 
@@ -92,7 +92,7 @@ import { site } from '../data/site';
     if (!playing || !caught) return;
     caught -= 1;
     shrink();
-    score.textContent = `Missed! Caught: ${caught}`;
+    score.textContent = `Missed! Caught ${caught} of ${goal}`;
     if (reducedMotion.matches) return;
     area.animate(
       { translate: ['0 0', '-4px 0', '4px 0', '-2px 0', '0 0'] },
@@ -108,7 +108,7 @@ import { site } from '../data/site';
     if (reducedMotion.matches) return;
     home?.animate(
       { scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgb(59 130 246 / 0.5)', '0 0 0 12px rgb(59 130 246 / 0)', 'none'] },
-      { duration: 1000, iterations: 4, easing: 'ease-out' },
+      { duration: 1000, iterations: 4, easing: 'ease-out', composite: 'add' },
     );
   };
 
@@ -119,7 +119,7 @@ import { site } from '../data/site';
     dot.animate({ scale: [1.8, 1] }, { duration: 300, easing: 'ease-out' });
 
     if (caught < goal) {
-      score.textContent = `Caught: ${caught}`;
+      score.textContent = `Caught ${caught} of ${goal}`;
       window.clearTimeout(timer);
       move();
       return;

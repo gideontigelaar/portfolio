@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage, Image, Picture } from 'astro:assets';
 import EnvelopeSimpleIcon from '@phosphor-icons/core/assets/regular/envelope-simple.svg';
 import Button from '../ui/Button.astro';
 import Card from '../ui/Card.astro';
@@ -14,6 +14,14 @@ import { photos } from '../../data/photos';
 import { site } from '../../data/site';
 
 const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-rotate-3'];
+const galleryWidth = 768;
+const photoWidth = 1500;
+const slides = await Promise.all(
+  photos.map(async (photo) => {
+    const { attributes } = await getImage({ src: photo.src, width: photoWidth, format: 'webp' });
+    return { ...photo, ratio: Number(attributes.width) / Number(attributes.height) };
+  }),
+);
 ---
 
 <section
@@ -79,7 +87,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
       alt="Whisp"
       loading="eager"
       widths={[250, 500]}
-      sizes="(min-width: 640px) 215px, 50vw"
+      sizes="(min-width: 640px) 215px, calc(50vw - 30px)"
       class="size-full object-cover"
     />
   </Card>
@@ -118,12 +126,16 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
             ]}
             data-gallery-open="photos"
           >
-            <Image
+            <Picture
               src={photo.src}
               alt={photo.alt}
+              formats={['avif']}
+              fallbackFormat="webp"
+              width={256}
               widths={[96, 160, 256]}
-              sizes="(min-width: 768px) 64px, 22vw"
+              sizes="(min-width: 768px) 64px, (min-width: 640px) 96px, calc(25vw - 24px)"
               loading="eager"
+              pictureAttributes={{ class: 'contents' }}
               class="size-full object-cover"
             />
           </button>
@@ -133,25 +145,25 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
   </Card>
 </section>
 
-<Gallery name="photos" label="Photos" count={photos.length} class="max-w-3xl">
+<Gallery name="photos" label="Photos" count={slides.length} class="max-w-3xl">
   {
-    photos.map(({ src, alt }) => {
-      const width = (75 * src.width) / src.height;
-
-      return (
-        <div class="grid place-items-center">
-          <Image
-            src={src}
-            alt={alt}
-            widths={[600, 900, 1200, 1500]}
-            sizes={`(min-aspect-ratio: ${Math.round(width)}/100) ${Math.round(width)}vh, 100vw`}
-            class="rounded-2xl"
-            style={{ width: `min(100%, ${width}svh)` }}
-            data-gallery-item
-          />
-        </div>
-      );
-    })
+    slides.map(({ src, alt, ratio }) => (
+      <div class="grid place-items-center">
+        <Picture
+          src={src}
+          alt={alt}
+          formats={['avif']}
+          fallbackFormat="webp"
+          width={photoWidth}
+          widths={[480, 720, 960, 1200, photoWidth]}
+          sizes={`min(${galleryWidth}px, 100vw - 2rem, ${ratio * 75}vh)`}
+          pictureAttributes={{ class: 'contents' }}
+          class="rounded-2xl"
+          style={{ width: `min(100%, ${ratio * 75}svh)` }}
+          data-gallery-item
+        />
+      </div>
+    ))
   }
 </Gallery>
 
@@ -231,7 +243,7 @@ const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-
       if (button === source) return;
       button.animate(
         { translate: ['0 0', '0 -0.5rem', '0 0'] },
-        { duration: 450, delay: Math.abs(index - origin) * 70, easing: spring },
+        { duration: 450, delay: Math.abs(index - origin) * 70, easing: spring, composite: 'add' },
       );
     });
   };

@@ -18,12 +18,13 @@ const contacts = [
 
   <ul class="flex flex-col gap-3" data-reveal style="--delay: 2">
     {
-      contacts.map(({ icon: Icon, label, url }) => (
+      contacts.map(({ icon: Icon, name, label, url }) => (
         <li>
           <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${name}: ${label}`}
             class="group inline-flex items-center gap-3"
           >
             <span class="grid size-9 place-items-center rounded-xl border border-line bg-surface shadow-xs transition duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-6 group-hover:border-zinc-950 group-hover:bg-zinc-950 group-hover:text-white dark:group-hover:border-white dark:group-hover:bg-white dark:group-hover:text-zinc-950">

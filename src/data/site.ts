@@ -9,14 +9,17 @@ export const site = {
   avatar: 'https://avatars.githubusercontent.com/gideontigelaar?s=460',
   socials: {
     github: {
+      name: 'GitHub',
       label: 'gideontigelaar',
       url: 'https://github.com/gideontigelaar',
     },
     linkedin: {
+      name: 'LinkedIn',
       label: 'in/gideontigelaar',
       url: 'https://www.linkedin.com/in/gideontigelaar',
     },
     instagram: {
+      name: 'Instagram',
       label: '@gideontigelaar',
       url: 'https://www.instagram.com/gideontigelaar/',
     },

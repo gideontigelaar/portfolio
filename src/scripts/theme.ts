@@ -8,7 +8,8 @@ const spreeWindow = 3000;
 const spreeLength = 10;
 const rapidToggle = 600;
 const discoDuration = 5000;
-const discoFade = 600;
+const discoFade = 800;
+const discoSpin = 800;
 const revealProperties = ['--theme-x', '--theme-y', '--theme-radius'];
 let spree: number[] = [];
 let transition: ViewTransition | undefined;
@@ -65,15 +66,33 @@ const setTheme = (dark: boolean, x: number, y: number, instant: boolean) => {
   );
 };
 
+const spinOut = async (icon: Element, spin: Animation) => {
+  const from = ((Number(spin.currentTime ?? 0) % discoSpin) / discoSpin) * 360;
+  const to = from < 180 ? 360 : 720;
+  spin.cancel();
+  await icon
+    .animate(
+      { rotate: [`${from}deg`, `${to}deg`] },
+      { duration: (2 * (to - from) * discoSpin) / 360, easing: 'cubic-bezier(0.3, 0.6, 0.45, 1)' },
+    )
+    .finished.catch(() => {});
+};
+
 const disco = () => {
   toast('Disco mode');
   found('disco');
   if (reducedMotion.matches) return;
 
   root.setAttribute('data-disco', '');
+  const icons = [...document.querySelectorAll('[data-theme-toggle] > svg')];
+  const spins = icons.map((icon) => icon.animate({ rotate: ['0deg', '360deg'] }, { duration: discoSpin, iterations: Infinity }));
+
   window.setTimeout(() => {
     root.setAttribute('data-disco', 'off');
-    window.setTimeout(() => root.removeAttribute('data-disco'), discoFade);
+    Promise.all([
+      ...icons.map((icon, i) => spinOut(icon, spins[i])),
+      new Promise((resolve) => window.setTimeout(resolve, discoFade)),
+    ]).then(() => root.removeAttribute('data-disco'));
   }, discoDuration);
 };
 
@@ -93,6 +112,5 @@ export const toggleTheme = (x: number, y: number) => {
 };
 
 systemDark.addEventListener('change', ({ matches }) => {
-  storeTheme(matches);
-  applyTheme(matches);
+  setTheme(matches, innerWidth / 2, innerHeight / 2, document.hidden);
 });

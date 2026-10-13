@@ -18,6 +18,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   const crossfade = dialog.hasAttribute('data-crossfade');
   let index = 0;
   let busy = false;
+  let closeQueued = false;
   let dragged = false;
 
   const dismisses = (target: Element) =>
@@ -42,8 +43,15 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     track.scrollTo({ left: clamp(next) * slideWidth(), behavior });
   };
 
+  const navigate = (next: number) => {
+    if (!busy) go(next);
+  };
+
   const animate = async (opening: boolean) => {
     busy = true;
+    dialog.inert = !opening;
+    track.style.overflow = 'hidden';
+    if (!opening) go(index, 'instant');
     const item = items[index];
     const trigger = triggers[index];
     let ghost: HTMLElement | undefined;
@@ -81,6 +89,11 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
         });
         ghost.setAttribute('aria-hidden', 'true');
         ghost.inert = true;
+        if (ghost instanceof HTMLImageElement && item instanceof HTMLImageElement) {
+          ghost.removeAttribute('srcset');
+          ghost.removeAttribute('sizes');
+          ghost.src = item.currentSrc || trigger.querySelector('img')?.currentSrc || item.src;
+        }
         dialog.append(ghost);
         item.style.visibility = 'hidden';
         if (!crossfade) trigger.style.visibility = 'hidden';
@@ -102,17 +115,24 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
 
       await Promise.allSettled(animations.map((animation) => animation.finished));
     } finally {
-      if (!opening && dialog.open) dialog.close();
       ghost?.remove();
       if (item) item.style.visibility = '';
       if (trigger) trigger.style.visibility = '';
       animations.forEach((animation) => animation.cancel());
+      if (!opening && dialog.open) dialog.close();
+      dialog.inert = false;
+      track.style.removeProperty('overflow');
       busy = false;
+      if (closeQueued && dialog.open) {
+        closeQueued = false;
+        animate(false);
+      }
     }
   };
 
   const open = (next: number) => {
     if (busy || dialog.open) return;
+    closeQueued = false;
     items.forEach((item, i) => {
       const thumbnail = triggers[i]?.querySelector('img');
       if (item instanceof HTMLImageElement && thumbnail) {
@@ -120,20 +140,26 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       }
     });
     dialog.showModal();
-    dialog.focus();
+    dialog.focus({ preventScroll: true });
+    dialog.scrollTop = 0;
     go(next, 'instant');
     select(next);
     animate(true);
   };
 
-  const shift = (direction: number) => go((index + direction + slides.length) % slides.length);
+  const shift = (direction: number) => navigate((index + direction + slides.length) % slides.length);
 
   const close = () => {
-    if (!busy && dialog.open) animate(false);
+    if (!dialog.open) return;
+    if (busy) {
+      closeQueued = true;
+      return;
+    }
+    animate(false);
   };
 
   triggers.forEach((trigger, i) => trigger.addEventListener('click', () => open(i)));
-  dots.forEach((dot, i) => dot.addEventListener('click', () => go(i)));
+  dots.forEach((dot, i) => dot.addEventListener('click', () => navigate(i)));
 
   dialog.querySelectorAll<HTMLButtonElement>('[data-gallery-shift]').forEach((button) => {
     button.addEventListener('click', () => shift(Number(button.dataset.galleryShift)));
@@ -161,13 +187,15 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     'wheel',
     (event) => {
       const vertical = Math.abs(event.deltaY) > Math.abs(event.deltaX);
-      if (!vertical || slides.length < 2 || dialog.scrollHeight > dialog.clientHeight) return;
+      const navigates = vertical && slides.length > 1 && dialog.scrollHeight <= dialog.clientHeight;
+      if (!busy && !navigates) return;
       event.preventDefault();
       clearTimeout(wheelTimeout);
       wheelTimeout = window.setTimeout(() => (wheelLocked = false), 200);
+      if (busy) wheelLocked = true;
       if (wheelLocked || Math.abs(event.deltaY) < 4) return;
       wheelLocked = true;
-      go(index + Math.sign(event.deltaY));
+      navigate(index + Math.sign(event.deltaY));
     },
     { passive: false },
   );
@@ -196,7 +224,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
 
   track.addEventListener('pointerdown', (event) => {
     dragged = false;
-    if (event.pointerType !== 'mouse' || event.button !== 0 || slides.length < 2) return;
+    if (busy || event.pointerType !== 'mouse' || event.button !== 0 || slides.length < 2) return;
     event.preventDefault();
 
     const start = { x: event.clientX, left: track.scrollLeft, index };

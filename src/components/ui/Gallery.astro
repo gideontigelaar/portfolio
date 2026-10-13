@@ -27,11 +27,11 @@ const navigation = [
   data-gallery={name}
   data-crossfade={crossfade || undefined}
 >
-  <div class="fixed inset-0 -z-10 bg-zinc-950/50 backdrop-blur-sm" data-gallery-backdrop data-gallery-fade></div>
+  <div class="fixed inset-0 -z-10 bg-zinc-950/50 backdrop-blur-sm backdrop-webkit" data-gallery-backdrop data-gallery-fade></div>
   <button
     type="button"
     aria-label="Close"
-    class="group fixed right-0 bottom-[max(1rem,env(safe-area-inset-bottom))] left-0 z-10 mx-auto grid size-12 place-items-center rounded-full bg-white/15 text-white shadow-lg backdrop-blur-md transition-colors sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:mx-0 sm:size-10 sm:bg-white/10 sm:shadow-none sm:hover:bg-white/20"
+    class="group fixed right-0 bottom-[max(1rem,env(safe-area-inset-bottom))] left-0 z-10 mx-auto grid size-12 place-items-center rounded-full bg-white/15 text-white shadow-lg backdrop-blur-md transition-colors backdrop-webkit sm:top-4 sm:right-4 sm:bottom-auto sm:left-auto sm:mx-0 sm:size-10 sm:bg-white/10 sm:shadow-none sm:hover:bg-white/20"
     data-gallery-close
     data-gallery-fade
     data-press
@@ -41,7 +41,7 @@ const navigation = [
   <div class:list={['relative w-full shrink-0', className]}>
     <div
       class:list={[
-        'flex w-full snap-x snap-mandatory [scrollbar-width:none] gap-6 overflow-x-auto overscroll-x-contain *:w-full *:shrink-0 *:snap-center',
+        'flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center [&::-webkit-scrollbar]:hidden',
         count > 1 && 'cursor-grab active:cursor-grabbing',
       ]}
       data-gallery-track
@@ -55,7 +55,7 @@ const navigation = [
             type="button"
             aria-label={label}
             class:list={[
-              'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20 lg:pointer-fine:grid',
+              'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors backdrop-webkit hover:bg-white/20 lg:pointer-fine:grid',
               position,
             ]}
             data-gallery-shift={direction}
@@ -74,7 +74,7 @@ const navigation = [
           <button
             type="button"
             aria-label={`Show ${i + 1} of ${count}`}
-            class="size-2 rounded-full bg-white/40 transition-all duration-300 hover:bg-white/70 aria-[current=true]:w-6 aria-[current=true]:bg-white"
+            class="size-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 hover:bg-white/70 aria-[current=true]:w-6 aria-[current=true]:bg-white"
           />
         ))}
       </div>

@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import type { Project } from '../../data/projects';
 
 type Props = Pick<Project, 'title' | 'screenshot' | 'screenshotDark'> & {
@@ -18,11 +18,15 @@ const screenshots = [
 
 {
   screenshots.map(({ src, visibility }) => (
-    <Image
+    <Picture
       src={src}
       alt={`${title} screenshot`}
+      formats={['avif']}
+      fallbackFormat="webp"
+      width={Math.max(...widths)}
       widths={widths}
       sizes={sizes}
+      pictureAttributes={{ class: 'contents' }}
       class:list={[className, visibility]}
     />
   ))

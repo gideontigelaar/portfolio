@@ -18,8 +18,9 @@ import { site } from '../../data/site';
         alt={site.name}
         width={100}
         height={100}
-        widths={[200, 300, 400]}
+        widths={[100, 200, 300, 400]}
         sizes="100px"
+        format="webp"
         quality={90}
         priority
         class="rounded-full shadow-sm ring-1 ring-line transition-[filter] duration-700 group-data-sleeping:brightness-60 group-data-sleeping:saturate-50"
@@ -117,7 +118,7 @@ import { site } from '../../data/site';
     new Promise<void>((resolve) => {
       const text = name.textContent ?? '';
       const copy = document.createElement('span');
-      copy.ariaHidden = 'true';
+      copy.setAttribute('aria-hidden', 'true');
       copy.className = 'absolute inset-0';
       name.style.color = 'transparent';
       name.after(copy);

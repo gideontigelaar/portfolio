@@ -4,7 +4,7 @@ const pieces = 60;
 
 export const confetti = () => {
   const layer = document.createElement('div');
-  layer.ariaHidden = 'true';
+  layer.setAttribute('aria-hidden', 'true');
   layer.className = 'pointer-events-none fixed inset-0 z-70 overflow-hidden';
   document.body.append(layer);
 

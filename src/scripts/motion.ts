@@ -9,6 +9,6 @@ export const playOnce = (
   keyframes: PropertyIndexedKeyframes,
   options: KeyframeAnimationOptions,
 ) => {
-  if (reducedMotion.matches || element.getAnimations().length) return;
+  if (reducedMotion.matches || element.getAnimations().some((animation) => !(animation instanceof CSSTransition))) return;
   element.animate(keyframes, options);
 };

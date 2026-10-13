@@ -49,82 +49,123 @@ const links = [
 <script>
   import { reducedMotion } from '../scripts/motion';
 
+  interface Box {
+    width: number;
+    height: number;
+    left: number;
+    top: number;
+  }
+
   const home = document.querySelector<HTMLAnchorElement>('[data-home]')!;
-  const nav = document.querySelector<HTMLElement>('[data-nav]')!;
-  const pill = nav.querySelector<HTMLElement>('[data-nav-pill]')!;
-  const navLinks = [...nav.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+  const list = document.querySelector<HTMLElement>('[data-nav]')!;
+  const pill = list.querySelector<HTMLElement>('[data-nav-pill]')!;
+  const links = [...list.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+  const footer = document.querySelector('footer');
   const sections = new Map(
-    navLinks.flatMap((link) => {
+    links.flatMap((link) => {
       const section = document.getElementById(link.hash.slice(1));
       return section ? [[link, section] as const] : [];
     }),
   );
+  const boxes = new Map<HTMLAnchorElement, Box>();
   const visible = new Set<Element>();
   const releaseDistance = 4;
   let active: HTMLAnchorElement | undefined;
-  let pinned: HTMLAnchorElement | undefined;
-  let settledAt: number | undefined;
+  let pinned = false;
+  let atBottom = false;
+  let settledAt = 0;
+  let settleTimer = 0;
+
+  const draw = () => {
+    const box = active && boxes.get(active);
+    pill.style.opacity = box ? '1' : '0';
+    if (!box) return;
+    pill.style.width = `${box.width}px`;
+    pill.style.height = `${box.height}px`;
+    pill.style.translate = `${box.left}px ${box.top}px`;
+  };
 
   const setActive = (link?: HTMLAnchorElement) => {
+    if (link === active) return;
     active = link;
-    navLinks.forEach((item) => item.setAttribute('aria-current', String(item === link)));
-    pill.style.opacity = link ? '1' : '0';
-    if (!link) return;
-    pill.style.width = `${link.offsetWidth}px`;
-    pill.style.height = `${link.offsetHeight}px`;
-    pill.style.translate = `${link.offsetLeft}px ${link.offsetTop}px`;
+    links.forEach((item) => {
+      if (item === link) {
+        item.setAttribute('aria-current', 'true');
+      } else {
+        item.removeAttribute('aria-current');
+      }
+    });
+    draw();
   };
 
-  const atBottom = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+  const sync = () => {
+    if (pinned) return;
+    setActive(atBottom ? links.at(-1) : [...sections].find(([, section]) => visible.has(section))?.[0]);
+  };
 
-  const update = () => {
-    if (pinned) {
-      if (settledAt === undefined || Math.abs(window.scrollY - settledAt) < releaseDistance) return;
-      pinned = undefined;
-      settledAt = undefined;
+  const release = () => {
+    if (Math.abs(window.scrollY - settledAt) < releaseDistance) return;
+    window.removeEventListener('scroll', release);
+    pinned = false;
+    sync();
+  };
+
+  new ResizeObserver(() => {
+    links.forEach((link) =>
+      boxes.set(link, { width: link.offsetWidth, height: link.offsetHeight, left: link.offsetLeft, top: link.offsetTop }),
+    );
+    draw();
+  }).observe(list);
+
+  if (sections.size) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(({ target, isIntersecting }) => {
+          if (isIntersecting) {
+            visible.add(target);
+          } else {
+            visible.delete(target);
+          }
+        });
+        sync();
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((section) => spy.observe(section));
+
+    if (footer) {
+      new IntersectionObserver(
+        ([entry]) => {
+          atBottom = entry.isIntersecting;
+          sync();
+        },
+        { rootMargin: '0px 0px 4px 0px', threshold: 1 },
+      ).observe(footer);
     }
-    const next =
-      sections.size && atBottom()
-        ? navLinks.at(-1)
-        : [...sections].find(([, section]) => visible.has(section))?.[0];
-    if (next !== active) setActive(next);
-  };
 
-  const spy = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(({ target, isIntersecting }) => {
-        if (isIntersecting) {
-          visible.add(target);
-        } else {
-          visible.delete(target);
-        }
-      });
-      update();
-    },
-    { rootMargin: '-45% 0px -50% 0px' },
-  );
+    links.forEach((link) =>
+      link.addEventListener('click', () => {
+        window.removeEventListener('scroll', release);
+        window.clearTimeout(settleTimer);
+        pinned = true;
+        setActive(link);
 
-  sections.forEach((section) => spy.observe(section));
+        const settle = () => {
+          window.clearTimeout(settleTimer);
+          if (!pinned || active !== link) return;
+          settledAt = window.scrollY;
+          window.addEventListener('scroll', release, { passive: true });
+        };
+        window.addEventListener('scrollend', settle, { once: true });
+        settleTimer = window.setTimeout(settle, 1200);
 
-  navLinks.forEach((link) =>
-    link.addEventListener('click', () => {
-      setActive(link);
-      pinned = link;
-      settledAt = undefined;
-      const settle = () => {
-        if (pinned === link) settledAt = window.scrollY;
-      };
-      window.addEventListener('scrollend', settle, { once: true });
-      window.setTimeout(settle, 1200);
-      if (reducedMotion.matches) return;
-      link.setAttribute('data-pressing', '');
-      pill.animate({ scale: [1, 0.85, 1.06, 1] }, { duration: 450, easing: 'ease-out' });
-      window.setTimeout(() => link.removeAttribute('data-pressing'), 450);
-    }),
-  );
-
-  window.addEventListener('resize', () => setActive(active));
-  window.addEventListener('scroll', update, { passive: true });
+        if (reducedMotion.matches) return;
+        link.setAttribute('data-pressing', '');
+        pill.animate({ scale: [1, 0.85, 1.06, 1] }, { duration: 450, easing: 'ease-out' });
+        window.setTimeout(() => link.removeAttribute('data-pressing'), 450);
+      }),
+    );
+  }
 
   home.addEventListener('click', () => {
     if (reducedMotion.matches) return;

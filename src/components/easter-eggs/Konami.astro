@@ -5,10 +5,24 @@
   import { reducedMotion } from '../../scripts/motion';
   import { toast } from '../../scripts/toast';
 
+  const root = document.documentElement;
   const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  const fade = 500;
+  let timer = 0;
 
   onSequence(code, 5000, () => {
-    const on = document.documentElement.toggleAttribute('data-retro');
+    const on = root.getAttribute('data-retro') !== '';
+    window.clearTimeout(timer);
+
+    if (on) {
+      root.setAttribute('data-retro', '');
+    } else if (reducedMotion.matches) {
+      root.removeAttribute('data-retro');
+    } else {
+      root.setAttribute('data-retro', 'off');
+      timer = window.setTimeout(() => root.removeAttribute('data-retro'), fade);
+    }
+
     if (!reducedMotion.matches) confetti();
     toast(on ? 'Retro mode on' : 'Retro mode off');
     found('konami');
@@ -28,14 +42,22 @@
     --crt-band: rgb(255 255 255 / 0.06);
   }
 
-  html[data-retro] body {
+  @media (prefers-reduced-motion: no-preference) {
+    body {
+      transition:
+        letter-spacing 0.5s var(--ease-smooth),
+        text-shadow 0.5s var(--ease-smooth);
+    }
+  }
+
+  html[data-retro=''] body {
     letter-spacing: 0.03em;
     text-shadow:
       0.5px 0 rgb(244 63 94 / 0.35),
       -0.5px 0 rgb(6 182 212 / 0.35);
   }
 
-  html.dark[data-retro] body {
+  html.dark[data-retro=''] body {
     text-shadow:
       0.5px 0 rgb(244 63 94 / 0.4),
       -0.5px 0 rgb(6 182 212 / 0.4),
@@ -64,7 +86,16 @@
     translate: 0 -100%;
   }
 
-  html[data-retro] [data-cursor] > * {
+  html[data-retro='off'] body::after {
+    animation: crt-off 0.5s ease-in forwards;
+  }
+
+  html[data-retro='off'] body::before {
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
+  }
+
+  html[data-retro=''] [data-cursor] > * {
     border-radius: 0;
   }
 
@@ -76,6 +107,12 @@
 
   @keyframes crt-on {
     from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes crt-off {
+    to {
       opacity: 0;
     }
   }
