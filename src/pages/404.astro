@@ -106,7 +106,7 @@ import { site } from '../data/site';
   const win = () => {
     playing = false;
     window.clearTimeout(timer);
-    score.textContent = 'You win! Now go home.';
+    score.textContent = 'You win! Now go to home.';
     found('catch-the-dot');
     if (reducedMotion.matches) return;
     home?.animate(

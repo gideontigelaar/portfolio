@@ -23,7 +23,7 @@ export const work: ExperienceEntry[] = [
     logo: dotsimpelLogo,
     logoAlt: 'Dotsimpel Logo',
     details:
-      'Building and maintaining websites, webshops and CMS features for a wide range of clients, mostly with PHP, MySQL and JavaScript.',
+      'Building new features and maintaining the Dotsimpel CMS for a wide range of customers, primarily using PHP, MySQL, and JavaScript.',
   },
   {
     title: 'Assistant Store Manager',
@@ -33,7 +33,7 @@ export const work: ExperienceEntry[] = [
     logo: aldiNordLogo,
     logoAlt: 'ALDI Nord Logo',
     details:
-      'Supporting the store manager in running the store, from planning and guiding the team to keeping daily operations on track.',
+      "Taking full charge of the store in the manager's absence and driving daily operations, from planning and guiding the team to keeping things on track.",
   },
 ];
 
@@ -46,7 +46,7 @@ export const education: ExperienceEntry[] = [
     logo: hanzeLogo,
     logoAlt: 'Hanze Logo',
     details:
-      'Studying software engineering in Groningen, with a focus on designing, building and testing software in real-world projects.',
+      'Focusing on full-stack software development, system design, and agile teamwork in project-driven environments.',
   },
   {
     title: 'MBO 4, Software Development',
@@ -56,6 +56,6 @@ export const education: ExperienceEntry[] = [
     logo: alfaCollegeLogo,
     logoAlt: 'Alfa-college Logo',
     details:
-      'Learned the fundamentals of software development, from programming and databases to building projects for real clients.',
+      'Learned the fundamentals of software development, from coding basic apps and games to delivering projects for real clients.',
   },
 ];
