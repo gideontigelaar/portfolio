@@ -99,15 +99,15 @@ import { site } from '../../data/site';
     dropIn(hat);
   };
 
-  const popHat = async () => {
+  const pop = async (element: HTMLElement) => {
     spins = 0;
     if (!reducedMotion.matches) {
-      await hat.animate(
+      await element.animate(
         { translate: ['0 0', '1.5rem -3rem'], rotate: ['-20deg', '200deg'], opacity: [1, 0] },
         { duration: 450, easing: smooth() },
       ).finished.catch(() => {});
     }
-    hat.setAttribute('hidden', '');
+    element.setAttribute('hidden', '');
   };
 
   const placeCrown = (animate: boolean) => {
@@ -118,13 +118,14 @@ import { site } from '../../data/site';
   if (isGolden()) placeCrown(false);
 
   window.addEventListener('eggs-complete', async () => {
-    if (!hat.hasAttribute('hidden')) await popHat();
+    if (!hat.hasAttribute('hidden')) await pop(hat);
     placeCrown(true);
   });
 
   avatar.addEventListener('click', (event) => {
-    if ((event.target as Element).closest('[data-hat]')) {
-      popHat();
+    const topper = (event.target as Element).closest<HTMLElement>('[data-hat], [data-crown]');
+    if (topper) {
+      pop(topper);
       return;
     }
 

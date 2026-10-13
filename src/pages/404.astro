@@ -11,13 +11,13 @@ import { site } from '../data/site';
       This page doesn't exist or has been moved.
     </p>
     <Button href="/" variant="primary" data-home-button>Back to home</Button>
-    <div class="mt-10 flex w-full flex-col items-center gap-3">
+    <div class="mt-10 flex w-full flex-col items-center gap-3" data-game-wrap hidden>
       <div
         role="application"
         aria-label="Catch the dot. Press Space when the dot is in the center."
         aria-describedby="game-score"
         tabindex="0"
-        class="group relative h-56 w-full max-w-md overflow-hidden rounded-3xl border border-dashed border-line"
+        class="group relative h-56 w-full max-w-md overflow-hidden rounded-3xl border-2 border-dashed border-zinc-950/30 dark:border-white/30"
         data-game
       >
         <span
@@ -26,165 +26,170 @@ import { site } from '../data/site';
         ></span>
         <span
           aria-hidden="true"
-          class="absolute top-0 left-0 grid size-8 place-items-center pointer-coarse:size-11"
+          class="absolute top-0 left-0 grid size-8 place-items-center"
           data-game-dot
         >
           <span
-            class="size-5 rounded-full border-2 border-zinc-950/45 transition-[scale] duration-300 ease-spring dark:border-white/55"
+            class="size-[calc(1.25rem_-_var(--caught,0)*0.1rem)] rounded-full border-2 border-zinc-950/45 transition-[width,height] duration-300 ease-spring dark:border-white/55"
             data-game-core
           ></span>
         </span>
       </div>
       <p id="game-score" class="text-sm text-muted" aria-live="polite" data-game-score>
-        <span class="pointer-coarse:hidden">Hover or focus the box to play</span>
-        <span class="hidden pointer-coarse:inline">Tap the box to play</span>
+        Hover or focus the box to play
       </p>
     </div>
   </section>
 </Layout>
 
 <script>
-  import { found } from '../scripts/eggs';
+  import { found, isDesktop } from '../scripts/eggs';
   import { reducedMotion } from '../scripts/motion';
 
-  const area = document.querySelector<HTMLElement>('[data-game]')!;
-  const dot = area.querySelector<HTMLElement>('[data-game-dot]')!;
-  const core = dot.querySelector<HTMLElement>('[data-game-core]')!;
-  const score = document.querySelector<HTMLElement>('[data-game-score]')!;
-  const home = document.querySelector<HTMLElement>('[data-home-button]');
-  const goal = 5;
-  const zone = 28;
-  let caught = 0;
-  let playing = false;
-  let timer = 0;
+  if (isDesktop()) {
+    const wrap = document.querySelector<HTMLElement>('[data-game-wrap]')!;
+    wrap.hidden = false;
 
-  const speed = () => 1150 - caught * 140;
+    const area = wrap.querySelector<HTMLElement>('[data-game]')!;
+    const dot = area.querySelector<HTMLElement>('[data-game-dot]')!;
+    const core = dot.querySelector<HTMLElement>('[data-game-core]')!;
+    const score = wrap.querySelector<HTMLElement>('[data-game-score]')!;
+    const home = document.querySelector<HTMLElement>('[data-home-button]');
+    const goal = 5;
+    const zone = 28;
+    let caught = 0;
+    let playing = false;
+    let timer = 0;
 
-  const shrink = () => {
-    core.style.scale = String(1 - caught * 0.08);
-  };
+    const speed = () => 900 - caught * 120;
 
-  const place = (x: number, y: number) => {
-    dot.style.translate = `${x}px ${y}px`;
-  };
+    const shrink = () => {
+      core.style.setProperty('--caught', String(caught));
+    };
 
-  const center = () => ({
-    x: (area.clientWidth - dot.offsetWidth) / 2,
-    y: (area.clientHeight - dot.offsetHeight) / 2,
-  });
+    const place = (x: number, y: number) => {
+      dot.style.translate = `${x}px ${y}px`;
+    };
 
-  const move = () => {
-    if (!playing) return;
-    const middle = center();
-    const near = Math.random() < 0.3;
-    const x = near ? middle.x + (Math.random() - 0.5) * 20 : Math.random() * middle.x * 2;
-    const y = near ? middle.y + (Math.random() - 0.5) * 20 : Math.random() * middle.y * 2;
-    dot.style.transitionDuration = `${speed()}ms`;
-    place(x, y);
-    if (reducedMotion.matches) timer = window.setTimeout(move, speed());
-  };
+    const center = () => ({
+      x: (area.clientWidth - dot.offsetWidth) / 2,
+      y: (area.clientHeight - dot.offsetHeight) / 2,
+    });
 
-  const start = () => {
-    if (playing || caught >= goal) return;
-    playing = true;
-    score.textContent = `Caught ${caught} of ${goal}`;
-    move();
-  };
+    const move = () => {
+      if (!playing) return;
+      const middle = center();
+      const duration = speed();
+      const near = Math.random() < 0.3;
+      const x = near ? middle.x + (Math.random() - 0.5) * 20 : Math.random() * middle.x * 2;
+      const y = near ? middle.y + (Math.random() - 0.5) * 20 : Math.random() * middle.y * 2;
+      dot.style.transitionDuration = `${duration}ms`;
+      place(x, y);
+      if (reducedMotion.matches) timer = window.setTimeout(move, duration);
+    };
 
-  const miss = () => {
-    if (!playing || !caught) return;
-    caught -= 1;
-    shrink();
-    score.textContent = `Missed! Caught ${caught} of ${goal}`;
-    if (reducedMotion.matches) return;
-    area.animate(
-      { translate: ['0 0', '-4px 0', '4px 0', '-2px 0', '0 0'] },
-      { duration: 250, easing: 'ease-out' },
-    );
-  };
-
-  const win = () => {
-    playing = false;
-    window.clearTimeout(timer);
-    score.textContent = 'You win! Now go to home.';
-    found('catch-the-dot');
-    if (reducedMotion.matches) return;
-    home?.animate(
-      { scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgb(59 130 246 / 0.5)', '0 0 0 12px rgb(59 130 246 / 0)', 'none'] },
-      { duration: 1000, iterations: 4, easing: 'ease-out', composite: 'add' },
-    );
-  };
-
-  const catchDot = () => {
-    if (!playing) return;
-    caught += 1;
-    shrink();
-    dot.animate({ scale: [1.8, 1] }, { duration: 300, easing: 'ease-out' });
-
-    if (caught < goal) {
+    const start = () => {
+      if (playing || caught >= goal) return;
+      playing = true;
       score.textContent = `Caught ${caught} of ${goal}`;
-      window.clearTimeout(timer);
       move();
-      return;
-    }
+    };
 
-    win();
-  };
+    const miss = () => {
+      if (!playing || !caught) return;
+      caught -= 1;
+      shrink();
+      score.textContent = `Missed! Caught ${caught} of ${goal}`;
+      if (reducedMotion.matches) return;
+      area.animate(
+        { translate: ['0 0', '-4px 0', '4px 0', '-2px 0', '0 0'] },
+        { duration: 250, easing: 'ease-out' },
+      );
+    };
 
-  window.winGame = () => {
-    caught = goal;
-    shrink();
-    win();
-    return 'Game won';
-  };
+    const win = () => {
+      playing = false;
+      window.clearTimeout(timer);
+      score.textContent = 'You win! Now go to home.';
+      found('catch-the-dot');
+      if (reducedMotion.matches) return;
+      home?.animate(
+        { scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgb(59 130 246 / 0.5)', '0 0 0 12px rgb(59 130 246 / 0)', 'none'] },
+        { duration: 1000, iterations: 4, easing: 'ease-out', composite: 'add' },
+      );
+    };
 
-  const middle = center();
-  place(middle.x, middle.y);
-  dot.style.transitionProperty = reducedMotion.matches ? 'none' : 'translate';
-  dot.style.transitionTimingFunction = 'ease-in-out';
+    const catchDot = () => {
+      if (!playing) return;
+      caught += 1;
+      shrink();
+      dot.animate({ scale: [1.8, 1] }, { duration: 300, easing: 'ease-out' });
 
-  dot.addEventListener('transitionend', (event) => {
-    if (event.propertyName === 'translate') move();
-  });
+      if (caught < goal) {
+        score.textContent = `Caught ${caught} of ${goal}`;
+        window.clearTimeout(timer);
+        move();
+        return;
+      }
 
-  area.addEventListener('pointerenter', start);
-  area.addEventListener('focus', start);
+      win();
+    };
 
-  dot.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!playing) {
-      start();
-      return;
-    }
-    catchDot();
-  });
+    window.winGame = () => {
+      caught = goal;
+      shrink();
+      win();
+      return 'Game won';
+    };
 
-  area.addEventListener('pointerdown', () => {
-    if (playing) {
-      miss();
-      return;
-    }
-    start();
-  });
+    const middle = center();
+    place(middle.x, middle.y);
+    dot.style.transitionProperty = reducedMotion.matches ? 'none' : 'translate';
+    dot.style.transitionTimingFunction = 'ease-in-out';
 
-  area.addEventListener('keydown', (event) => {
-    if (event.key !== ' ') return;
-    event.preventDefault();
-    if (!playing) {
-      start();
-      return;
-    }
-    const zoneRect = area.getBoundingClientRect();
-    const dotRect = dot.getBoundingClientRect();
-    const distance = Math.hypot(
-      dotRect.left + dotRect.width / 2 - (zoneRect.left + zoneRect.width / 2),
-      dotRect.top + dotRect.height / 2 - (zoneRect.top + zoneRect.height / 2),
-    );
-    if (distance <= zone) {
+    dot.addEventListener('transitionend', (event) => {
+      if (event.propertyName === 'translate') move();
+    });
+
+    area.addEventListener('pointerenter', start);
+    area.addEventListener('focus', start);
+
+    dot.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!playing) {
+        start();
+        return;
+      }
       catchDot();
-    } else {
-      miss();
-    }
-  });
+    });
+
+    area.addEventListener('pointerdown', () => {
+      if (playing) {
+        miss();
+        return;
+      }
+      start();
+    });
+
+    area.addEventListener('keydown', (event) => {
+      if (event.key !== ' ') return;
+      event.preventDefault();
+      if (!playing) {
+        start();
+        return;
+      }
+      const zoneRect = area.getBoundingClientRect();
+      const dotRect = dot.getBoundingClientRect();
+      const distance = Math.hypot(
+        dotRect.left + dotRect.width / 2 - (zoneRect.left + zoneRect.width / 2),
+        dotRect.top + dotRect.height / 2 - (zoneRect.top + zoneRect.height / 2),
+      );
+      if (distance <= zone) {
+        catchDot();
+      } else {
+        miss();
+      }
+    });
+  }
 </script>
