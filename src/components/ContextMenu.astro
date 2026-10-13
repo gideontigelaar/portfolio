@@ -15,7 +15,7 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
   role="menu"
   aria-label="Quick menu"
   tabindex="-1"
-  class="invisible fixed top-0 left-0 z-60 flex w-56 origin-top-left scale-95 flex-col rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,scale,visibility] duration-200 outline-none data-open:visible data-open:scale-100 data-open:opacity-100 data-open:blur-none data-open:transition-[opacity,filter,scale]"
+  class="invisible fixed top-0 left-0 z-60 flex w-56 scale-95 flex-col rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,scale,visibility] duration-200 outline-none data-open:visible data-open:scale-100 data-open:opacity-100 data-open:blur-none data-open:transition-[opacity,filter,scale] data-open:duration-300 data-open:ease-spring"
   data-context-menu
 >
   <a
@@ -109,6 +109,7 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
     const top = Math.max(margin, Math.min(y, innerHeight - offsetHeight - margin));
     menu.style.left = `${left}px`;
     menu.style.top = `${top}px`;
+    menu.style.transformOrigin = `${x - left}px ${y - top}px`;
     returnFocus = document.activeElement as HTMLElement | null;
     menu.setAttribute('data-open', '');
     menu.focus({ preventScroll: true });

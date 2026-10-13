@@ -10,7 +10,7 @@ import { site } from '../../data/site';
     <button
       type="button"
       aria-label="Flip profile picture"
-      class="group relative block rounded-full transition-transform duration-500 ease-spring hover:scale-110 hover:-rotate-6"
+      class="group relative block press rounded-full transition-transform duration-500 ease-spring hover:scale-110 hover:-rotate-6"
       data-avatar
     >
       <Image
@@ -83,7 +83,7 @@ import { site } from '../../data/site';
     if (!reducedMotion.matches) {
       await hat.animate(
         { translate: ['0 0', '1.5rem -3rem'], rotate: ['-20deg', '200deg'], opacity: [1, 0] },
-        { duration: 450, easing: smooth },
+        { duration: 450, easing: smooth() },
       ).finished.catch(() => {});
     }
     hat.setAttribute('hidden', '');
@@ -104,7 +104,7 @@ import { site } from '../../data/site';
     if (!reducedMotion.matches) {
       flip = avatar.animate(
         { transform: ['perspective(400px) rotateY(0deg)', 'perspective(400px) rotateY(360deg)'] },
-        { duration: 900, easing: spring },
+        { duration: 900, easing: spring() },
       );
     }
 
@@ -147,7 +147,7 @@ import { site } from '../../data/site';
       await hand.animate({ opacity: [0, 1, 1, 0] }, { duration: 1800 }).finished;
       return;
     }
-    hand.animate({ opacity: [0, 1], scale: [0, 1] }, { duration: 400, easing: spring, fill: 'forwards' });
+    hand.animate({ opacity: [0, 1], scale: [0, 1] }, { duration: 400, easing: spring(), fill: 'forwards' });
     await hand.animate(
       { rotate: ['0deg', '22deg', '-8deg', '22deg', '-8deg', '22deg', '-8deg', '22deg', '-8deg', '0deg'] },
       { duration: 1500, delay: 150, easing: 'ease-in-out' },

@@ -47,7 +47,7 @@ import { site } from '../../data/site';
         transform: ['rotate(0deg) scale(1)', 'rotate(180deg) scale(1.15)', 'rotate(360deg) scale(1)'],
         offset: [0, 0.5, 1],
       },
-      { duration: 700, easing: spring },
+      { duration: 700, easing: spring() },
     );
 
   document.querySelectorAll<HTMLElement>('#about [data-gallery-open]').forEach((trigger) => {

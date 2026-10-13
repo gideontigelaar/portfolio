@@ -13,7 +13,7 @@ const variants = {
   primary:
     'bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-600',
   secondary:
-    'bg-zinc-200/70 [--press:var(--color-zinc-500)] hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700',
+    'bg-zinc-200/70 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700',
 };
 ---
 
@@ -21,11 +21,10 @@ const variants = {
   href={href}
   type={href ? undefined : 'button'}
   class:list={[
-    'inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-center text-sm font-semibold whitespace-nowrap transition-colors duration-200',
+    'inline-flex w-fit press items-center gap-2 rounded-full px-4 py-2 text-center text-sm font-semibold whitespace-nowrap transition-[color,background-color,scale] duration-300 ease-spring',
     variants[variant],
     className,
   ]}
-  data-press={href ? undefined : true}
   {...attributes}
 >
   <slot />

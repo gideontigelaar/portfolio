@@ -80,7 +80,12 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       };
       const source = trigger?.getBoundingClientRect();
       const target = item?.getBoundingClientRect();
-      animations = fading().map((element) => element.animate({ opacity: [0, 1] }, options));
+      animations = fading().map((element) =>
+        element.animate(
+          element.dataset.galleryFade === 'rise' ? { opacity: [0, 1], translate: ['0 0.75rem', '0 0'] } : { opacity: [0, 1] },
+          options,
+        ),
+      );
 
       if (item && (!trigger || !source || !target || reducedMotion.matches || !isVisible(source) || !target.width)) {
         animations.push(item.animate({ opacity: [0, 1], scale: [0.95, 1] }, options));

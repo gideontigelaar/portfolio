@@ -42,7 +42,7 @@ const slides = await Promise.all(
             aria-label={language.name}
             data-language={language.name}
             class:list={[
-              'rounded-xl transition-transform duration-500 ease-spring hover:-translate-y-1.5',
+              'press rounded-xl transition-transform duration-500 ease-spring hover:-translate-y-1.5',
               language.hiddenOnMobile && 'hidden md:block',
             ]}
           >
@@ -77,7 +77,7 @@ const slides = await Promise.all(
     href="https://whisp.gideontigelaar.com/"
     target="_blank"
     rel="noopener noreferrer"
-    class="relative aspect-square"
+    class="relative aspect-square press [--press-scale:0.97]"
     data-tilt
     data-enter
     style="--delay: 5"
@@ -102,7 +102,7 @@ const slides = await Promise.all(
         <button
           type="button"
           aria-label="Instagram"
-          class="shrink-0 rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
+          class="shrink-0 press rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
           data-instagram-logo
         >
           <Image src={instagramIcon} alt="" loading="eager" width={35} height={35} />
@@ -121,7 +121,7 @@ const slides = await Promise.all(
             type="button"
             aria-label={`Open photo: ${photo.alt}`}
             class:list={[
-              'relative aspect-square overflow-hidden rounded-xl transition duration-500 ease-spring hover:z-10 hover:scale-110 hover:shadow-lg',
+              'relative aspect-square press overflow-hidden rounded-xl transition duration-500 ease-spring hover:z-10 hover:scale-110 hover:shadow-lg',
               scatter[i],
             ]}
             data-gallery-open="photos"
@@ -196,21 +196,21 @@ const slides = await Promise.all(
   let lastPress = 0;
   let lastTrick = -1;
 
-  const tricks: [PropertyIndexedKeyframes, KeyframeAnimationOptions][] = [
+  const tricks = (): [PropertyIndexedKeyframes, KeyframeAnimationOptions][] => [
     [
       {
         transform: ['scale(1) rotate(0deg)', 'scale(1.35) rotate(-15deg)', 'scale(1) rotate(360deg)'],
         offset: [0, 0.3, 1],
       },
-      { duration: 600, easing: spring },
+      { duration: 600, easing: spring() },
     ],
     [
       { transform: ['perspective(300px) rotateY(0deg)', 'perspective(300px) rotateY(360deg)'] },
-      { duration: 700, easing: spring },
+      { duration: 700, easing: spring() },
     ],
     [
       { transform: ['perspective(300px) rotateX(0deg)', 'perspective(300px) rotateX(360deg)'] },
-      { duration: 700, easing: spring },
+      { duration: 700, easing: spring() },
     ],
     [
       {
@@ -243,7 +243,7 @@ const slides = await Promise.all(
       if (button === source) return;
       button.animate(
         { translate: ['0 0', '0 -0.5rem', '0 0'] },
-        { duration: 450, delay: Math.abs(index - origin) * 70, easing: spring, composite: 'add' },
+        { duration: 450, delay: Math.abs(index - origin) * 70, easing: spring(), composite: 'add' },
       );
     });
   };
@@ -257,7 +257,7 @@ const slides = await Promise.all(
           transform: ['scale(1) rotate(0deg)', 'scale(1.3) rotate(180deg)', 'scale(1) rotate(360deg)'],
           offset: [0, 0.5, 1],
         },
-        { duration: 800, delay: index * 90, easing: spring },
+        { duration: 800, delay: index * 90, easing: spring() },
       ),
     );
   };
@@ -284,11 +284,12 @@ const slides = await Promise.all(
 
       if (reducedMotion.matches || playing?.playState === 'running') return;
 
-      let next = Math.floor(Math.random() * tricks.length);
-      if (next === lastTrick) next = (next + 1) % tricks.length;
+      const list = tricks();
+      let next = Math.floor(Math.random() * list.length);
+      if (next === lastTrick) next = (next + 1) % list.length;
       lastTrick = next;
 
-      const [keyframes, options] = tricks[next];
+      const [keyframes, options] = list[next];
       playing = button.animate(keyframes, options);
       ripple(button);
     });
@@ -302,7 +303,7 @@ const slides = await Promise.all(
           transform: ['rotate(0deg) scale(1)', 'rotate(-20deg) scale(1.3)', 'rotate(360deg) scale(1)'],
           offset: [0, 0.3, 1],
         },
-        { duration: 700, easing: spring },
+        { duration: 700, easing: spring() },
       ),
     );
   });
