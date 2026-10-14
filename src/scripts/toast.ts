@@ -1,22 +1,17 @@
 import { reducedMotion, smooth } from './motion';
 import { keepAboveDialogs } from './top-layer';
 
-let pill: HTMLElement | undefined;
-let queue = Promise.resolve();
+const pill = document.createElement('div');
+pill.setAttribute('role', 'status');
+pill.className =
+  'pointer-events-none fixed bottom-6 left-1/2 z-70 -translate-x-1/2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold whitespace-nowrap text-white opacity-0 shadow-lg dark:bg-zinc-50 dark:text-zinc-900';
+document.body.append(pill);
+keepAboveDialogs(pill);
 
-const create = () => {
-  const element = document.createElement('div');
-  element.setAttribute('role', 'status');
-  element.className =
-    'pointer-events-none fixed bottom-6 left-1/2 z-70 -translate-x-1/2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold whitespace-nowrap text-white opacity-0 shadow-lg dark:bg-zinc-50 dark:text-zinc-900';
-  document.body.append(element);
-  keepAboveDialogs(element);
-  return element;
-};
+let queue = Promise.resolve();
 
 export const toast = (message: string) => {
   queue = queue.then(() => {
-    pill ??= create();
     pill.textContent = message;
     return pill
       .animate(
@@ -32,6 +27,9 @@ export const toast = (message: string) => {
       .finished.then(
         () => {},
         () => {},
-      );
+      )
+      .then(() => {
+        pill.textContent = '';
+      });
   });
 };

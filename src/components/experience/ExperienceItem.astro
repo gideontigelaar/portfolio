@@ -4,7 +4,7 @@ import type { ExperienceEntry } from '../../data/experience';
 
 type Props = ExperienceEntry & { gallery: string };
 
-const { title, organization, period, logo, logoAlt, gallery } = Astro.props;
+const { title, organization, period, logo, gallery } = Astro.props;
 ---
 
 <button
@@ -14,7 +14,7 @@ const { title, organization, period, logo, logoAlt, gallery } = Astro.props;
 >
   <Image
     src={logo}
-    alt={logoAlt}
+    alt=""
     width={48}
     height={48}
     loading="eager"

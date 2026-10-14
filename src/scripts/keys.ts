@@ -3,7 +3,7 @@ import { isDesktop } from './eggs';
 const modifiers = new Set(['Shift', 'Control', 'Alt', 'Meta', 'CapsLock']);
 
 const ignored = (target: EventTarget | null) =>
-  target instanceof Element && !!target.closest('input, textarea, select, [contenteditable], dialog');
+  target instanceof Element && !!target.closest('input, textarea, select, [contenteditable], dialog, [role="menu"]');
 
 export const onSequence = (sequence: string[], within: number, callback: () => void) => {
   const keys: string[] = [];

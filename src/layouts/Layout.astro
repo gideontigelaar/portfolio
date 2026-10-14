@@ -58,7 +58,7 @@ const person = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{title}</title>
-    {!noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(person)} />}
+    {!noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />}
     <Font cssVariable="--font-manrope" preload />
     <script is:inline>
       (() => {

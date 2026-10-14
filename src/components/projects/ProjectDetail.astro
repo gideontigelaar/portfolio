@@ -40,6 +40,8 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
     </div>
   </div>
   <div class="shrink-0 px-5 pt-3 pb-5">
-    <Button href={href} target="_blank" rel="noopener noreferrer">View on GitHub</Button>
+    <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`View on GitHub: ${title}`}>
+      View on GitHub
+    </Button>
   </div>
 </Card>

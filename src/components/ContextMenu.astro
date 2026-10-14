@@ -1,31 +1,55 @@
 ---
 import { Image } from 'astro:assets';
+import ArrowSquareOutIcon from '@phosphor-icons/core/assets/regular/arrow-square-out.svg';
+import ArrowsOutSimpleIcon from '@phosphor-icons/core/assets/regular/arrows-out-simple.svg';
 import CodeIcon from '@phosphor-icons/core/assets/regular/code.svg';
+import CursorClickIcon from '@phosphor-icons/core/assets/regular/cursor-click.svg';
 import HouseIcon from '@phosphor-icons/core/assets/regular/house.svg';
+import ImageIcon from '@phosphor-icons/core/assets/regular/image.svg';
+import LinkSimpleIcon from '@phosphor-icons/core/assets/regular/link-simple.svg';
 import LinkedinLogoIcon from '@phosphor-icons/core/assets/fill/linkedin-logo-fill.svg';
 import MoonIcon from '@phosphor-icons/core/assets/regular/moon.svg';
+import ShareNetworkIcon from '@phosphor-icons/core/assets/regular/share-network.svg';
 import SunIcon from '@phosphor-icons/core/assets/regular/sun.svg';
+import TextTIcon from '@phosphor-icons/core/assets/regular/text-t.svg';
 import Button from './ui/Button.astro';
 import { site } from '../data/site';
 
-const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800';
+const item =
+  'group flex w-full shrink-0 items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors focus:bg-zinc-100 active:bg-zinc-100 pointer-coarse:py-3 forced-colors:focus:outline-2 dark:focus:bg-zinc-800 dark:active:bg-zinc-800';
+const icon = 'size-4 shrink-0 transition-transform duration-300 ease-spring';
+const separator = 'my-1 shrink-0 border-t border-line';
+const newTabMotion = 'group-focus:translate-x-0.5 group-focus:-translate-y-0.5 group-focus:scale-125';
+
+const actions = [
+  { name: 'open', label: 'Open', icon: ArrowsOutSimpleIcon, motion: 'group-focus:scale-125' },
+  { name: 'interact', label: 'Interact', icon: CursorClickIcon, motion: 'group-focus:-translate-y-0.5 group-focus:scale-125' },
+  { name: 'link-tab', label: 'Open link in new tab', icon: ArrowSquareOutIcon, motion: newTabMotion },
+  { name: 'copy-link', label: 'Copy link', icon: LinkSimpleIcon, motion: 'group-focus:-rotate-12 group-focus:scale-125' },
+  { name: 'share', label: 'Share link', icon: ShareNetworkIcon, motion: 'group-focus:rotate-12 group-focus:scale-125' },
+  { name: 'image-tab', label: 'Open image in new tab', icon: ArrowSquareOutIcon, motion: newTabMotion },
+  { name: 'copy-image', label: 'Copy image', icon: ImageIcon, motion: 'group-focus:-rotate-6 group-focus:scale-125' },
+  { name: 'copy-text', label: 'Copy text', icon: TextTIcon, motion: 'group-focus:-translate-y-0.5 group-focus:scale-125' },
+];
 ---
 
 <div
   role="menu"
   aria-label="Quick menu"
   tabindex="-1"
-  class="invisible fixed top-0 left-0 z-60 flex w-56 scale-95 flex-col rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,scale,visibility] duration-200 outline-none data-open:visible data-open:scale-100 data-open:opacity-100 data-open:blur-none data-open:transition-[opacity,filter,scale] data-open:duration-300 data-open:ease-spring"
+  inert
+  class="invisible fixed top-0 left-0 z-60 flex max-h-[calc(100dvh-1rem)] w-56 scale-95 flex-col overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,scale,visibility] duration-200 outline-none data-open:visible data-open:scale-100 data-open:opacity-100 data-open:blur-none data-open:transition-[opacity,filter,scale] data-open:duration-300 data-open:ease-spring motion-reduce:scale-100 motion-reduce:blur-none"
   data-context-menu
 >
   <a
     role="menuitem"
+    tabindex="-1"
     href={site.socials.linkedin.url}
     target="_blank"
     rel="noopener noreferrer"
     class={item}
   >
-    <span class="relative shrink-0 transition-transform duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-6">
+    <span class="relative shrink-0 transition-transform duration-300 ease-spring group-focus:scale-110 group-focus:-rotate-6">
       <Image src={site.avatar} alt="" width={32} height={32} densities={[1, 2, 3]} format="webp" class="rounded-full" />
       <LinkedinLogoIcon
         class="absolute -right-1 -bottom-1 size-4 rounded-sm bg-white text-[#0a66c2]"
@@ -37,20 +61,31 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
       <span class="text-xs text-muted">View on LinkedIn</span>
     </span>
   </a>
-  <div role="separator" class="my-1 h-px bg-line"></div>
-  <a role="menuitem" href="/#home" class={item}>
-    <HouseIcon class="size-4 transition-transform duration-300 ease-spring group-hover:-translate-y-0.5 group-hover:scale-125" aria-hidden="true" />
+  <div role="separator" class={separator}></div>
+  <div role="group" class="flex shrink-0 flex-col" data-context-group hidden>
+    {
+      actions.map(({ name, label, icon: Icon, motion }) => (
+        <button type="button" role="menuitem" tabindex="-1" class={item} data-action={name} hidden>
+          <Icon class:list={[icon, motion]} aria-hidden="true" />
+          {label}
+        </button>
+      ))
+    }
+  </div>
+  <div role="separator" class={separator} data-context-group hidden></div>
+  <a role="menuitem" tabindex="-1" href="/#home" class={item} data-context-home>
+    <HouseIcon class:list={[icon, 'group-focus:-translate-y-0.5 group-focus:scale-125']} aria-hidden="true" />
     Home
   </a>
-  <button type="button" role="menuitem" class={item} data-context-theme>
-    <MoonIcon class="size-4 transition-transform duration-300 ease-spring group-hover:-rotate-12 group-hover:scale-125 dark:hidden" aria-hidden="true" />
-    <SunIcon class="hidden size-4 transition-transform duration-300 ease-spring group-hover:rotate-45 group-hover:scale-125 dark:block" aria-hidden="true" />
+  <button type="button" role="menuitem" tabindex="-1" class={item} data-context-theme>
+    <MoonIcon class:list={[icon, 'group-focus:-rotate-12 group-focus:scale-125 dark:hidden']} aria-hidden="true" />
+    <SunIcon class:list={[icon, 'hidden group-focus:rotate-45 group-focus:scale-125 dark:block']} aria-hidden="true" />
     <span class="dark:hidden">Dark mode</span>
     <span class="hidden dark:inline">Light mode</span>
   </button>
-  <div role="separator" class="my-1 h-px bg-line" data-secret hidden></div>
-  <button type="button" role="menuitem" class={item} data-secret data-context-source hidden>
-    <CodeIcon class="size-4 transition-transform duration-300 ease-spring group-hover:scale-125" aria-hidden="true" />
+  <div role="separator" class={separator} data-secret hidden></div>
+  <button type="button" role="menuitem" tabindex="-1" class={item} data-secret data-context-source hidden>
+    <CodeIcon class:list={[icon, 'group-focus:scale-125']} aria-hidden="true" />
     Secret menu
   </button>
 </div>
@@ -80,106 +115,5 @@ const item = 'group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-lef
 </dialog>
 
 <script>
-  import { count, found, total } from '../scripts/eggs';
-  import { toggleTheme } from '../scripts/theme';
-  import { keepAboveDialogs } from '../scripts/top-layer';
-
-  const menu = document.querySelector<HTMLElement>('[data-context-menu]')!;
-  const themeItem = menu.querySelector<HTMLButtonElement>('[data-context-theme]')!;
-  const secrets = [...menu.querySelectorAll<HTMLElement>('[data-secret]')];
-  const about = document.querySelector<HTMLDialogElement>('[data-about]')!;
-  const aboutCount = about.querySelector<HTMLElement>('[data-about-count]')!;
-  const items = () => [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')].filter((element) => !element.hidden);
-  const margin = 8;
-  const maxDistance = 120;
-  let pointerType = 'mouse';
-  let returnFocus: HTMLElement | null = null;
-
-  const isOpen = () => menu.hasAttribute('data-open');
-
-  const hide = () => {
-    if (!isOpen()) return;
-    menu.removeAttribute('data-open');
-    if (menu.contains(document.activeElement)) returnFocus?.focus({ preventScroll: true });
-  };
-
-  const show = (x: number, y: number) => {
-    const { offsetWidth, offsetHeight } = menu;
-    const left = Math.max(margin, Math.min(x, innerWidth - offsetWidth - margin));
-    const top = Math.max(margin, Math.min(y, innerHeight - offsetHeight - margin));
-    menu.style.left = `${left}px`;
-    menu.style.top = `${top}px`;
-    menu.style.transformOrigin = `${x - left}px ${y - top}px`;
-    returnFocus = document.activeElement as HTMLElement | null;
-    menu.setAttribute('data-open', '');
-    menu.focus({ preventScroll: true });
-  };
-
-  document.addEventListener('contextmenu', (event) => {
-    if (pointerType !== 'mouse' || event.shiftKey) {
-      hide();
-      return;
-    }
-    event.preventDefault();
-    secrets.forEach((element) => (element.hidden = !event.altKey));
-    show(event.clientX, event.clientY);
-  });
-
-  window.addEventListener('pointerdown', (event) => {
-    pointerType = event.pointerType;
-    if (!menu.contains(event.target as Node)) hide();
-  });
-
-  window.addEventListener(
-    'pointermove',
-    ({ clientX, clientY }) => {
-      if (!isOpen()) return;
-      const { left, top, right, bottom } = menu.getBoundingClientRect();
-      const dx = Math.max(left - clientX, 0, clientX - right);
-      const dy = Math.max(top - clientY, 0, clientY - bottom);
-      if (Math.hypot(dx, dy) > maxDistance) hide();
-    },
-    { passive: true },
-  );
-
-  themeItem.addEventListener('click', ({ clientX, clientY }) => toggleTheme(clientX, clientY));
-
-  menu.querySelector('[data-context-source]')!.addEventListener('click', () => {
-    found('secret-menu');
-    aboutCount.textContent = `${count()}/${total()}`;
-    about.showModal();
-  });
-
-  about.addEventListener('click', ({ target, clientX, clientY }) => {
-    const { left, right, top, bottom } = about.getBoundingClientRect();
-    const outside = clientX < left || clientX > right || clientY < top || clientY > bottom;
-    if (outside || (target as Element).closest('[data-about-close]')) about.close();
-  });
-
-  menu.addEventListener('click', hide);
-  keepAboveDialogs(menu);
-  window.addEventListener('scroll', hide, { passive: true });
-  window.addEventListener('resize', hide);
-  window.addEventListener('blur', hide);
-  window.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !isOpen()) return;
-    event.preventDefault();
-    hide();
-  });
-
-  menu.addEventListener('keydown', (event) => {
-    const visibleItems = items();
-    const index = visibleItems.indexOf(document.activeElement as HTMLElement);
-    const targets: Record<string, number> = {
-      ArrowDown: index + 1,
-      ArrowUp: Math.max(index, 0) - 1,
-      Home: 0,
-      End: visibleItems.length - 1,
-    };
-
-    if (event.key === 'Tab') hide();
-    if (!(event.key in targets)) return;
-    event.preventDefault();
-    visibleItems[(targets[event.key] + visibleItems.length) % visibleItems.length].focus();
-  });
+  import '../scripts/context-menu';
 </script>

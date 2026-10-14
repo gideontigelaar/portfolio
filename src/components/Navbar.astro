@@ -75,6 +75,7 @@ const links = [
   let atBottom = false;
   let settledAt = 0;
   let settleTimer = 0;
+  let pendingSettle: (() => void) | undefined;
 
   const draw = () => {
     const box = active && boxes.get(active);
@@ -147,16 +148,20 @@ const links = [
       link.addEventListener('click', () => {
         window.removeEventListener('scroll', release);
         window.clearTimeout(settleTimer);
+        if (pendingSettle) window.removeEventListener('scrollend', pendingSettle);
         pinned = true;
         setActive(link);
 
         const settle = () => {
           window.clearTimeout(settleTimer);
+          window.removeEventListener('scrollend', settle);
+          pendingSettle = undefined;
           if (!pinned || active !== link) return;
           settledAt = window.scrollY;
           window.addEventListener('scroll', release, { passive: true });
         };
-        window.addEventListener('scrollend', settle, { once: true });
+        pendingSettle = settle;
+        window.addEventListener('scrollend', settle);
         settleTimer = window.setTimeout(settle, 1200);
 
         if (reducedMotion.matches) return;

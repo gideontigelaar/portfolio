@@ -27,7 +27,7 @@ const year = new Date().getFullYear();
   const scope = footer.querySelector<HTMLElement>('[data-year-scope]')!;
   const year = scope.querySelector<HTMLElement>('[data-year]')!;
   const toast = scope.querySelector<HTMLElement>('[data-year-toast]')!;
-  const original = Number(year.textContent);
+  const original = new Date().getFullYear();
   const cooldown = 5000;
   const grace = 400;
   const settle = 250;
@@ -48,6 +48,8 @@ const year = new Date().getFullYear();
   let settleTimer = 0;
   let rewind = 0;
   let resetting = false;
+
+  year.textContent = String(original);
 
   const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
   const easeOut = (t: number) => 1 - (1 - t) ** 3;

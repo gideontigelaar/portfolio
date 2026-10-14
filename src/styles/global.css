@@ -107,6 +107,12 @@
     touch-action: manipulation;
   }
 
+  @media (pointer: coarse) {
+    :where(a, img) {
+      -webkit-user-drag: none;
+    }
+  }
+
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-blue-500;
   }
@@ -205,7 +211,9 @@
   }
 }
 
-html[data-custom-cursor],
-html[data-custom-cursor] * {
-  cursor: none;
+@media not (forced-colors: active) {
+  html[data-custom-cursor],
+  html[data-custom-cursor] * {
+    cursor: none;
+  }
 }

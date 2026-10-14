@@ -14,6 +14,8 @@ const regionOf = (target: EventTarget | null) =>
 const overflows = (region: HTMLElement | null): region is HTMLElement =>
   !!region && region.scrollHeight > region.clientHeight;
 
+const focusable = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((dialog) => {
   const track = dialog.querySelector<HTMLElement>('[data-gallery-track]')!;
   const slides = [...track.children] as HTMLElement[];
@@ -24,6 +26,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   const triggers = [
     ...document.querySelectorAll<HTMLElement>(`[data-gallery-open="${dialog.dataset.gallery}"]`),
   ];
+  const status = dialog.querySelector<HTMLElement>('[data-gallery-status]');
   const crossfade = dialog.hasAttribute('data-crossfade');
   let index = 0;
   let busy = false;
@@ -52,6 +55,24 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     index = clamp(next);
     dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
   };
+
+  const announce = () => {
+    if (status) status.textContent = `${index + 1} of ${slides.length}`;
+  };
+
+  if (slides.length > 1) {
+    slides.forEach((slide, i) => {
+      slide.setAttribute('role', 'group');
+      slide.setAttribute('aria-roledescription', 'slide');
+      slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
+    });
+  }
+
+  if (!track.querySelector(focusable)) {
+    track.tabIndex = 0;
+    track.setAttribute('role', 'group');
+    track.setAttribute('aria-label', dialog.getAttribute('aria-label') ?? '');
+  }
 
   const go = (next: number, behavior: ScrollBehavior = 'smooth') => {
     track.scrollTo({ left: clamp(next) * slideWidth(), behavior });
@@ -162,6 +183,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
         item.style.background = `center / cover url("${thumbnail.currentSrc}")`;
       }
     });
+    if (status) status.textContent = '';
     dialog.showModal();
     dialog.focus({ preventScroll: true });
     dialog.scrollTop = 0;
@@ -238,7 +260,9 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     'scroll',
     () => {
       const next = clamp(track.scrollLeft / slideWidth());
-      if (next !== index) select(next);
+      if (next === index) return;
+      select(next);
+      announce();
     },
     { passive: true },
   );

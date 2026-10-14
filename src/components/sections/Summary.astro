@@ -110,7 +110,13 @@ const slides = await Promise.all(
         </button>
         <span class="text-base text-muted">{site.socials.instagram.label}</span>
       </div>
-      <Button href={site.socials.instagram.url} target="_blank" rel="noopener noreferrer" class="order-3">
+      <Button
+        href={site.socials.instagram.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Follow me on Instagram"
+        class="order-3"
+      >
         Follow me!
       </Button>
     </div>

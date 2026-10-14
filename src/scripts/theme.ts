@@ -15,11 +15,17 @@ let spree: number[] = [];
 let transition: ViewTransition | undefined;
 
 const themeColor = document.querySelector('meta[name="theme-color"]');
+const toggles = document.querySelectorAll('[data-theme-toggle]');
+
+const syncToggles = (dark: boolean) => toggles.forEach((toggle) => toggle.setAttribute('aria-pressed', String(dark)));
 
 const applyTheme = (dark: boolean) => {
   root.classList.toggle('dark', dark);
   themeColor?.setAttribute('content', dark ? '#09090b' : '#fafafa');
+  syncToggles(dark);
 };
+
+syncToggles(root.classList.contains('dark'));
 
 const storeTheme = (dark: boolean) => {
   try {

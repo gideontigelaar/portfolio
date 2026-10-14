@@ -31,6 +31,8 @@ const { title, organization, period, href, logo, logoAlt, details } = Astro.prop
     <p class="text-muted">{details}</p>
   </div>
   <div class="shrink-0 p-6 pt-4">
-    <Button href={href} target="_blank" rel="noopener noreferrer">Visit website</Button>
+    <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`Visit website: ${organization}`}>
+      Visit website
+    </Button>
   </div>
 </Card>

@@ -5,10 +5,11 @@ import type { Project } from '../../data/projects';
 type Props = Pick<Project, 'title' | 'screenshot' | 'screenshotDark'> & {
   widths: number[];
   sizes: string;
+  alt?: string;
   class?: string;
 };
 
-const { title, screenshot, screenshotDark, widths, sizes, class: className } = Astro.props;
+const { title, screenshot, screenshotDark, widths, sizes, alt = `${title} screenshot`, class: className } = Astro.props;
 
 const screenshots = [
   { src: screenshot, visibility: screenshotDark ? 'block dark:hidden' : undefined },
@@ -20,7 +21,7 @@ const screenshots = [
   screenshots.map(({ src, visibility }) => (
     <Picture
       src={src}
-      alt={`${title} screenshot`}
+      alt={alt}
       formats={['avif']}
       fallbackFormat="webp"
       width={Math.max(...widths)}
