@@ -24,7 +24,7 @@ const tones = {
         <button
           type="button"
           aria-label={`${label} ${uiText.position(i + 1, count)}`}
-          aria-current={current === undefined ? undefined : String(i === current)}
+          aria-current={current === undefined ? undefined : i === current}
           inert={dots.hidden(i)}
           data-edge={dots.edge(i) || undefined}
           class:list={[
