@@ -39,6 +39,7 @@ const closeDelay = 200;
 const holdDelay = 500;
 const holdSlop = 10;
 const pointerMemory = 1500;
+const keyMemory = 1000;
 const typeaheadDelay = 500;
 const controls = 'a[href], button, [role="button"], summary';
 const blocks = 'p, h1, h2, h3, h4, h5, h6, li, dt, dd, figcaption, blockquote, td, th';
@@ -54,9 +55,12 @@ let target: Target = { text: '', label: '' };
 let returnFocus: HTMLElement | null = null;
 let hold: Hold | undefined;
 let held = false;
+let pressing = false;
+let touching = false;
 let nativeHold = false;
 let closeTimer = 0;
 let lastPointer = { type: '', time: -Infinity };
+let lastMenuKey = -Infinity;
 let query = '';
 let queryTimer = 0;
 
@@ -140,13 +144,16 @@ const available: Record<string, (context: Target) => boolean> = {
   'copy-text': ({ text }) => !!text && canWrite,
 };
 
+const isMenuKey = (event: KeyboardEvent) => event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey);
+
 const sourceOf = (event: MouseEvent): Source => {
-  const type = 'pointerType' in event ? (event as PointerEvent).pointerType : undefined;
-  if (type === '' || event.button < 0) return 'keyboard';
-  if (type === 'touch' || type === 'pen') return 'touch';
+  const type = (event as Partial<PointerEvent>).pointerType;
+  if (touching || type === 'touch' || type === 'pen') return 'touch';
+  if (type === '' || event.button < 0 || event.timeStamp - lastMenuKey < keyMemory || !(event.clientX || event.clientY)) {
+    return 'keyboard';
+  }
   if (type === 'mouse') return 'mouse';
-  if (event.timeStamp - lastPointer.time > pointerMemory) return 'keyboard';
-  return lastPointer.type === 'mouse' ? 'mouse' : 'touch';
+  return event.timeStamp - lastPointer.time < pointerMemory && lastPointer.type !== 'mouse' ? 'touch' : 'mouse';
 };
 
 const place = (left: number, top: number, originX: number, originY: number) => {
@@ -205,6 +212,7 @@ const show = (origin: Element | null, from: Source, secret: boolean, point?: { x
     returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   }
   opener = from;
+  pressing = from === 'touch' && touching;
   if (point) {
     place(point.x, point.y, point.x, point.y);
   } else {
@@ -314,10 +322,17 @@ const release = (event: PointerEvent) => {
   if (hold?.id === event.pointerId) cancelHold();
 };
 
-const close = () => hide();
+const close = () => {
+  if (!pressing) hide();
+};
 
 const closeFromOutside = (event: Event) => {
-  if (!isInside(event.target)) hide();
+  if (!pressing && !isInside(event.target)) hide();
+};
+
+const lift = () => {
+  touching = false;
+  pressing = false;
 };
 
 menu.addEventListener('click', (event) => {
@@ -432,7 +447,7 @@ window.addEventListener('contextmenu', (event) => {
 
   const from = sourceOf(event);
   if (from === 'touch') nativeHold = true;
-  if (from === 'touch' && held) {
+  if (held) {
     event.preventDefault();
     return;
   }
@@ -448,6 +463,7 @@ window.addEventListener('contextmenu', (event) => {
 });
 
 window.addEventListener('keydown', (event) => {
+  if (isMenuKey(event)) lastMenuKey = event.timeStamp;
   if (isInside(event.target)) return;
 
   if (event.key === 'Escape') {
@@ -457,7 +473,7 @@ window.addEventListener('keydown', (event) => {
     return;
   }
 
-  if (event.key !== 'ContextMenu' && !(event.key === 'F10' && event.shiftKey)) return;
+  if (!isMenuKey(event)) return;
   if (isEditable(document.activeElement)) return;
   event.preventDefault();
   show(document.activeElement, 'keyboard', event.altKey);
@@ -468,6 +484,7 @@ window.addEventListener(
   (event) => {
     lastPointer = { type: event.pointerType, time: event.timeStamp };
     held = false;
+    touching = event.pointerType !== 'mouse';
     if (isInside(event.target)) return;
     hide();
     if (event.pointerType !== 'mouse' && event.isPrimary && !nativeHold && !isEditable(event.target)) startHold(event);
@@ -490,12 +507,21 @@ window.addEventListener(
   { passive: true },
 );
 
-window.addEventListener('pointerup', release, { capture: true, passive: true });
+window.addEventListener(
+  'pointerup',
+  (event) => {
+    release(event);
+    lift();
+  },
+  { capture: true, passive: true },
+);
 window.addEventListener('pointercancel', release, { capture: true, passive: true });
+window.addEventListener('touchcancel', lift, { capture: true, passive: true });
 
 window.addEventListener(
   'touchend',
   (event) => {
+    lift();
     if (held && event.cancelable) event.preventDefault();
   },
   { capture: true },
@@ -514,7 +540,17 @@ window.addEventListener(
 
 window.addEventListener('scroll', closeFromOutside, { capture: true, passive: true });
 window.addEventListener('wheel', closeFromOutside, { capture: true, passive: true });
-window.addEventListener('dragstart', close, { capture: true });
+window.addEventListener(
+  'dragstart',
+  (event) => {
+    if (pressing) {
+      event.preventDefault();
+      return;
+    }
+    hide();
+  },
+  { capture: true },
+);
 window.addEventListener('resize', close);
 window.addEventListener('blur', close);
 window.addEventListener('pagehide', close);
