@@ -48,7 +48,6 @@ const canWriteImage =
   typeof navigator.clipboard?.write === 'function' &&
   typeof ClipboardItem === 'function' &&
   (!('supports' in ClipboardItem) || ClipboardItem.supports('image/png'));
-const canShare = typeof navigator.share === 'function';
 
 let opener: Source = 'mouse';
 let target: Target = { text: '', label: '' };
@@ -136,7 +135,6 @@ const available: Record<string, (context: Target) => boolean> = {
   interact: ({ control, link }) => !!control && !link && !opensWithin(control) && !isDisabled(control),
   'link-tab': ({ link }) => !!link,
   'copy-link': ({ link }) => !!link && canWrite,
-  share: ({ link }) => !!link && canShare,
   'image-tab': ({ image }) => !!image,
   'copy-image': ({ image }) => !!image && canWriteImage,
   'copy-text': ({ text }) => !!text && canWrite,
@@ -274,11 +272,6 @@ const run: Record<string, (context: Target) => void> = {
   'link-tab': ({ link }) =>
     link && window.open(link.href, '_blank', link.relList.contains('noreferrer') ? 'noopener,noreferrer' : 'noopener'),
   'copy-link': ({ link }) => link && report(navigator.clipboard.writeText(link.href), 'Link copied', "Couldn't copy link"),
-  share: ({ link, label }) =>
-    link &&
-    navigator.share({ title: label || document.title, url: link.href }).catch((error: unknown) => {
-      if (!(error instanceof DOMException && error.name === 'AbortError')) toast("Couldn't share link");
-    }),
   'image-tab': ({ image }) => image && window.open(image.currentSrc, '_blank', 'noopener'),
   'copy-image': ({ image }) =>
     image &&
