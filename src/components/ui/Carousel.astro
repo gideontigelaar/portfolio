@@ -1,0 +1,54 @@
+---
+import CaretLeftIcon from '@phosphor-icons/core/assets/regular/caret-left.svg';
+import CaretRightIcon from '@phosphor-icons/core/assets/regular/caret-right.svg';
+import Dots from './Dots.astro';
+
+interface Props {
+  label: string;
+  count: number;
+  class?: string;
+}
+
+const { label, count, class: className } = Astro.props;
+const paged = count > 1;
+const control =
+  'group relative grid size-9 shrink-0 press place-items-center rounded-full bg-current/10 transition-[background-color,scale] duration-300 ease-spring after:absolute after:-inset-1 hover:bg-current/20';
+const icon = 'size-4.5 transition-transform duration-300 ease-spring';
+---
+
+<div
+  class:list={['flex flex-col gap-4', className]}
+  role={paged ? 'region' : undefined}
+  aria-roledescription={paged ? 'carousel' : undefined}
+  aria-label={paged ? label : undefined}
+  data-carousel={paged || undefined}
+>
+  <div
+    class:list={[
+      paged &&
+        '-m-3 flex snap-x snap-mandatory items-start gap-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
+    ]}
+    data-carousel-pages
+    data-swipe-fade={paged || undefined}
+  >
+    <slot />
+  </div>
+  {
+    paged && (
+      <div class="flex items-center justify-center gap-4">
+        <button type="button" aria-label="Previous page" class={control} data-carousel-shift="-1">
+          <CaretLeftIcon class:list={[icon, 'group-hover:-translate-x-0.5']} aria-hidden="true" />
+        </button>
+        <Dots count={count} label="Show page" tone="current" current={0} />
+        <button type="button" aria-label="Next page" class={control} data-carousel-shift="1">
+          <CaretRightIcon class:list={[icon, 'group-hover:translate-x-0.5']} aria-hidden="true" />
+        </button>
+        <p class="sr-only" role="status" data-carousel-status />
+      </div>
+    )
+  }
+</div>
+
+<script>
+  import '../../scripts/carousel';
+</script>

@@ -1,0 +1,35 @@
+---
+import CaretRightIcon from '@phosphor-icons/core/assets/regular/caret-right.svg';
+import ExperienceItem from './ExperienceItem.astro';
+import type { ExperienceEntry } from '../../data/experience';
+
+interface Props {
+  entries: ExperienceEntry[];
+  gallery: string;
+  label: string;
+  max: number;
+}
+
+const { entries, gallery, label, max } = Astro.props;
+const hidden = entries.length - max;
+---
+
+{entries.slice(0, max).map((entry) => <ExperienceItem {...entry} gallery={gallery} />)}
+{
+  hidden > 0 && (
+    <button
+      type="button"
+      class="group relative -mt-1 ml-15 flex w-fit items-center gap-1 press text-sm text-muted transition-[color,scale] duration-300 ease-spring after:absolute after:-inset-x-3 after:-inset-y-2 hover:text-zinc-950 dark:hover:text-zinc-50"
+      data-gallery-open={gallery}
+      data-gallery-index={max}
+    >
+      <span class="underline-grow">
+        Show {hidden} more<span class="sr-only"> {label}</span>
+      </span>
+      <CaretRightIcon
+        class="size-3.5 transition-transform duration-300 ease-spring group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </button>
+  )
+}
