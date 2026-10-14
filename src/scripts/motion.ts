@@ -1,5 +1,7 @@
 export const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+export const scrollTimelines = CSS.supports('animation-timeline: scroll()');
+
 const easings = new Map<string, string>();
 
 const easing = (name: string) => {

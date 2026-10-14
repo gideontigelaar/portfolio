@@ -1,4 +1,7 @@
-import { reducedMotion } from './motion';
+import { windowDots } from './dots';
+import { reducedMotion, scrollTimelines } from './motion';
+import { onActivate } from './press';
+import { clampIndex, labelSlides, stepOf, swipe } from './swipe';
 import { inViewport } from './viewport';
 
 const radius = (element: Element) =>
@@ -14,6 +17,18 @@ const regionOf = (target: EventTarget | null) =>
 const overflows = (region: HTMLElement | null): region is HTMLElement =>
   !!region && region.scrollHeight > region.clientHeight;
 
+const fadeEdge = 2;
+
+const fadeRange = 0.12;
+
+const fade = (region: HTMLElement) => {
+  const max = region.scrollHeight - region.clientHeight;
+  const progress = max > 0 ? region.scrollTop / max : 0;
+  const edge = (value: number) => (max > 0 ? `${Math.min(value / fadeRange, 1) * fadeEdge}rem` : '0px');
+  region.style.setProperty('--fade-top', edge(progress));
+  region.style.setProperty('--fade-bottom', edge(1 - progress));
+};
+
 const focusable = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((dialog) => {
@@ -21,52 +36,47 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   const slides = [...track.children] as HTMLElement[];
   const items = [...track.querySelectorAll<HTMLElement>('[data-gallery-item]')];
   const regions = [...track.querySelectorAll<HTMLElement>('[data-gallery-scroll]')];
-  const dots = [...dialog.querySelectorAll<HTMLButtonElement>('[data-gallery-dots] button')];
+  const dots = [...dialog.querySelectorAll<HTMLButtonElement>('[data-dots] button')];
   const fades = [...dialog.querySelectorAll<HTMLElement>('[data-gallery-fade]')];
-  const triggers = [
+  const openers = [
     ...document.querySelectorAll<HTMLElement>(`[data-gallery-open="${dialog.dataset.gallery}"]`),
   ];
+  const triggers = openers.filter((opener) => !opener.hasAttribute('data-gallery-index'));
   const status = dialog.querySelector<HTMLElement>('[data-gallery-status]');
   const crossfade = dialog.hasAttribute('data-crossfade');
   let index = 0;
   let busy = false;
   let closeQueued = false;
-  let dragged = false;
+  let heading: number | undefined;
+  let pressedBackdrop = false;
 
   const fading = () => {
     const boxed = fades.filter(isBoxed);
     return boxed.filter((element) => !boxed.some((other) => other !== element && other.contains(element)));
   };
 
-  const dismisses = (target: Element) =>
-    target === dialog ||
-    target === track ||
-    target.hasAttribute('data-gallery-backdrop') ||
-    !!target.closest('[data-gallery-close]') ||
-    (target.parentElement === track && !target.hasAttribute('data-gallery-item'));
+  const isBackdrop = (target: EventTarget | null) =>
+    target instanceof Element &&
+    (target === dialog ||
+      target === track ||
+      target.hasAttribute('data-gallery-backdrop') ||
+      (target.parentElement === track && !target.hasAttribute('data-gallery-item')));
 
-  const clamp = (value: number) =>
-    Number.isFinite(value) ? Math.max(0, Math.min(Math.round(value), slides.length - 1)) : 0;
+  const clamp = (value: number) => clampIndex(value, slides.length);
 
-  const slideWidth = () =>
-    (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : 0) || track.clientWidth || 1;
+  const slideDots = windowDots(dots);
 
   const select = (next: number) => {
     index = clamp(next);
     dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
+    slideDots(index);
   };
 
   const announce = () => {
     if (status) status.textContent = `${index + 1} of ${slides.length}`;
   };
 
-  if (slides.length > 1) {
-    slides.forEach((slide, i) => {
-      slide.setAttribute('role', 'group');
-      slide.setAttribute('aria-roledescription', 'slide');
-      slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
-    });
-  }
+  if (slides.length > 1) labelSlides(slides);
 
   if (!track.querySelector(focusable)) {
     track.tabIndex = 0;
@@ -75,11 +85,25 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   }
 
   const go = (next: number, behavior: ScrollBehavior = 'smooth') => {
-    track.scrollTo({ left: clamp(next) * slideWidth(), behavior });
+    track.scrollTo({ left: clamp(next) * stepOf(track), behavior: reducedMotion.matches ? 'instant' : behavior });
   };
 
+  const paint = swipe(track, {
+    index: () => index,
+    go,
+    host: dialog,
+    enabled: () => !busy,
+    ignore: ({ target, offsetX }) => {
+      const region = regionOf(target);
+      return !!region && region === target && offsetX >= region.clientWidth;
+    },
+    preventDefault: true,
+  });
+
   const navigate = (next: number) => {
-    if (!busy) go(next);
+    if (busy) return;
+    heading = clamp(next);
+    go(heading);
   };
 
   const animate = async (opening: boolean) => {
@@ -89,6 +113,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     if (!opening) go(index, 'instant');
     const item = items[index];
     const trigger = triggers[index];
+    if (!opening) trigger?.dispatchEvent(new Event('gallery-reveal', { bubbles: true }));
     let ghost: HTMLElement | undefined;
     let animations: Animation[] = [];
 
@@ -137,6 +162,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
         dialog.append(ghost);
         const ghostRegions = ghost.querySelectorAll<HTMLElement>('[data-gallery-scroll]');
         item.querySelectorAll<HTMLElement>('[data-gallery-scroll]').forEach((region, i) => {
+          ghostRegions[i].style.overflow = 'hidden';
           ghostRegions[i].scrollTop = region.scrollTop;
         });
         item.style.visibility = 'hidden';
@@ -163,7 +189,10 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       if (item) item.style.visibility = '';
       if (trigger) trigger.style.visibility = '';
       animations.forEach((animation) => animation.cancel());
-      if (!opening && dialog.open) dialog.close();
+      if (!opening && dialog.open) {
+        dialog.close();
+        trigger?.focus({ preventScroll: true });
+      }
       dialog.inert = false;
       track.style.removeProperty('overflow');
       busy = false;
@@ -184,16 +213,18 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       }
     });
     if (status) status.textContent = '';
+    heading = undefined;
     dialog.showModal();
     dialog.focus({ preventScroll: true });
     dialog.scrollTop = 0;
     regions.forEach((region) => (region.scrollTop = 0));
     go(next, 'instant');
     select(next);
+    paint();
     animate(true);
   };
 
-  const shift = (direction: number) => navigate((index + direction + slides.length) % slides.length);
+  const shift = (direction: number) => navigate(((heading ?? index) + direction + slides.length) % slides.length);
 
   const close = () => {
     if (!dialog.open) return;
@@ -204,11 +235,13 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     animate(false);
   };
 
-  triggers.forEach((trigger, i) => trigger.addEventListener('click', () => open(i)));
+  openers.forEach((opener) =>
+    opener.addEventListener('click', () => open(Number(opener.dataset.galleryIndex ?? triggers.indexOf(opener)))),
+  );
   dots.forEach((dot, i) => dot.addEventListener('click', () => navigate(i)));
 
   dialog.querySelectorAll<HTMLButtonElement>('[data-gallery-shift]').forEach((button) => {
-    button.addEventListener('click', () => shift(Number(button.dataset.galleryShift)));
+    onActivate(button, () => shift(Number(button.dataset.galleryShift)));
   });
 
   dialog.addEventListener('cancel', (event) => {
@@ -216,10 +249,13 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     close();
   });
 
-  dialog.addEventListener('click', (event) => {
-    const target = event.target as Element;
-    if (!dismisses(target) || (busy && !target.closest('[data-gallery-close]'))) return;
-    close();
+  dialog.addEventListener('pointerdown', ({ target }) => (pressedBackdrop = !busy && isBackdrop(target)), {
+    passive: true,
+  });
+
+  dialog.addEventListener('click', ({ target }) => {
+    const closes = target instanceof Element && !!target.closest('[data-gallery-close]');
+    if (closes || (pressedBackdrop && isBackdrop(target))) close();
   });
 
   dialog.addEventListener('keydown', (event) => {
@@ -235,23 +271,32 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     region.scrollBy({ top: event.key === 'ArrowDown' ? 64 : -64, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
   });
 
-  let wheelLocked = false;
-  let wheelTimeout = 0;
+  let wheel = { time: -Infinity, navigated: -Infinity, vertical: false, used: false, last: 0 };
 
   dialog.addEventListener(
     'wheel',
     (event) => {
-      const vertical = Math.abs(event.deltaY) > Math.abs(event.deltaX);
+      const dx = Math.abs(event.deltaX);
+      const dy = Math.abs(event.deltaY);
+      const surge =
+        wheel.vertical && wheel.used && dy > Math.max(wheel.last * 2, 12) && event.timeStamp - wheel.navigated > 300;
+      if (event.timeStamp - wheel.time > 200 || surge) {
+        wheel = { ...wheel, vertical: dy > dx, used: false };
+      }
+      wheel.time = event.timeStamp;
+      wheel.last = dy;
       const navigates =
-        vertical && slides.length > 1 && dialog.scrollHeight <= dialog.clientHeight && !overflows(regionOf(event.target));
+        wheel.vertical &&
+        slides.length > 1 &&
+        dialog.scrollHeight <= dialog.clientHeight &&
+        !overflows(regionOf(event.target));
       if (!busy && !navigates) return;
       event.preventDefault();
-      clearTimeout(wheelTimeout);
-      wheelTimeout = window.setTimeout(() => (wheelLocked = false), 200);
-      if (busy) wheelLocked = true;
-      if (wheelLocked || Math.abs(event.deltaY) < 4) return;
-      wheelLocked = true;
-      navigate(index + Math.sign(event.deltaY));
+      if (busy) wheel.used = true;
+      if (wheel.used || dy < 4) return;
+      wheel.used = true;
+      wheel.navigated = event.timeStamp;
+      navigate((heading ?? index) + Math.sign(event.deltaY));
     },
     { passive: false },
   );
@@ -259,7 +304,8 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   track.addEventListener(
     'scroll',
     () => {
-      const next = clamp(track.scrollLeft / slideWidth());
+      const next = clamp(track.scrollLeft / stepOf(track));
+      if (next === heading) heading = undefined;
       if (next === index) return;
       select(next);
       announce();
@@ -267,54 +313,21 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     { passive: true },
   );
 
-  track.addEventListener('dragstart', (event) => event.preventDefault());
-
-  dialog.addEventListener(
-    'click',
-    (event) => {
-      if (!dragged) return;
-      dragged = false;
-      event.stopImmediatePropagation();
-      event.preventDefault();
-    },
-    true,
-  );
-
-  track.addEventListener('pointerdown', (event) => {
-    dragged = false;
-    if (busy || event.pointerType !== 'mouse' || event.button !== 0 || slides.length < 2) return;
-    const region = regionOf(event.target);
-    if (region && region === event.target && event.offsetX >= region.clientWidth) return;
-    event.preventDefault();
-
-    const start = { x: event.clientX, left: track.scrollLeft, index };
-    let delta = 0;
-
-    const move = (moveEvent: PointerEvent) => {
-      delta = moveEvent.clientX - start.x;
-      if (!dragged && Math.abs(delta) > 5) {
-        dragged = true;
-        track.style.scrollSnapType = 'none';
-      }
-      if (dragged) track.scrollLeft = start.left - delta;
-    };
-
-    const settle = () => track.style.removeProperty('scroll-snap-type');
-
-    window.addEventListener('pointermove', move);
-    window.addEventListener(
-      'pointerup',
-      () => {
-        window.removeEventListener('pointermove', move);
-        if (!dragged) return;
-        if ('onscrollend' in window) {
-          track.addEventListener('scrollend', settle, { once: true });
-        } else {
-          setTimeout(settle, 500);
-        }
-        go(Math.abs(delta) > 60 ? start.index - Math.sign(delta) : start.index);
-      },
-      { once: true },
+  if (!scrollTimelines) {
+    const observer = new ResizeObserver((entries) =>
+      entries.forEach(({ target }) => {
+        const region = target.closest<HTMLElement>('[data-gallery-scroll]');
+        if (region) fade(region);
+      }),
     );
-  });
+    regions.forEach((region) => {
+      region.addEventListener('scroll', () => fade(region), { passive: true });
+      observer.observe(region);
+      region.querySelectorAll(':scope > *, img').forEach((child) => observer.observe(child));
+    });
+  }
+
+  const forget = () => (heading = undefined);
+  track.addEventListener('pointerdown', forget, { passive: true });
+  track.addEventListener('touchstart', forget, { passive: true });
 });

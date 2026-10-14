@@ -2,6 +2,7 @@
 import CaretLeftIcon from '@phosphor-icons/core/assets/regular/caret-left.svg';
 import CaretRightIcon from '@phosphor-icons/core/assets/regular/caret-right.svg';
 import XIcon from '@phosphor-icons/core/assets/regular/x.svg';
+import Dots from './Dots.astro';
 
 interface Props {
   name: string;
@@ -12,6 +13,9 @@ interface Props {
 }
 
 const { name, label, count, crossfade = false, class: className } = Astro.props;
+
+const pillButton =
+  'group relative grid size-9 press place-items-center rounded-full bg-white/15 text-white transition-[background-color,scale] duration-300 ease-spring after:absolute after:-inset-1 hover:bg-white/25 lg:pointer-fine:hidden';
 
 const navigation = [
   { icon: CaretLeftIcon, label: 'Previous', direction: -1, position: '-left-16', nudge: 'group-hover:-translate-x-0.5' },
@@ -35,6 +39,7 @@ const navigation = [
         count > 1 && 'cursor-grab active:cursor-grabbing',
       ]}
       data-gallery-track
+      data-swipe-fade
     >
       <slot />
     </div>
@@ -62,14 +67,24 @@ const navigation = [
   >
     {
       count > 1 && (
-        <div class="flex gap-4 pl-3 sm:pl-0" data-gallery-dots data-gallery-fade>
-          {Array.from({ length: count }, (_, i) => (
-            <button
-              type="button"
-              aria-label={`Show ${i + 1} of ${count}`}
-              class="relative size-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 ease-spring after:absolute after:-inset-x-2 after:-inset-y-3 hover:bg-white/70 aria-[current=true]:w-6 aria-[current=true]:bg-white"
-            />
-          ))}
+        <div class="flex items-center gap-3 sm:gap-4" data-gallery-fade>
+          <button
+            type="button"
+            aria-label={navigation[0].label}
+            class={pillButton}
+            data-gallery-shift={navigation[0].direction}
+          >
+            <CaretLeftIcon class:list={['size-4.5 transition-transform duration-300 ease-spring', navigation[0].nudge]} aria-hidden="true" />
+          </button>
+          <Dots count={count} label="Show" tone="light" />
+          <button
+            type="button"
+            aria-label={navigation[1].label}
+            class={pillButton}
+            data-gallery-shift={navigation[1].direction}
+          >
+            <CaretRightIcon class:list={['size-4.5 transition-transform duration-300 ease-spring', navigation[1].nudge]} aria-hidden="true" />
+          </button>
         </div>
       )
     }
@@ -103,26 +118,20 @@ const navigation = [
     initial-value: 0px;
   }
 
+  :global([data-gallery-scroll]) {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--fade-top),
+      #000 calc(100% - var(--fade-bottom)),
+      transparent
+    );
+  }
+
   @supports (animation-timeline: scroll()) {
     :global([data-gallery-scroll]) {
-      mask-image: linear-gradient(
-        to bottom,
-        transparent,
-        #000 var(--fade-top),
-        #000 calc(100% - var(--fade-bottom)),
-        transparent
-      );
       animation: scroll-fade linear both;
       animation-timeline: scroll(self);
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      [data-gallery-track] > :global(*) {
-        animation-name: swipe;
-        animation-fill-mode: both;
-        animation-timing-function: linear;
-        animation-timeline: view(inline);
-      }
     }
   }
 
@@ -143,19 +152,6 @@ const navigation = [
     100% {
       --fade-top: 2rem;
       --fade-bottom: 0px;
-    }
-  }
-
-  @keyframes swipe {
-    0%,
-    100% {
-      opacity: 0.4;
-      scale: 0.92;
-    }
-
-    50% {
-      opacity: 1;
-      scale: 1;
     }
   }
 </style>

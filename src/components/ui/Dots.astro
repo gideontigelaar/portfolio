@@ -1,0 +1,37 @@
+---
+import { dotWindow, maxDots } from '../../lib/dots';
+
+interface Props {
+  count: number;
+  label: string;
+  tone: 'light' | 'current';
+  current?: number;
+}
+
+const { count, label, tone, current } = Astro.props;
+const dots = dotWindow(count, current ?? 0);
+const tones = {
+  light: 'bg-white/40 transition-[width,background-color,scale] hover:bg-white/70 aria-[current=true]:bg-white',
+  current: 'bg-current opacity-25 transition-[width,opacity,scale] hover:opacity-50 aria-[current=true]:opacity-100',
+};
+---
+
+<div class:list={['flex shrink-0', count > maxDots && '-my-3 w-30 overflow-hidden py-3']}>
+  <div class="flex translate-x-[calc(var(--dots-start,0)*-1.5rem)] gap-4 transition-[translate] duration-300 ease-spring" data-dots>
+    {
+      Array.from({ length: count }, (_, i) => (
+        <button
+          type="button"
+          aria-label={`${label} ${i + 1} of ${count}`}
+          aria-current={current === undefined ? undefined : String(i === current)}
+          inert={dots.hidden(i)}
+          data-edge={dots.edge(i) || undefined}
+          class:list={[
+            'relative size-2 shrink-0 rounded-full duration-300 ease-spring after:absolute after:-inset-x-2 after:-inset-y-3 data-edge:scale-60 aria-[current=true]:w-6',
+            tones[tone],
+          ]}
+        />
+      ))
+    }
+  </div>
+</div>
