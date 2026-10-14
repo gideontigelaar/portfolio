@@ -12,7 +12,9 @@ const { title, year, description, screenshot, screenshotDark } = Astro.props;
   class="group -mx-3 grid grid-cols-3 items-center gap-4 interactive-row rounded-3xl p-3 text-left sm:gap-5"
   data-gallery-open="projects"
 >
-  <span class="col-span-3 overflow-hidden rounded-2xl border border-line shadow-xs sm:col-span-1">
+  <span
+    class="relative col-span-3 overflow-hidden rounded-2xl border border-line shine shadow-xs transition-shadow duration-500 ease-smooth group-hocus:shadow-md sm:col-span-1"
+  >
     <ProjectScreenshot
       title={title}
       screenshot={screenshot}
@@ -20,7 +22,7 @@ const { title, year, description, screenshot, screenshotDark } = Astro.props;
       alt=""
       widths={[320, 430, 640, 860]}
       sizes="(min-width: 640px) 215px, calc(100vw - 48px)"
-      class="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 ease-smooth group-hover:scale-105"
+      class="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 ease-smooth group-hocus:scale-105"
     />
   </span>
   <span class="col-span-3 flex flex-col gap-1 sm:col-span-2">

@@ -10,11 +10,14 @@ const links = [
 ];
 ---
 
-<header class="sticky top-0 z-50 bg-zinc-50 dark:bg-zinc-950">
+<div aria-hidden="true" class="pointer-events-none sticky top-0 z-40 -mb-16 h-16" data-nav-glass>
+  <div class="absolute inset-x-0 top-full h-6" data-nav-fade></div>
+</div>
+<header class="sticky top-0 z-50">
   <nav class="mx-auto flex max-w-[700px] items-center justify-between px-2 py-3 min-[360px]:px-4 sm:px-1">
     <a href="/#home" aria-label="Home" data-home class="relative flex nav-item items-center p-2">
       <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
-      <Zzz place="nav" class="top-0 left-full" />
+      <Zzz place="nav" class="-top-0.5 left-3/4" />
     </a>
     <ul class="relative isolate flex items-center gap-0.5 min-[340px]:gap-1" data-nav>
       <li
@@ -39,12 +42,38 @@ const links = [
     </ul>
     <ThemeToggle />
   </nav>
-  <div
-    aria-hidden="true"
-    class="pointer-events-none absolute inset-x-0 top-full h-6 bg-linear-to-b from-zinc-50 to-transparent dark:from-zinc-950"
-  >
-  </div>
 </header>
+
+<style>
+  [data-nav-glass] {
+    --nav-tint: color-mix(in oklab, var(--color-zinc-50) var(--nav-opacity, 90%), transparent);
+    background-color: var(--nav-tint);
+    -webkit-backdrop-filter: var(--nav-blur, blur(16px) saturate(1.5));
+    backdrop-filter: var(--nav-blur, blur(16px) saturate(1.5));
+  }
+
+  :global(.dark) [data-nav-glass] {
+    --nav-tint: color-mix(in oklab, var(--color-zinc-950) var(--nav-opacity, 90%), transparent);
+  }
+
+  [data-nav-fade] {
+    background-image: linear-gradient(var(--nav-tint), transparent);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    [data-nav-glass] {
+      --nav-opacity: 100%;
+      --nav-blur: none;
+    }
+  }
+
+  @supports (-moz-appearance: none) {
+    [data-nav-glass] {
+      --nav-opacity: 100%;
+      --nav-blur: none;
+    }
+  }
+</style>
 
 <script>
   import { reducedMotion } from '../scripts/motion';

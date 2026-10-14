@@ -17,11 +17,13 @@ export const spring = () => easing('--ease-spring');
 
 export const smooth = () => easing('--ease-smooth');
 
+export const bounce = () => easing('--ease-bounce');
+
 export const playOnce = (
   element: Element,
   keyframes: PropertyIndexedKeyframes,
   options: KeyframeAnimationOptions,
 ) => {
   if (reducedMotion.matches || element.getAnimations().some((animation) => !(animation instanceof CSSTransition))) return;
-  element.animate(keyframes, options);
+  return element.animate(keyframes, options);
 };

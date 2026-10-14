@@ -27,14 +27,17 @@ const contacts = [
             aria-label={`${name}: ${label}`}
             class="group inline-flex press items-center gap-3 transition-[scale] duration-300 ease-spring [--press-scale:0.97]"
           >
-            <span class="grid size-9 place-items-center rounded-xl border border-line bg-surface shadow-xs transition duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-6 group-hover:border-zinc-950 group-hover:bg-zinc-950 group-hover:text-white dark:group-hover:border-white dark:group-hover:bg-white dark:group-hover:text-zinc-950">
-              <Icon class="size-4" aria-hidden="true" />
+            <span class="grid size-9 place-items-center rounded-xl border border-line bg-surface shadow-xs transition-[scale,rotate,box-shadow,background-color,border-color,color] duration-500 ease-spring group-hocus:scale-110 group-hocus:-rotate-8 group-hocus:border-zinc-950 group-hocus:bg-zinc-950 group-hocus:text-white group-hocus:shadow-md dark:group-hocus:border-white dark:group-hocus:bg-white dark:group-hocus:text-zinc-950">
+              <Icon
+                class="size-4 transition-[scale,rotate] duration-500 ease-spring group-hocus:scale-125 group-hocus:rotate-14 group-hocus:delay-75"
+                aria-hidden="true"
+              />
             </span>
-            <span class="underline-grow text-blue-600 group-hover:translate-x-1 dark:text-blue-400">
+            <span class="underline-grow text-blue-600 group-hocus:translate-x-1 dark:text-blue-400">
               {label}
             </span>
             <ArrowUpRightIcon
-              class="size-4 -translate-x-1 text-blue-600 opacity-0 transition duration-300 ease-smooth group-hover:translate-x-1 group-hover:opacity-100 dark:text-blue-400"
+              class="size-4 -translate-x-1 text-blue-600 opacity-0 transition duration-300 ease-smooth group-hocus:translate-x-1 group-hocus:-translate-y-0.5 group-hocus:opacity-100 dark:text-blue-400"
               aria-hidden="true"
             />
           </a>

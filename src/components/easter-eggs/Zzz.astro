@@ -5,17 +5,17 @@ interface Props {
 }
 
 const { class: className, place } = Astro.props;
+const compact = place === 'nav';
+const sizes = compact ? ['text-[0.5rem]', 'text-[0.625rem]', 'text-xs'] : ['text-xs', 'text-sm', 'text-base'];
 ---
 
 <span
   aria-hidden="true"
-  class:list={['pointer-events-none absolute flex items-end gap-0.5 font-bold text-blue-500', className]}
+  class:list={['pointer-events-none absolute flex items-end font-bold text-blue-500', compact ? 'gap-px' : 'gap-0.5', className]}
   data-zzz={place}
   hidden
 >
-  <span class="text-xs">z</span>
-  <span class="text-sm">z</span>
-  <span class="text-base">Z</span>
+  {[...'zzZ'].map((letter, i) => <span class={sizes[i]}>{letter}</span>)}
 </span>
 
 <script>

@@ -19,7 +19,7 @@ const { title, organization, period, logo, gallery } = Astro.props;
     height={48}
     loading="eager"
     data-spin
-    class="shrink-0 rounded-full bg-white ring-1 ring-line"
+    class="shrink-0 rounded-full bg-white ring-1 ring-line transition-[scale,rotate] duration-500 ease-spring group-hocus:scale-110 group-hocus:-rotate-6"
   />
   <span class="flex w-full flex-col">
     <span class="w-fit underline-grow">{title}</span>

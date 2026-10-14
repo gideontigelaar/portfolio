@@ -1,5 +1,5 @@
 ---
-import { getImage, Image, Picture } from 'astro:assets';
+import { Image, Picture } from 'astro:assets';
 import EnvelopeSimpleIcon from '@phosphor-icons/core/assets/regular/envelope-simple.svg';
 import Button from '../ui/Button.astro';
 import Card from '../ui/Card.astro';
@@ -7,21 +7,21 @@ import CopyEmailButton from '../ui/CopyEmailButton.astro';
 import Gallery from '../ui/Gallery.astro';
 
 import instagramIcon from '../../assets/icons/skill-icons/instagram.svg';
-import whispLogo from '../../assets/images/logos/whisp.webp';
+import whispLogo from '../../assets/images/logos/whisp.svg';
 
 import { languages } from '../../data/languages';
 import { photos } from '../../data/photos';
 import { site } from '../../data/site';
 
+const notices = [
+  { angle: -80, color: '#fa7e1e' },
+  { angle: -45, color: '#d62976' },
+  { angle: -10, color: '#962fbf' },
+];
 const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-rotate-3'];
 const galleryWidth = 768;
 const photoWidth = 1500;
-const slides = await Promise.all(
-  photos.map(async (photo) => {
-    const { attributes } = await getImage({ src: photo.src, width: photoWidth, format: 'webp' });
-    return { ...photo, ratio: Number(attributes.width) / Number(attributes.height) };
-  }),
-);
+const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo.src.height }));
 ---
 
 <section
@@ -42,7 +42,7 @@ const slides = await Promise.all(
             aria-label={language.name}
             data-language={language.name}
             class:list={[
-              'press rounded-xl transition-transform duration-500 ease-spring hover:-translate-y-1.5',
+              'press rounded-xl transition-[translate,scale,rotate,filter] duration-500 ease-spring',
               language.hiddenOnMobile && 'hidden md:block',
             ]}
           >
@@ -67,7 +67,7 @@ const slides = await Promise.all(
     style="--delay: 4"
   >
     <EnvelopeSimpleIcon
-      class="absolute -right-5 -bottom-5 -z-10 hidden size-28 -rotate-14 text-zinc-200 transition duration-700 ease-spring group-hover:-translate-y-2 group-hover:-rotate-3 group-has-data-copied:translate-x-24 group-has-data-copied:-translate-y-24 group-has-data-copied:rotate-14 group-has-data-copied:opacity-0 sm:block dark:text-zinc-800"
+      class="absolute -right-5 -bottom-5 -z-10 hidden size-28 -rotate-14 text-zinc-200 transition duration-700 ease-spring group-hover:-translate-y-4 group-hover:-rotate-3 group-hover:duration-450 group-hover:ease-bounce group-has-data-copied:translate-x-24 group-has-data-copied:duration-700 group-has-data-copied:ease-spring group-has-data-copied:-translate-y-24 group-has-data-copied:rotate-14 group-has-data-copied:opacity-0 sm:block dark:text-zinc-800"
       aria-hidden="true"
     />
     <span class="text-[length:min(1.5rem,21cqw)] leading-[calc(4/3)] tracking-tight">Question?</span>
@@ -78,24 +78,18 @@ const slides = await Promise.all(
     href="https://whisp.gideontigelaar.com/"
     target="_blank"
     rel="noopener noreferrer"
-    class="relative aspect-square press [--press-scale:0.97]"
+    class="relative aspect-square shine press [--press-scale:0.97]"
     data-tilt
     data-enter
     style="--delay: 5"
   >
-    <Image
-      src={whispLogo}
-      alt="Whisp"
-      loading="eager"
-      widths={[250, 500]}
-      sizes="(min-width: 640px) 215px, calc(50vw - 30px)"
-      class="size-full object-cover"
-    />
+    <Image src={whispLogo} alt="Whisp" loading="eager" class="size-full object-cover" />
   </Card>
 
   <Card
     class="col-span-2 flex flex-col gap-4 p-4 min-[360px]:p-5 sm:p-7 md:flex-row md:items-center md:justify-between md:gap-1"
     data-enter
+    data-follow-card
     style="--delay: 6"
   >
     <div class="contents md:flex md:h-full md:flex-col md:justify-between">
@@ -106,7 +100,18 @@ const slides = await Promise.all(
           class="shrink-0 press rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
           data-instagram-logo
         >
-          <Image src={instagramIcon} alt="" loading="eager" width={35} height={35} />
+          <span class="relative block" data-instagram-icon>
+            <Image src={instagramIcon} alt="" loading="eager" width={35} height={35} />
+            <span aria-hidden="true" class="pointer-events-none absolute -top-0.5 -right-0.5">
+              {notices.map(({ angle, color }) => (
+                <span
+                  class="absolute top-0 left-0 h-[3px] w-2.5 origin-left rounded-full opacity-0"
+                  style={`rotate: ${angle}deg; background: ${color}`}
+                  data-notice
+                />
+              ))}
+            </span>
+          </span>
         </button>
         <span class="text-base text-muted">{site.socials.instagram.label}</span>
       </div>
@@ -116,6 +121,7 @@ const slides = await Promise.all(
         rel="noopener noreferrer"
         aria-label="Follow me on Instagram"
         class="order-3"
+        data-follow
       >
         Follow me!
       </Button>
@@ -174,9 +180,35 @@ const slides = await Promise.all(
   }
 </Gallery>
 
+<style>
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    [data-language]:hover {
+      translate: 0 -0.6rem;
+      scale: 1.25;
+      filter: drop-shadow(0 0.5rem 0.5rem rgb(0 0 0 / 0.15));
+    }
+
+    [data-language]:hover:active {
+      scale: 1.1;
+    }
+
+    [data-language]:has(+ [data-language]:hover) {
+      translate: 0 -0.25rem;
+      scale: 1.1;
+      rotate: -6deg;
+    }
+
+    [data-language]:hover + [data-language] {
+      translate: 0 -0.25rem;
+      scale: 1.1;
+      rotate: 6deg;
+    }
+  }
+</style>
+
 <script>
   import { found } from '../../scripts/eggs';
-  import { playOnce, reducedMotion, spring } from '../../scripts/motion';
+  import { playOnce, reducedMotion, smooth, spring } from '../../scripts/motion';
 
   const maxTilt = 10;
 
@@ -301,6 +333,51 @@ const slides = await Promise.all(
       const [keyframes, options] = list[next];
       playing = iconOf(button).animate(keyframes, options);
       ripple(button);
+    });
+  });
+
+  const sway = 'cubic-bezier(0.37, 0, 0.63, 1)';
+  const pose = (y: number, angle: number, x: number, yScale = x) =>
+    `translateY(${y}rem) rotate(${angle}deg) scale(${x}, ${yScale})`;
+
+  const excited: PropertyIndexedKeyframes = {
+    transform: [
+      pose(0, 0, 1),
+      pose(0.08, 0, 1.12, 0.88),
+      pose(-0.7, -14, 0.94, 1.1),
+      pose(0, 0, 1.1, 0.92),
+      pose(-0.35, 12, 1.08),
+      pose(0, -8, 1.04),
+      pose(0, 5, 1.03),
+      pose(0, -2, 1.01),
+      pose(0, 0, 1),
+    ],
+    offset: [0, 0.1, 0.3, 0.45, 0.58, 0.7, 0.81, 0.91, 1],
+    easing: sway,
+  };
+
+  const notice: PropertyIndexedKeyframes = {
+    transform: ['translateX(0.1rem) scaleX(0)', 'translateX(0.25rem) scaleX(1)', 'translateX(0.6rem) scaleX(0.3)'],
+    opacity: [0, 1, 0],
+    offset: [0, 0.35, 1],
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-follow-card]').forEach((card) => {
+    const follow = card.querySelector<HTMLElement>('[data-follow]');
+    const icon = card.querySelector<HTMLElement>('[data-instagram-icon]');
+    if (!follow || !icon) return;
+    const lines = [...icon.querySelectorAll<HTMLElement>('[data-notice]')];
+
+    const cheer = () => {
+      if (!playOnce(icon, excited, { duration: 1300 })) return;
+      lines.forEach((line, i) => line.animate(notice, { duration: 550, delay: 60 + i * 50, easing: smooth() }));
+    };
+
+    follow.addEventListener('pointerenter', ({ pointerType }) => {
+      if (pointerType === 'mouse') cheer();
+    });
+    follow.addEventListener('focus', () => {
+      if (follow.matches(':focus-visible')) cheer();
     });
   });
 

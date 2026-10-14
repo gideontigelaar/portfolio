@@ -31,7 +31,7 @@ const navigation = [
   data-gallery={name}
   data-crossfade={crossfade || undefined}
 >
-  <div class="fixed inset-x-0 -inset-y-1/2 -z-10 bg-zinc-950/50 backdrop-blur-sm backdrop-webkit" data-gallery-backdrop data-gallery-fade></div>
+  <div class="fixed inset-x-0 -inset-y-1/2 -z-10 bg-zinc-950/50 backdrop-blur-sm" data-gallery-backdrop data-gallery-fade></div>
   <div class:list={['relative w-full shrink-0', className]}>
     <div
       class:list={[
@@ -50,7 +50,7 @@ const navigation = [
             type="button"
             aria-label={label}
             class:list={[
-              'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 press place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-[color,background-color,scale] duration-300 ease-spring backdrop-webkit hover:bg-white/20 lg:pointer-fine:grid',
+              'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 press place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-[color,background-color,scale] duration-300 ease-spring hover:bg-white/20 lg:pointer-fine:grid',
               position,
             ]}
             data-gallery-shift={direction}
@@ -62,7 +62,7 @@ const navigation = [
     }
   </div>
   <div
-    class="fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto flex w-fit items-center gap-3 rounded-full bg-zinc-900/70 p-1 shadow-lg ring-1 ring-white/10 backdrop-blur-md backdrop-saturate-150 backdrop-webkit sm:contents"
+    class="fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto flex w-fit items-center gap-3 rounded-full bg-zinc-900/70 p-1 shadow-lg ring-1 ring-white/10 backdrop-blur-md backdrop-saturate-150 sm:contents"
     data-gallery-fade="rise"
   >
     {
@@ -92,7 +92,7 @@ const navigation = [
     <button
       type="button"
       aria-label="Close"
-      class="group relative grid size-9 press place-items-center rounded-full bg-white/15 text-white transition-[color,background-color,scale] duration-300 ease-spring backdrop-webkit after:absolute after:-inset-1 hover:bg-white/25 sm:fixed sm:top-4 sm:right-4 sm:size-10 sm:bg-white/10 sm:backdrop-blur-md sm:hover:bg-white/20"
+      class="group relative grid size-9 press place-items-center rounded-full bg-white/15 text-white transition-[color,background-color,scale] duration-300 ease-spring after:absolute after:-inset-1 hover:bg-white/25 sm:fixed sm:top-4 sm:right-4 sm:size-10 sm:bg-white/10 sm:backdrop-blur-md sm:hover:bg-white/20"
       data-gallery-close
       data-gallery-fade
     >
