@@ -1,4 +1,5 @@
 ---
+import { uiText } from '../../data/text';
 import { dotWindow, maxDots } from '../../lib/dots';
 
 interface Props {
@@ -22,7 +23,7 @@ const tones = {
       Array.from({ length: count }, (_, i) => (
         <button
           type="button"
-          aria-label={`${label} ${i + 1} of ${count}`}
+          aria-label={`${label} ${uiText.position(i + 1, count)}`}
           aria-current={current === undefined ? undefined : String(i === current)}
           inert={dots.hidden(i)}
           data-edge={dots.edge(i) || undefined}

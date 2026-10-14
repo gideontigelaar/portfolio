@@ -7,6 +7,24 @@ export const navText = {
   light: 'Light mode',
 };
 
+export const uiText = {
+  carousel: 'carousel',
+  slide: 'slide',
+  previous: 'Previous',
+  next: 'Next',
+  previousPage: 'Previous page',
+  nextPage: 'Next page',
+  show: 'Show',
+  showPage: 'Show page',
+  close: 'Close',
+  position: (current: number, total: number) => `${current} of ${total}`,
+  page: (current: number, total: number) => `Page ${current} of ${total}`,
+};
+
+export const heroText = {
+  flip: 'Flip profile picture',
+};
+
 export const summaryText = {
   languages: 'Languages I use',
   question: 'Question?',
@@ -16,6 +34,8 @@ export const summaryText = {
     href: 'https://whisp.gideontigelaar.com/',
     alt: 'Whisp',
   },
+  photos: 'Photos',
+  openPhoto: (alt: string) => `Open photo: ${alt}`,
 };
 
 export const emailText = {
@@ -39,6 +59,8 @@ export const projectsText = {
   title: 'Projects',
   intro: "Here are some of the projects I've worked on.",
   github: 'View on GitHub',
+  tech: 'Tech',
+  screenshot: (title: string) => `${title} screenshot`,
 };
 
 export const contactText = {
@@ -63,6 +85,7 @@ export const footerText = {
 };
 
 export const menuText = {
+  label: 'Quick menu',
   profile: `View on ${site.socials.linkedin.name}`,
   open: 'Open',
   interact: 'Interact',
@@ -102,6 +125,7 @@ export const notFoundText = {
   message: "This page doesn't exist or has been moved.",
   home: 'Back to home',
   prompt: 'Hover or focus the box to play',
+  instructions: 'Catch the dot. Press Space when the dot is in the center.',
   score: (caught: number, goal: number) => `Caught ${caught} of ${goal}`,
   missed: (caught: number, goal: number) => `Missed! Caught ${caught} of ${goal}`,
   win: 'You win! Now go to home.',
@@ -119,4 +143,13 @@ export const consoleText = {
     { label: 'Email', value: site.email },
   ],
   thanks: 'Thanks for checking!',
+};
+
+export const llmsText = {
+  projects: 'Projects',
+  experience: 'Experience',
+  contact: 'Contact',
+  website: 'Website',
+  email: 'Email',
+  role: (title: string, organization: string) => `${title} at ${organization}`,
 };

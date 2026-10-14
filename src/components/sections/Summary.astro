@@ -133,7 +133,7 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
         photos.map((photo, i) => (
           <button
             type="button"
-            aria-label={`Open photo: ${photo.alt}`}
+            aria-label={summaryText.openPhoto(photo.alt)}
             class:list={[
               'relative aspect-square press overflow-hidden rounded-xl transition duration-500 ease-spring hover:z-10 hover:scale-110 hover:shadow-lg',
               scatter[i],
@@ -159,7 +159,7 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
   </Card>
 </section>
 
-<Gallery name="photos" label="Photos" count={slides.length} class="max-w-3xl">
+<Gallery name="photos" label={summaryText.photos} count={slides.length} class="max-w-3xl">
   {
     slides.map(({ src, alt, ratio }) => (
       <div class="grid place-items-center">

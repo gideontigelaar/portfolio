@@ -1,3 +1,4 @@
+import { uiText } from '../data/text';
 import { windowDots } from './dots';
 import { reducedMotion, scrollTimelines } from './motion';
 import { onActivate } from './press';
@@ -73,7 +74,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   };
 
   const announce = () => {
-    if (status) status.textContent = `${index + 1} of ${slides.length}`;
+    if (status) status.textContent = uiText.position(index + 1, slides.length);
   };
 
   if (slides.length > 1) labelSlides(slides);

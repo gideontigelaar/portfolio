@@ -2,6 +2,7 @@
 import CaretLeftIcon from '@phosphor-icons/core/assets/regular/caret-left.svg';
 import CaretRightIcon from '@phosphor-icons/core/assets/regular/caret-right.svg';
 import Dots from './Dots.astro';
+import { uiText } from '../../data/text';
 
 interface Props {
   label: string;
@@ -19,7 +20,7 @@ const icon = 'size-4.5 transition-transform duration-300 ease-spring';
 <div
   class:list={['flex flex-col gap-4', className]}
   role={paged ? 'region' : undefined}
-  aria-roledescription={paged ? 'carousel' : undefined}
+  aria-roledescription={paged ? uiText.carousel : undefined}
   aria-label={paged ? label : undefined}
   data-carousel={paged || undefined}
 >
@@ -36,11 +37,11 @@ const icon = 'size-4.5 transition-transform duration-300 ease-spring';
   {
     paged && (
       <div class="flex items-center justify-center gap-4">
-        <button type="button" aria-label="Previous page" class={control} data-carousel-shift="-1">
+        <button type="button" aria-label={uiText.previousPage} class={control} data-carousel-shift="-1">
           <CaretLeftIcon class:list={[icon, 'group-hover:-translate-x-0.5']} aria-hidden="true" />
         </button>
-        <Dots count={count} label="Show page" tone="current" current={0} />
-        <button type="button" aria-label="Next page" class={control} data-carousel-shift="1">
+        <Dots count={count} label={uiText.showPage} tone="current" current={0} />
+        <button type="button" aria-label={uiText.nextPage} class={control} data-carousel-shift="1">
           <CaretRightIcon class:list={[icon, 'group-hover:translate-x-0.5']} aria-hidden="true" />
         </button>
         <p class="sr-only" role="status" data-carousel-status />

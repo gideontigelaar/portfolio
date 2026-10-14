@@ -1,3 +1,4 @@
+import { uiText } from '../data/text';
 import { windowDots } from './dots';
 import { reducedMotion, smooth } from './motion';
 import { onActivate } from './press';
@@ -31,7 +32,7 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
     lock();
     dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
     slideDots(index);
-    if (status) status.textContent = `Page ${index + 1} of ${pages.length}`;
+    if (status) status.textContent = uiText.page(index + 1, pages.length);
   };
 
   const reveal = (direction: number) => {

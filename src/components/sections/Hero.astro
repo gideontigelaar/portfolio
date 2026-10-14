@@ -3,13 +3,14 @@ import { Image } from 'astro:assets';
 import HandWavingIcon from '@phosphor-icons/core/assets/fill/hand-waving-fill.svg';
 import Zzz from '../easter-eggs/Zzz.astro';
 import { site } from '../../data/site';
+import { heroText } from '../../data/text';
 ---
 
 <section id="hero" class="flex flex-col gap-3 py-14 sm:py-20">
   <div class="relative w-fit" data-enter>
     <button
       type="button"
-      aria-label="Flip profile picture"
+      aria-label={heroText.flip}
       class="group relative block press rounded-full transition-transform duration-500 ease-spring hover:scale-110 hover:-rotate-6"
       data-avatar
     >

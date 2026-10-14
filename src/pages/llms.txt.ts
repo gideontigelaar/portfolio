@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { education, work } from '../data/experience';
 import { projects } from '../data/projects';
 import { site } from '../data/site';
+import { llmsText } from '../data/text';
 
 export const GET: APIRoute = ({ site: origin }) => {
   const home = origin?.href ?? '/';
@@ -12,21 +13,21 @@ export const GET: APIRoute = ({ site: origin }) => {
     '',
     site.intro,
     '',
-    '## Projects',
+    `## ${llmsText.projects}`,
     '',
     ...projects.map(({ title, year, href, description }) => `- [${title} (${year})](${href}): ${description}`),
     '',
-    '## Experience',
+    `## ${llmsText.experience}`,
     '',
     ...[...work, ...education].map(
-      ({ title, organization, period, href }) => `- [${title} at ${organization}](${href}): ${period}`,
+      ({ title, organization, period, href }) => `- [${llmsText.role(title, organization)}](${href}): ${period}`,
     ),
     '',
-    '## Contact',
+    `## ${llmsText.contact}`,
     '',
-    `- [Website](${home})`,
+    `- [${llmsText.website}](${home})`,
     ...Object.values(site.socials).map(({ name, url }) => `- [${name}](${url})`),
-    `- Email: ${site.email}`,
+    `- ${llmsText.email}: ${site.email}`,
     '',
   ].join('\n');
 

@@ -1,3 +1,4 @@
+import { uiText } from '../data/text';
 import { reducedMotion, scrollTimelines, smooth } from './motion';
 
 interface SwipeOptions {
@@ -28,8 +29,8 @@ export const clampIndex = (value: number, count: number) =>
 export const labelSlides = (slides: HTMLElement[]) =>
   slides.forEach((slide, i) => {
     slide.setAttribute('role', 'group');
-    slide.setAttribute('aria-roledescription', 'slide');
-    slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
+    slide.setAttribute('aria-roledescription', uiText.slide);
+    slide.setAttribute('aria-label', uiText.position(i + 1, slides.length));
   });
 
 const stretch = (distance: number, size: number) =>

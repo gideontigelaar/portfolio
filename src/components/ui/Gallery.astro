@@ -3,6 +3,7 @@ import CaretLeftIcon from '@phosphor-icons/core/assets/regular/caret-left.svg';
 import CaretRightIcon from '@phosphor-icons/core/assets/regular/caret-right.svg';
 import XIcon from '@phosphor-icons/core/assets/regular/x.svg';
 import Dots from './Dots.astro';
+import { uiText } from '../../data/text';
 
 interface Props {
   name: string;
@@ -18,8 +19,8 @@ const pillButton =
   'group relative grid size-9 press place-items-center rounded-full bg-white/15 text-white transition-[background-color,scale] duration-300 ease-spring after:absolute after:-inset-1 hover:bg-white/25 lg:pointer-fine:hidden';
 
 const navigation = [
-  { icon: CaretLeftIcon, label: 'Previous', direction: -1, position: '-left-16', nudge: 'group-hover:-translate-x-0.5' },
-  { icon: CaretRightIcon, label: 'Next', direction: 1, position: '-right-16', nudge: 'group-hover:translate-x-0.5' },
+  { icon: CaretLeftIcon, label: uiText.previous, direction: -1, position: '-left-16', nudge: 'group-hover:-translate-x-0.5' },
+  { icon: CaretRightIcon, label: uiText.next, direction: 1, position: '-right-16', nudge: 'group-hover:translate-x-0.5' },
 ];
 ---
 
@@ -76,7 +77,7 @@ const navigation = [
           >
             <CaretLeftIcon class:list={['size-4.5 transition-transform duration-300 ease-spring', navigation[0].nudge]} aria-hidden="true" />
           </button>
-          <Dots count={count} label="Show" tone="light" />
+          <Dots count={count} label={uiText.show} tone="light" />
           <button
             type="button"
             aria-label={navigation[1].label}
@@ -91,7 +92,7 @@ const navigation = [
     {count > 1 && <p class="sr-only" role="status" data-gallery-status></p>}
     <button
       type="button"
-      aria-label="Close"
+      aria-label={uiText.close}
       class="group relative grid size-9 press place-items-center rounded-full bg-white/15 text-white transition-[color,background-color,scale] duration-300 ease-spring after:absolute after:-inset-1 hover:bg-white/25 sm:fixed sm:top-4 sm:right-4 sm:size-10 sm:bg-white/10 sm:backdrop-blur-md sm:hover:bg-white/20"
       data-gallery-close
       data-gallery-fade

@@ -1,6 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import type { Project } from '../../data/projects';
+import { projectsText } from '../../data/text';
 
 type Props = Pick<Project, 'title' | 'screenshot' | 'screenshotDark'> & {
   widths: number[];
@@ -9,7 +10,7 @@ type Props = Pick<Project, 'title' | 'screenshot' | 'screenshotDark'> & {
   class?: string;
 };
 
-const { title, screenshot, screenshotDark, widths, sizes, alt = `${title} screenshot`, class: className } = Astro.props;
+const { title, screenshot, screenshotDark, widths, sizes, alt = projectsText.screenshot(title), class: className } = Astro.props;
 
 const screenshots = [
   { src: screenshot, visibility: screenshotDark ? 'block dark:hidden' : undefined },

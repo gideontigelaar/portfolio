@@ -27,7 +27,7 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
           {title}
           <span class="text-sm font-medium text-muted tabular-nums">{year}</span>
         </h3>
-        <ul class="flex flex-wrap gap-1.5" aria-label="Tech">
+        <ul class="flex flex-wrap gap-1.5" aria-label={projectsText.tech}>
           {
             tech.map((item) => (
               <li class="flex">

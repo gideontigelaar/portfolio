@@ -12,7 +12,7 @@ import { notFoundText } from '../data/text';
     <div class="mt-10 flex w-full flex-col items-center gap-3" data-game-wrap hidden>
       <div
         role="application"
-        aria-label="Catch the dot. Press Space when the dot is in the center."
+        aria-label={notFoundText.instructions}
         aria-describedby="game-score"
         tabindex="0"
         class="group relative h-56 w-full max-w-md overflow-hidden rounded-3xl border-2 border-dashed border-zinc-950/30 dark:border-white/30"
