@@ -95,7 +95,9 @@ const actions = [
   data-about
 >
   <div
-    class="scale-95 rounded-3xl border border-line bg-surface p-6 shadow-xl transition-[scale] duration-300 ease-spring group-open:scale-100 motion-reduce:transition-none starting:group-open:scale-95"
+    tabindex="-1"
+    autofocus
+    class="scale-95 rounded-3xl border border-line bg-surface p-6 shadow-xl transition-[scale] duration-300 ease-spring outline-none group-open:scale-100 motion-reduce:transition-none starting:group-open:scale-95"
   >
     <h2 id="about-site-title" class="text-xl font-bold tracking-tight">{menuText.siteInfo.title}</h2>
     <p class="mt-2 text-sm text-muted">{menuText.siteInfo.text}</p>

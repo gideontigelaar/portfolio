@@ -1,5 +1,6 @@
 import { toastText } from '../data/text';
 import { count, found, total } from './eggs';
+import { usingKeyboard } from './press';
 import { toggleTheme } from './theme';
 import { toast } from './toast';
 import { keepAboveDialogs } from './top-layer';
@@ -235,7 +236,7 @@ const hide = (restore = true) => {
   menu.removeAttribute('data-open');
   const focused = document.activeElement;
   if (focused instanceof HTMLElement && isInside(focused)) {
-    if (restore) returnFocus?.focus({ preventScroll: true });
+    if (restore) returnFocus?.focus({ preventScroll: true, focusVisible: usingKeyboard() });
     if (isInside(document.activeElement)) focused.blur();
   }
   window.clearTimeout(closeTimer);
@@ -249,7 +250,7 @@ const center = (element: Element) => {
 
 const activate = (control: HTMLElement) => {
   hide(false);
-  control.focus({ preventScroll: true });
+  if (usingKeyboard()) control.focus({ preventScroll: true });
   control.click();
 };
 
@@ -429,7 +430,7 @@ menu.addEventListener('wheel', (event) => event.stopPropagation(), { passive: tr
 menu.addEventListener('pointermove', (event) => {
   if (!isOpen() || event.pointerType !== 'mouse' || !(event.target instanceof Element)) return;
   const item = event.target.closest<HTMLElement>('[role="menuitem"]');
-  if (item && item !== document.activeElement) item.focus({ preventScroll: true });
+  if (item && item !== document.activeElement) item.focus({ preventScroll: true, focusVisible: false });
 });
 
 menu.addEventListener('pointerleave', (event) => {

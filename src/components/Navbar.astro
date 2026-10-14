@@ -68,7 +68,7 @@ const links = [
     }
   }
 
-  @supports (-moz-appearance: none) {
+  @supports (-moz-appearance: none) or (-webkit-touch-callout: none) {
     [data-nav-glass] {
       --nav-opacity: 100%;
       --nav-blur: none;

@@ -1,5 +1,11 @@
 document.addEventListener('touchstart', () => {}, { passive: true });
 
+let keyboard = false;
+window.addEventListener('keydown', () => (keyboard = true), { capture: true });
+window.addEventListener('pointerdown', () => (keyboard = false), { capture: true, passive: true });
+
+export const usingKeyboard = () => keyboard;
+
 const ghostWindow = 500;
 
 export const onActivate = (button: HTMLElement, callback: () => void) => {

@@ -1,7 +1,7 @@
 import { uiText } from '../data/text';
 import { windowDots } from './dots';
 import { reducedMotion, scrollTimelines } from './motion';
-import { onActivate } from './press';
+import { onActivate, usingKeyboard } from './press';
 import { clampIndex, labelSlides, stepOf, swipe } from './swipe';
 import { inViewport } from './viewport';
 
@@ -192,7 +192,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       animations.forEach((animation) => animation.cancel());
       if (!opening && dialog.open) {
         dialog.close();
-        trigger?.focus({ preventScroll: true });
+        if (usingKeyboard()) trigger?.focus({ preventScroll: true });
       }
       dialog.inert = false;
       track.style.removeProperty('overflow');
