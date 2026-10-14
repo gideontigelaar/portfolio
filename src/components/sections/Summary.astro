@@ -12,6 +12,7 @@ import whispLogo from '../../assets/images/logos/whisp.svg';
 import { languages } from '../../data/languages';
 import { photos } from '../../data/photos';
 import { site } from '../../data/site';
+import { summaryText } from '../../data/text';
 
 const notices = [
   { angle: -80, color: '#fa7e1e' },
@@ -33,7 +34,7 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
     data-enter
     style="--delay: 3"
   >
-    <span class="text-2xl tracking-tight">Languages I use</span>
+    <span class="text-2xl tracking-tight">{summaryText.languages}</span>
     <div class="flex justify-between">
       {
         languages.map((language) => (
@@ -70,12 +71,12 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
       class="absolute -right-5 -bottom-5 -z-10 hidden size-28 -rotate-14 text-zinc-200 transition duration-700 ease-spring group-hover:-translate-y-4 group-hover:-rotate-3 group-hover:duration-450 group-hover:ease-bounce group-has-data-copied:translate-x-24 group-has-data-copied:duration-700 group-has-data-copied:ease-spring group-has-data-copied:-translate-y-24 group-has-data-copied:rotate-14 group-has-data-copied:opacity-0 sm:block dark:text-zinc-800"
       aria-hidden="true"
     />
-    <span class="text-[length:min(1.5rem,21cqw)] leading-[calc(4/3)] tracking-tight">Question?</span>
+    <span class="text-[length:min(1.5rem,21cqw)] leading-[calc(4/3)] tracking-tight">{summaryText.question}</span>
     <CopyEmailButton email={site.email} />
   </Card>
 
   <Card
-    href="https://whisp.gideontigelaar.com/"
+    href={summaryText.whisp.href}
     target="_blank"
     rel="noopener noreferrer"
     class="relative aspect-square shine press [--press-scale:0.97]"
@@ -83,7 +84,7 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
     data-enter
     style="--delay: 5"
   >
-    <Image src={whispLogo} alt="Whisp" loading="eager" class="size-full object-cover" />
+    <Image src={whispLogo} alt={summaryText.whisp.alt} loading="eager" class="size-full object-cover" />
   </Card>
 
   <Card
@@ -96,7 +97,7 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
       <div class="flex items-center gap-3 md:w-60">
         <button
           type="button"
-          aria-label="Instagram"
+          aria-label={site.socials.instagram.name}
           class="shrink-0 press rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
           data-instagram-logo
         >
@@ -119,11 +120,11 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
         href={site.socials.instagram.url}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Follow me on Instagram"
+        aria-label={summaryText.followLabel}
         class="order-3"
         data-follow
       >
-        Follow me!
+        {summaryText.follow}
       </Button>
     </div>
 

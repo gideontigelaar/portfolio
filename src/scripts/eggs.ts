@@ -1,3 +1,4 @@
+import { toastText } from '../data/text';
 import { toast } from './toast';
 
 const storageKey = 'easter-eggs';
@@ -46,7 +47,7 @@ export const found = (egg: Egg) => {
   try {
     localStorage.setItem(storageKey, JSON.stringify([...discovered]));
   } catch {}
-  toast(`Easter egg found (${count()}/${total()})`);
-  if (count() === total()) toast('You found them all');
+  toast(toastText.eggFound(count(), total()));
+  if (count() === total()) toast(toastText.allEggs);
   if (golden()) window.dispatchEvent(new Event('eggs-complete'));
 };

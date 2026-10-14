@@ -1,12 +1,13 @@
 ---
 import MoonIcon from '@phosphor-icons/core/assets/regular/moon.svg';
 import SunIcon from '@phosphor-icons/core/assets/regular/sun.svg';
+import { navText } from '../data/text';
 ---
 
 <button
   type="button"
   class="grid nav-item p-2 *:col-start-1 *:row-start-1 *:size-6 *:transition *:duration-500 *:ease-spring"
-  aria-label="Dark mode"
+  aria-label={navText.dark}
   aria-pressed="false"
   data-theme-toggle
 >

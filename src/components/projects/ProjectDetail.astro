@@ -4,6 +4,7 @@ import Button from '../ui/Button.astro';
 import Card from '../ui/Card.astro';
 import ProjectScreenshot from './ProjectScreenshot.astro';
 import type { Project } from '../../data/projects';
+import { projectsText } from '../../data/text';
 
 type Props = Project;
 
@@ -40,8 +41,8 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
     </div>
   </div>
   <div class="shrink-0 px-5 pt-3 pb-5">
-    <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`View on GitHub: ${title}`}>
-      View on GitHub
+    <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`${projectsText.github}: ${title}`}>
+      {projectsText.github}
     </Button>
   </div>
 </Card>

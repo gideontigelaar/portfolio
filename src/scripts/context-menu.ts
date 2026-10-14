@@ -1,3 +1,4 @@
+import { toastText } from '../data/text';
 import { count, found, total } from './eggs';
 import { toggleTheme } from './theme';
 import { toast } from './toast';
@@ -279,16 +280,18 @@ const run: Record<string, (context: Target) => void> = {
   interact: ({ control }) => control && activate(control),
   'link-tab': ({ link }) =>
     link && window.open(link.href, '_blank', link.relList.contains('noreferrer') ? 'noopener,noreferrer' : 'noopener'),
-  'copy-link': ({ link }) => link && report(navigator.clipboard.writeText(link.href), 'Link copied', "Couldn't copy link"),
+  'copy-link': ({ link }) =>
+    link && report(navigator.clipboard.writeText(link.href), toastText.linkCopied, toastText.linkFailed),
   'image-tab': ({ image }) => image && window.open(image.currentSrc, '_blank', 'noopener'),
   'copy-image': ({ image }) =>
     image &&
     report(
       navigator.clipboard.write([new ClipboardItem({ 'image/png': toPng(image) })]),
-      'Image copied',
-      "Couldn't copy image",
+      toastText.imageCopied,
+      toastText.imageFailed,
     ),
-  'copy-text': ({ text }) => text && report(navigator.clipboard.writeText(text), 'Text copied', "Couldn't copy text"),
+  'copy-text': ({ text }) =>
+    text && report(navigator.clipboard.writeText(text), toastText.textCopied, toastText.textFailed),
 };
 
 const typeahead = (key: string, list: HTMLElement[], index: number) => {

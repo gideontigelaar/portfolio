@@ -13,6 +13,7 @@ import SunIcon from '@phosphor-icons/core/assets/regular/sun.svg';
 import TextTIcon from '@phosphor-icons/core/assets/regular/text-t.svg';
 import Button from './ui/Button.astro';
 import { site } from '../data/site';
+import { menuText, navText } from '../data/text';
 
 const item =
   'group flex w-full shrink-0 items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors focus:bg-zinc-100 active:bg-zinc-100 pointer-coarse:py-3 forced-colors:focus:outline-2 dark:focus:bg-zinc-800 dark:active:bg-zinc-800';
@@ -21,13 +22,13 @@ const separator = 'my-1 shrink-0 border-t border-line';
 const newTabMotion = 'group-focus:translate-x-0.5 group-focus:-translate-y-0.5 group-focus:scale-125';
 
 const actions = [
-  { name: 'open', label: 'Open', icon: ArrowsOutSimpleIcon, motion: 'group-focus:scale-125' },
-  { name: 'interact', label: 'Interact', icon: CursorClickIcon, motion: 'group-focus:-translate-y-0.5 group-focus:scale-125' },
-  { name: 'link-tab', label: 'Open link in new tab', icon: ArrowSquareOutIcon, motion: newTabMotion },
-  { name: 'copy-link', label: 'Copy link', icon: LinkSimpleIcon, motion: 'group-focus:-rotate-12 group-focus:scale-125' },
-  { name: 'image-tab', label: 'Open image in new tab', icon: ArrowSquareOutIcon, motion: newTabMotion },
-  { name: 'copy-image', label: 'Copy image', icon: ImageIcon, motion: 'group-focus:-rotate-6 group-focus:scale-125' },
-  { name: 'copy-text', label: 'Copy text', icon: TextTIcon, motion: 'group-focus:-translate-y-0.5 group-focus:scale-125' },
+  { name: 'open', label: menuText.open, icon: ArrowsOutSimpleIcon, motion: 'group-focus:scale-125' },
+  { name: 'interact', label: menuText.interact, icon: CursorClickIcon, motion: 'group-focus:-translate-y-0.5 group-focus:scale-125' },
+  { name: 'link-tab', label: menuText.linkTab, icon: ArrowSquareOutIcon, motion: newTabMotion },
+  { name: 'copy-link', label: menuText.copyLink, icon: LinkSimpleIcon, motion: 'group-focus:-rotate-12 group-focus:scale-125' },
+  { name: 'image-tab', label: menuText.imageTab, icon: ArrowSquareOutIcon, motion: newTabMotion },
+  { name: 'copy-image', label: menuText.copyImage, icon: ImageIcon, motion: 'group-focus:-rotate-6 group-focus:scale-125' },
+  { name: 'copy-text', label: menuText.copyText, icon: TextTIcon, motion: 'group-focus:-translate-y-0.5 group-focus:scale-125' },
 ];
 ---
 
@@ -56,7 +57,7 @@ const actions = [
     </span>
     <span class="flex flex-col leading-tight">
       <span class="font-semibold">{site.name}</span>
-      <span class="text-xs text-muted">View on LinkedIn</span>
+      <span class="text-xs text-muted">{menuText.profile}</span>
     </span>
   </a>
   <div role="separator" class={separator}></div>
@@ -73,18 +74,18 @@ const actions = [
   <div role="separator" class={separator} data-context-group hidden></div>
   <a role="menuitem" tabindex="-1" href="/#home" class={item} data-context-home>
     <HouseIcon class:list={[icon, 'group-focus:-translate-y-0.5 group-focus:scale-125']} aria-hidden="true" />
-    Home
+    {navText.home}
   </a>
   <button type="button" role="menuitem" tabindex="-1" class={item} data-context-theme>
     <MoonIcon class:list={[icon, 'group-focus:-rotate-12 group-focus:scale-125 dark:hidden']} aria-hidden="true" />
     <SunIcon class:list={[icon, 'hidden group-focus:rotate-45 group-focus:scale-125 dark:block']} aria-hidden="true" />
-    <span class="dark:hidden">Dark mode</span>
-    <span class="hidden dark:inline">Light mode</span>
+    <span class="dark:hidden">{navText.dark}</span>
+    <span class="hidden dark:inline">{navText.light}</span>
   </button>
   <div role="separator" class={separator} data-secret hidden></div>
   <button type="button" role="menuitem" tabindex="-1" class={item} data-secret data-context-source hidden>
     <CodeIcon class:list={[icon, 'group-focus:scale-125']} aria-hidden="true" />
-    Secret menu
+    {menuText.secret}
   </button>
 </div>
 
@@ -96,18 +97,16 @@ const actions = [
   <div
     class="scale-95 rounded-3xl border border-line bg-surface p-6 shadow-xl transition-[scale] duration-300 ease-spring group-open:scale-100 motion-reduce:transition-none starting:group-open:scale-95"
   >
-    <h2 id="about-site-title" class="text-xl font-bold tracking-tight">About this site</h2>
-    <p class="mt-2 text-sm text-muted">
-      Built with Astro and Tailwind CSS. No trackers or ads, just a lot of small details.
-    </p>
+    <h2 id="about-site-title" class="text-xl font-bold tracking-tight">{menuText.siteInfo.title}</h2>
+    <p class="mt-2 text-sm text-muted">{menuText.siteInfo.text}</p>
     <p class="mt-4 rounded-2xl bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-800">
-      Easter eggs found: <strong data-about-count>0</strong>
+      {menuText.siteInfo.eggs} <strong data-about-count>0</strong>
     </p>
     <div class="mt-6 flex gap-2">
-      <Button href={`${site.socials.github.url}/portfolio`} target="_blank" rel="noopener noreferrer" variant="primary">
-        View on GitHub
+      <Button href={menuText.siteInfo.repository} target="_blank" rel="noopener noreferrer" variant="primary">
+        {menuText.siteInfo.github}
       </Button>
-      <Button data-about-close>Close</Button>
+      <Button data-about-close>{menuText.siteInfo.close}</Button>
     </div>
   </div>
 </dialog>

@@ -2,11 +2,12 @@
 import HouseIcon from '@phosphor-icons/core/assets/regular/house.svg';
 import ThemeToggle from './ThemeToggle.astro';
 import Zzz from './easter-eggs/Zzz.astro';
+import { aboutText, contactText, navText, projectsText } from '../data/text';
 
 const links = [
-  { href: '/#about', label: 'About' },
-  { href: '/#projects', label: 'Projects' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/#about', label: aboutText.title },
+  { href: '/#projects', label: projectsText.title },
+  { href: '/#contact', label: contactText.title },
 ];
 ---
 
@@ -15,7 +16,7 @@ const links = [
 </div>
 <header class="sticky top-0 z-50">
   <nav class="mx-auto flex max-w-[700px] items-center justify-between px-2 py-3 min-[360px]:px-4 sm:px-1">
-    <a href="/#home" aria-label="Home" data-home class="relative flex nav-item items-center p-2">
+    <a href="/#home" aria-label={navText.home} data-home class="relative flex nav-item items-center p-2">
       <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
       <Zzz place="nav" class="-top-0.5 left-3/4" />
     </a>

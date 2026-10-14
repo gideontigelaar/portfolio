@@ -2,6 +2,7 @@
 import CaretRightIcon from '@phosphor-icons/core/assets/regular/caret-right.svg';
 import ExperienceItem from './ExperienceItem.astro';
 import type { ExperienceEntry } from '../../data/experience';
+import { aboutText } from '../../data/text';
 
 interface Props {
   entries: ExperienceEntry[];
@@ -24,7 +25,7 @@ const hidden = entries.length - max;
       data-gallery-index={max}
     >
       <span class="underline-grow">
-        Show {hidden} more<span class="sr-only"> {label}</span>
+        {aboutText.showMore(hidden)}<span class="sr-only"> {label}</span>
       </span>
       <CaretRightIcon
         class="size-3.5 transition-transform duration-300 ease-spring group-hover:translate-x-0.5"

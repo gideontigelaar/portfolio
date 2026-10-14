@@ -20,6 +20,7 @@ const year = new Date().getFullYear();
 </footer>
 
 <script>
+  import { footerText } from '../data/text';
   import { found } from '../scripts/eggs';
   import { reducedMotion, smooth, spring } from '../scripts/motion';
 
@@ -32,13 +33,7 @@ const year = new Date().getFullYear();
   const grace = 400;
   const settle = 250;
   const resetDuration = 1500;
-  const milestones = new Map<number, [string, number]>([
-    [10, ['Warming up', 0]],
-    [25, ['On fire!', 0.23]],
-    [50, ['Unstoppable', 0.38]],
-    [100, ['Legendary', 0.56]],
-    [250, ['Maybe take a break?', 0.75]],
-  ]);
+  const milestones = new Map(footerText.milestones.map((milestone) => [milestone.clicks, milestone]));
   const visited = new Set<number>();
   let heat = 0;
   let streak = 0;
@@ -136,7 +131,7 @@ const year = new Date().getFullYear();
     streak = 0;
     scope.style.setProperty('--heat', '0');
     year.removeAttribute('data-hot');
-    pop('Time machine reset');
+    pop(footerText.reset);
     startRewind(resetDuration, easeOut);
   };
 
@@ -150,9 +145,9 @@ const year = new Date().getFullYear();
     found('time-travel');
     if (value === 3000) {
       glitch();
-      pop('Year 3000. Still debugging...');
+      pop(footerText.year3000);
     } else {
-      pop('Welcome to the future!');
+      pop(footerText.future);
     }
     return true;
   };
@@ -167,7 +162,7 @@ const year = new Date().getFullYear();
     lastClick = performance.now();
     streak += 1;
     const milestone = milestones.get(streak);
-    if (!travel(value) && milestone) pop(`${streak}× ${milestone[0]}`, milestone[1]);
+    if (!travel(value) && milestone) pop(footerText.streak(streak, milestone.text), milestone.shake);
     if (!reducedMotion.matches) {
       year.animate(
         { translate: ['0 0.6em', '0 0'], opacity: [0, 1], filter: ['blur(3px)', 'blur(0)'] },
@@ -181,14 +176,14 @@ const year = new Date().getFullYear();
   });
 
   window.setYear = (value: number) => {
-    if (!Number.isFinite(value)) return 'Pass a number, for example setYear(2099)';
+    if (!Number.isFinite(value)) return footerText.setYearHelp;
     const next = Math.round(value);
     stopRewind();
     window.clearTimeout(settleTimer);
     resetting = false;
     year.textContent = String(next);
     travel(next);
-    return `Counter set to ${next}`;
+    return footerText.setYear(next);
   };
 </script>
 

@@ -1,5 +1,6 @@
 <script>
   import { site } from '../../data/site';
+  import { consoleText } from '../../data/text';
   import { found, isDesktop } from '../../scripts/eggs';
 
   const title = 'font: 700 22px/1.5 system-ui, sans-serif; color: #3b82f6';
@@ -7,36 +8,22 @@
   const label = 'font: 700 13px/1.6 system-ui, sans-serif; color: inherit';
 
   if (isDesktop()) {
-    console.log(
-      '%cHi there\n%cLooking for a developer? Type hireGideon() and press Enter.',
-      title,
-      text,
-    );
+    console.log(`%c${consoleText.greeting}\n%c${consoleText.hint}`, title, text);
 
     window.hireGideon = () => {
       console.log(
         [
           `%c${site.name}`,
-          '%cSoftware engineering student & PHP developer',
+          `%c${consoleText.role}`,
           '',
-          '%cStack     %cPHP, MySQL, C++, Java, Python, C#',
-          `%cGitHub    %c${site.socials.github.url}`,
-          `%cLinkedIn  %c${site.socials.linkedin.url}`,
-          `%cEmail     %c${site.email}`,
+          ...consoleText.details.map((detail) => `%c${detail.label.padEnd(10)}%c${detail.value}`),
         ].join('\n'),
         title,
         text,
-        label,
-        text,
-        label,
-        text,
-        label,
-        text,
-        label,
-        text,
+        ...consoleText.details.flatMap(() => [label, text]),
       );
       found('console');
-      return 'Thanks for checking!';
+      return consoleText.thanks;
     };
   }
 </script>

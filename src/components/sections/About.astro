@@ -3,42 +3,39 @@ import ExperienceDetail from '../experience/ExperienceDetail.astro';
 import ExperienceList from '../experience/ExperienceList.astro';
 import Gallery from '../ui/Gallery.astro';
 import { education, work } from '../../data/experience';
-import { site } from '../../data/site';
+import { aboutText } from '../../data/text';
 
 const maxWorkOnPage = 2;
 const maxEducationOnPage = 2;
 ---
 
 <section id="about" class="py-14 sm:py-20">
-  <h2 class="mb-3 text-2xl font-semibold tracking-tight" data-reveal>About</h2>
+  <h2 class="mb-3 text-2xl font-semibold tracking-tight" data-reveal>{aboutText.title}</h2>
 
   <div class="grid grid-cols-2 gap-12 sm:gap-6">
     <div class="col-span-2 flex flex-col gap-6 text-muted sm:col-span-1" data-reveal style="--delay: 1">
-      <p>
-        {site.intro} I'm also actively exploring the world of software development and engineering
-        through personal projects and by connecting with new people.
-      </p>
-      <p>
-        My interest in programming started at age 11, when I began creating simple games in Unity.
-        A few years later, I started building my own Discord bot. That's when it clicked! I knew I
-        wanted to turn my passion into a career.
-      </p>
+      {aboutText.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
     </div>
 
     <div class="col-span-2 flex flex-col gap-3 sm:col-span-1" data-reveal style="--delay: 2">
-      <h3 class="text-xl font-semibold tracking-tight">Work Experience</h3>
-      <ExperienceList entries={work} gallery="work" label="work experience" max={maxWorkOnPage} />
+      <h3 class="text-xl font-semibold tracking-tight">{aboutText.work}</h3>
+      <ExperienceList entries={work} gallery="work" label={aboutText.work.toLowerCase()} max={maxWorkOnPage} />
 
-      <h3 class="mt-4 text-xl font-semibold tracking-tight">Education</h3>
-      <ExperienceList entries={education} gallery="education" label="education" max={maxEducationOnPage} />
+      <h3 class="mt-4 text-xl font-semibold tracking-tight">{aboutText.education}</h3>
+      <ExperienceList
+        entries={education}
+        gallery="education"
+        label={aboutText.education.toLowerCase()}
+        max={maxEducationOnPage}
+      />
     </div>
   </div>
 
-  <Gallery name="work" label="Work experience" count={work.length} crossfade class="max-w-md">
+  <Gallery name="work" label={aboutText.work} count={work.length} crossfade class="max-w-md">
     {work.map((entry) => <ExperienceDetail {...entry} />)}
   </Gallery>
 
-  <Gallery name="education" label="Education" count={education.length} crossfade class="max-w-md">
+  <Gallery name="education" label={aboutText.education} count={education.length} crossfade class="max-w-md">
     {education.map((entry) => <ExperienceDetail {...entry} />)}
   </Gallery>
 </section>

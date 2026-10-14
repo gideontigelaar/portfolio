@@ -1,16 +1,14 @@
 ---
 import Button from '../components/ui/Button.astro';
 import Layout from '../layouts/Layout.astro';
-import { site } from '../data/site';
+import { notFoundText } from '../data/text';
 ---
 
-<Layout title={`Page not found - ${site.name}`} noindex>
+<Layout title={notFoundText.title} noindex>
   <section class="flex flex-col items-center gap-3 py-20 text-center">
-    <h1 class="text-4xl font-bold tracking-tight">404</h1>
-    <p class="max-w-[500px] text-muted">
-      This page doesn't exist or has been moved.
-    </p>
-    <Button href="/" variant="primary" data-home-button>Back to home</Button>
+    <h1 class="text-4xl font-bold tracking-tight">{notFoundText.heading}</h1>
+    <p class="max-w-[500px] text-muted">{notFoundText.message}</p>
+    <Button href="/" variant="primary" data-home-button>{notFoundText.home}</Button>
     <div class="mt-10 flex w-full flex-col items-center gap-3" data-game-wrap hidden>
       <div
         role="application"
@@ -35,14 +33,13 @@ import { site } from '../data/site';
           ></span>
         </span>
       </div>
-      <p id="game-score" class="text-sm text-muted" aria-live="polite" data-game-score>
-        Hover or focus the box to play
-      </p>
+      <p id="game-score" class="text-sm text-muted" aria-live="polite" data-game-score>{notFoundText.prompt}</p>
     </div>
   </section>
 </Layout>
 
 <script>
+  import { notFoundText } from '../data/text';
   import { found, isDesktop } from '../scripts/eggs';
   import { reducedMotion } from '../scripts/motion';
 
@@ -91,7 +88,7 @@ import { site } from '../data/site';
     const start = () => {
       if (playing || caught >= goal) return;
       playing = true;
-      score.textContent = `Caught ${caught} of ${goal}`;
+      score.textContent = notFoundText.score(caught, goal);
       move();
     };
 
@@ -99,7 +96,7 @@ import { site } from '../data/site';
       if (!playing || !caught) return;
       caught -= 1;
       shrink();
-      score.textContent = `Missed! Caught ${caught} of ${goal}`;
+      score.textContent = notFoundText.missed(caught, goal);
       if (reducedMotion.matches) return;
       area.animate(
         { translate: ['0 0', '-4px 0', '4px 0', '-2px 0', '0 0'] },
@@ -110,7 +107,7 @@ import { site } from '../data/site';
     const win = () => {
       playing = false;
       window.clearTimeout(timer);
-      score.textContent = 'You win! Now go to home.';
+      score.textContent = notFoundText.win;
       found('catch-the-dot');
       if (reducedMotion.matches) return;
       home?.animate(
@@ -126,7 +123,7 @@ import { site } from '../data/site';
       if (!reducedMotion.matches) dot.animate({ scale: [1.8, 1] }, { duration: 300, easing: 'ease-out' });
 
       if (caught < goal) {
-        score.textContent = `Caught ${caught} of ${goal}`;
+        score.textContent = notFoundText.score(caught, goal);
         window.clearTimeout(timer);
         move();
         return;
@@ -139,7 +136,7 @@ import { site } from '../data/site';
       caught = goal;
       shrink();
       win();
-      return 'Game won';
+      return notFoundText.won;
     };
 
     const middle = center();

@@ -4,6 +4,7 @@ import Gallery from '../ui/Gallery.astro';
 import ProjectCard from '../projects/ProjectCard.astro';
 import ProjectDetail from '../projects/ProjectDetail.astro';
 import { projects } from '../../data/projects';
+import { projectsText } from '../../data/text';
 import { paginate } from '../../lib/paginate';
 
 const maxProjectsPerPage = 3;
@@ -11,10 +12,10 @@ const pages = paginate(projects, maxProjectsPerPage);
 ---
 
 <section id="projects" class="py-14 sm:py-20">
-  <h2 class="mb-3 text-2xl font-semibold tracking-tight" data-reveal>Projects</h2>
-  <p class="mb-6 text-muted" data-reveal style="--delay: 1">Here are some of the projects I've worked on.</p>
+  <h2 class="mb-3 text-2xl font-semibold tracking-tight" data-reveal>{projectsText.title}</h2>
+  <p class="mb-6 text-muted" data-reveal style="--delay: 1">{projectsText.intro}</p>
 
-  <Carousel label="Projects" count={pages.length}>
+  <Carousel label={projectsText.title} count={pages.length}>
     {
       pages.map((page, pageIndex) => (
         <div class="grid grid-cols-1 gap-6 sm:gap-2">
@@ -32,7 +33,7 @@ const pages = paginate(projects, maxProjectsPerPage);
     }
   </Carousel>
 
-  <Gallery name="projects" label="Projects" count={projects.length} crossfade class="max-w-lg">
+  <Gallery name="projects" label={projectsText.title} count={projects.length} crossfade class="max-w-lg">
     {projects.map((project) => <ProjectDetail {...project} />)}
   </Gallery>
 </section>

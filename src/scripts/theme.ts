@@ -1,3 +1,4 @@
+import { toastText } from '../data/text';
 import { found } from './eggs';
 import { reducedMotion } from './motion';
 import { toast } from './toast';
@@ -85,7 +86,7 @@ const spinOut = async (icon: Element, spin: Animation) => {
 };
 
 const disco = () => {
-  toast('Disco mode');
+  toast(toastText.disco);
   found('disco');
   if (reducedMotion.matches) return;
 

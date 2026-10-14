@@ -4,6 +4,7 @@ import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
 import Card from '../ui/Card.astro';
 import type { ExperienceEntry } from '../../data/experience';
+import { aboutText } from '../../data/text';
 
 type Props = ExperienceEntry;
 
@@ -31,8 +32,8 @@ const { title, organization, period, href, logo, logoAlt, details } = Astro.prop
     <p class="text-muted">{details}</p>
   </div>
   <div class="shrink-0 p-6 pt-4">
-    <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`Visit website: ${organization}`}>
-      Visit website
+    <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`${aboutText.visit}: ${organization}`}>
+      {aboutText.visit}
     </Button>
   </div>
 </Card>
