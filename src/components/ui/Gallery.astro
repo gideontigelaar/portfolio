@@ -34,15 +34,17 @@ const navigation = [
 >
   <div class="fixed inset-x-0 -inset-y-1/2 -z-10 bg-zinc-950/50 backdrop-blur-sm" data-gallery-backdrop data-gallery-fade></div>
   <div class:list={['relative w-full shrink-0', className]}>
-    <div
-      class:list={[
-        'flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:max-h-[calc(100svh-var(--gallery-space))] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
-        count > 1 && 'cursor-grab active:cursor-grabbing',
-      ]}
-      data-gallery-track
-      data-swipe-fade
-    >
-      <slot />
+    <div class="pointer-events-none -m-1 overflow-clip p-1">
+      <div
+        class:list={[
+          'pointer-events-auto flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:max-h-[calc(100svh-var(--gallery-space))] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
+          count > 1 && 'cursor-grab active:cursor-grabbing',
+        ]}
+        data-gallery-track
+        data-swipe-fade
+      >
+        <slot />
+      </div>
     </div>
     {
       count > 1 &&
@@ -131,7 +133,9 @@ const navigation = [
 
   @supports (animation-timeline: scroll()) {
     :global([data-gallery-scroll]) {
-      animation: scroll-fade linear both;
+      animation-name: scroll-fade;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: scroll(self);
     }
   }

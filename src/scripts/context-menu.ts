@@ -1,6 +1,6 @@
 import { toastText } from '../data/text';
 import { count, found, total } from './eggs';
-import { usingKeyboard } from './press';
+import { restoreFocus, usingKeyboard } from './press';
 import { toggleTheme } from './theme';
 import { toast } from './toast';
 import { keepAboveDialogs } from './top-layer';
@@ -53,6 +53,7 @@ const canWriteImage =
   (!('supports' in ClipboardItem) || ClipboardItem.supports('image/png'));
 
 let opener: Source = 'mouse';
+let navigated = false;
 let target: Target = { text: '', label: '' };
 let returnFocus: HTMLElement | null = null;
 let hold: Hold | undefined;
@@ -82,6 +83,7 @@ const items = () =>
   [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')].filter((element) => !element.closest('[hidden]'));
 
 const focusItem = (item?: HTMLElement) => {
+  navigated = true;
   item?.focus({ preventScroll: true });
   item?.scrollIntoView({ block: 'nearest' });
 };
@@ -198,9 +200,28 @@ const cancelHold = () => {
   hold = undefined;
 };
 
+const openDialogs = () => [...document.querySelectorAll<HTMLDialogElement>('dialog[open]')];
+
+const dismiss = (dialog: HTMLDialogElement) =>
+  new Promise<void>((done) => {
+    dialog.addEventListener('close', () => done(), { once: true });
+    if (dialog.dispatchEvent(new Event('cancel', { cancelable: true }))) dialog.close();
+  });
+
+const goHome = async () => {
+  await Promise.all(openDialogs().reverse().map(dismiss));
+  if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  location.assign(home.href);
+};
+
 const show = (origin: Element | null, from: Source, secret: boolean, point?: { x: number; y: number }) => {
   cancelHold();
   target = resolve(origin, from === 'keyboard');
+  if (document.querySelector('dialog[data-gallery][open]')) {
+    themeItem.setAttribute('aria-disabled', 'true');
+  } else {
+    themeItem.removeAttribute('aria-disabled');
+  }
   actions.forEach((action) => (action.hidden = !available[action.dataset.action ?? '']?.(target)));
   const hasActions = actions.some((action) => !action.hidden);
   contextual.forEach((element) => (element.hidden = !hasActions));
@@ -214,6 +235,7 @@ const show = (origin: Element | null, from: Source, secret: boolean, point?: { x
     returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   }
   opener = from;
+  navigated = from === 'keyboard';
   pressing = from === 'touch' && touching;
   if (point) {
     place(point.x, point.y, point.x, point.y);
@@ -230,13 +252,18 @@ const show = (origin: Element | null, from: Source, secret: boolean, point?: { x
   }
 };
 
-const hide = (restore = true) => {
+const hide = (restore = true, instant = false) => {
   cancelHold();
   if (!isOpen()) return;
+  menu.toggleAttribute('data-instant', instant);
   menu.removeAttribute('data-open');
+  if (instant) {
+    void getComputedStyle(menu).opacity;
+    menu.removeAttribute('data-instant');
+  }
   const focused = document.activeElement;
   if (focused instanceof HTMLElement && isInside(focused)) {
-    if (restore) returnFocus?.focus({ preventScroll: true, focusVisible: usingKeyboard() });
+    if (restore && returnFocus) restoreFocus(returnFocus, navigated && usingKeyboard());
     if (isInside(document.activeElement)) focused.blur();
   }
   window.clearTimeout(closeTimer);
@@ -357,8 +384,9 @@ menu.addEventListener('click', (event) => {
   }
 
   if (item === themeItem) {
+    if (isDisabled(themeItem)) return;
     const [x, y] = event.detail ? [event.clientX, event.clientY] : center(themeItem);
-    hide();
+    hide(true, true);
     toggleTheme(x, y);
     return;
   }
@@ -368,6 +396,14 @@ menu.addEventListener('click', (event) => {
     found('secret-menu');
     aboutCount.textContent = `${count()}/${total()}`;
     if (!about.open) about.showModal();
+    return;
+  }
+
+  const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+  if (item === home && !modified && isSamePage(home) && openDialogs().length) {
+    event.preventDefault();
+    hide(false);
+    goHome();
     return;
   }
 
@@ -404,8 +440,11 @@ menu.addEventListener('keydown', (event) => {
     case 'PageDown':
       focusAt(-1);
       break;
-    case 'Escape':
     case 'Tab':
+      navigated = true;
+      hide();
+      break;
+    case 'Escape':
       hide();
       break;
     case 'Enter':

@@ -12,6 +12,7 @@
   import { keepAboveDialogs } from '../scripts/top-layer';
 
   const cursor = document.querySelector<HTMLElement>('[data-cursor]')!;
+  const bar = document.querySelector<HTMLElement>('[data-nav-bar]')!;
   const root = document.documentElement;
   const interactive =
     'a, button, [role="button"], [role="menuitem"], label, summary, input, select, textarea';
@@ -70,7 +71,8 @@
   );
 
   window.addEventListener('pointerover', (event) => {
-    cursor.toggleAttribute('data-hover', !!(event.target as Element).closest(interactive));
+    const control = (event.target as Element).closest(interactive);
+    cursor.toggleAttribute('data-hover', !!control && !control.matches(':disabled, [aria-disabled="true"]'));
   });
 
   window.addEventListener('pointerdown', (event) => {
@@ -81,4 +83,12 @@
   window.addEventListener('blur', () => setVisible(false));
   root.addEventListener('mouseleave', () => setVisible(false));
   keepAboveDialogs(cursor);
+
+  new MutationObserver(() => {
+    if (root.hasAttribute('data-theme-transition')) {
+      if (cursor.parentElement === document.body && current.y < bar.getBoundingClientRect().bottom) bar.append(cursor);
+    } else if (cursor.parentElement === bar) {
+      document.body.append(cursor);
+    }
+  }).observe(root, { attributeFilter: ['data-theme-transition'] });
 </script>

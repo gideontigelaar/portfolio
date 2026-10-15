@@ -38,7 +38,10 @@ const storeTheme = (dark: boolean) => {
   } catch {}
 };
 
-const clearReveal = () => revealProperties.forEach((property) => root.style.removeProperty(property));
+const clearReveal = () => {
+  revealProperties.forEach((property) => root.style.removeProperty(property));
+  root.removeAttribute('data-theme-transition');
+};
 
 const endTransition = () => {
   transition?.skipTransition();
@@ -46,11 +49,15 @@ const endTransition = () => {
   clearReveal();
 };
 
+const overlaid = () => root.hasAttribute('data-retro') || document.querySelector(':modal') !== null;
+
+const canAnimate = () => 'startViewTransition' in document && !reducedMotion.matches && !document.hidden && !overlaid();
+
 const setTheme = (dark: boolean, x: number, y: number, instant: boolean) => {
   storeTheme(dark);
   endTransition();
 
-  if (instant || !('startViewTransition' in document) || reducedMotion.matches) {
+  if (instant || !canAnimate()) {
     applyTheme(dark);
     return;
   }
@@ -59,6 +66,7 @@ const setTheme = (dark: boolean, x: number, y: number, instant: boolean) => {
   root.style.setProperty('--theme-x', `${x}px`);
   root.style.setProperty('--theme-y', `${y}px`);
   root.style.setProperty('--theme-radius', `${radius}px`);
+  root.setAttribute('data-theme-transition', '');
 
   const current = document.startViewTransition(() => applyTheme(dark));
   transition = current;
@@ -119,5 +127,5 @@ export const toggleTheme = (x: number, y: number) => {
 };
 
 systemDark.addEventListener('change', ({ matches }) => {
-  setTheme(matches, innerWidth / 2, innerHeight / 2, document.hidden);
+  setTheme(matches, innerWidth / 2, innerHeight / 2, false);
 });

@@ -20,143 +20,119 @@ const notices = [
   { angle: -10, color: '#962fbf' },
 ];
 const scatter = ['hover:-rotate-6', 'hover:rotate-6', 'hover:rotate-3', 'hover:-rotate-3'];
+const coreLanguages = languages.filter((language) => !language.optional).length;
 const galleryWidth = 768;
 const photoWidth = 1500;
 const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo.src.height }));
 ---
 
-<section
-  id="summary"
-  class="grid grid-cols-2 gap-4 pb-14 sm:grid-cols-3 sm:grid-rows-2 sm:gap-5 sm:pb-20"
->
-  <Card
-    class="@container col-span-2 flex flex-col justify-between gap-6 p-4 min-[360px]:p-5 sm:p-7"
-    data-enter
-    style="--delay: 3"
-  >
-    <span class="text-2xl tracking-tight">{summaryText.languages}</span>
-    <div class="flex justify-between">
-      {
-        languages.map((language) => (
-          <button
-            type="button"
-            aria-label={language.name}
-            data-language={language.name}
-            class:list={[
-              'press rounded-xl transition-[translate,scale,rotate,filter] duration-500 ease-spring',
-              language.hiddenOnMobile && 'hidden md:block',
-            ]}
-          >
-            <Image
-              src={language.icon}
-              alt=""
-              width={50}
-              height={50}
-              loading="eager"
-              data-language-icon
-              class="size-[min(2.5rem,17cqw)] sm:size-12.5"
-            />
-          </button>
-        ))
-      }
-    </div>
-  </Card>
-
-  <Card
-    class="group @container relative isolate flex aspect-square flex-col justify-between p-4 min-[360px]:p-5 sm:p-7"
-    data-enter
-    style="--delay: 4"
-  >
-    <EnvelopeSimpleIcon
-      class="absolute -right-5 -bottom-5 -z-10 hidden size-28 -rotate-14 text-zinc-200 transition duration-700 ease-spring group-hover:-translate-y-4 group-hover:-rotate-3 group-hover:duration-450 group-hover:ease-bounce group-has-data-copied:translate-x-24 group-has-data-copied:duration-700 group-has-data-copied:ease-spring group-has-data-copied:-translate-y-24 group-has-data-copied:rotate-14 group-has-data-copied:opacity-0 sm:block dark:text-zinc-800"
-      aria-hidden="true"
-    />
-    <span class="text-[length:min(1.5rem,21cqw)] leading-[calc(4/3)] tracking-tight">{summaryText.question}</span>
-    <CopyEmailButton email={site.email} />
-  </Card>
-
-  <Card
-    href={summaryText.whisp.href}
-    target="_blank"
-    rel="noopener noreferrer"
-    class="relative aspect-square shine press [--press-scale:0.97]"
-    data-tilt
-    data-enter
-    style="--delay: 5"
-  >
-    <Image src={whispLogo} alt={summaryText.whisp.alt} loading="eager" class="size-full object-cover" />
-  </Card>
-
-  <Card
-    class="col-span-2 flex flex-col gap-4 p-4 min-[360px]:p-5 sm:p-7 md:flex-row md:items-center md:justify-between md:gap-1"
-    data-enter
-    data-follow-card
-    style="--delay: 6"
-  >
-    <div class="contents md:flex md:h-full md:flex-col md:justify-between">
-      <div class="flex items-center gap-3 md:w-60">
-        <button
-          type="button"
-          aria-label={site.socials.instagram.name}
-          class="shrink-0 press rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
-          data-instagram-logo
-        >
-          <span class="relative block" data-instagram-icon>
-            <Image src={instagramIcon} alt="" loading="eager" width={35} height={35} />
-            <span aria-hidden="true" class="pointer-events-none absolute -top-0.5 -right-0.5">
-              {notices.map(({ angle, color }) => (
-                <span
-                  class="absolute top-0 left-0 h-[3px] w-2.5 origin-left rounded-full opacity-0"
-                  style={`rotate: ${angle}deg; background: ${color}`}
-                  data-notice
-                />
-              ))}
-            </span>
-          </span>
-        </button>
-        <span class="text-base text-muted">{site.socials.instagram.label}</span>
+<section id="summary" class="@container pb-14 sm:pb-20">
+  <div class="grid gap-(--gap)" data-bento>
+    <Card class="@container col-span-2 flex flex-col justify-between p-(--pad-wide)" data-enter style="--delay: 3">
+      <span class="text-(length:--title) leading-[calc(4/3)] tracking-tight">{summaryText.languages}</span>
+      <div class="flex justify-between" style={`--core: ${coreLanguages}; --all: ${languages.length}`} data-languages>
+        {
+          languages.map((language) => (
+            <button
+              type="button"
+              aria-label={language.name}
+              data-language={language.name}
+              data-optional={language.optional || undefined}
+              class="press rounded-xl transition-[translate,scale,rotate,filter] duration-500 ease-spring"
+            >
+              <Image src={language.icon} alt="" width={64} height={64} loading="eager" data-language-icon />
+            </button>
+          ))
+        }
       </div>
-      <Button
-        href={site.socials.instagram.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={summaryText.followLabel}
-        class="order-3"
-        data-follow
-      >
-        {summaryText.follow}
-      </Button>
-    </div>
+    </Card>
 
-    <div class="order-2 grid grid-cols-4 gap-2 md:grid-cols-2 md:gap-3">
-      {
-        photos.map((photo, i) => (
+    <Card class="group @container relative isolate flex flex-col justify-between p-(--pad)" data-enter style="--delay: 4">
+      <EnvelopeSimpleIcon
+        class="absolute -right-(--envelope-offset) -bottom-(--envelope-offset) -z-10 hidden size-(--envelope) -rotate-14 text-zinc-200 transition duration-700 ease-spring group-hover:-translate-y-4 group-hover:-rotate-3 group-hover:duration-450 group-hover:ease-bounce group-has-data-copied:translate-x-24 group-has-data-copied:duration-700 group-has-data-copied:ease-spring group-has-data-copied:-translate-y-24 group-has-data-copied:rotate-14 group-has-data-copied:opacity-0 @min-[8rem]:block dark:text-zinc-800"
+        aria-hidden="true"
+      />
+      <span class="text-[length:min(var(--title),20cqi)] leading-[calc(4/3)] tracking-tight">{summaryText.question}</span>
+      <CopyEmailButton email={site.email} />
+    </Card>
+
+    <Card
+      href={summaryText.whisp.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="relative shine press [--press-scale:0.97]"
+      data-tilt
+      data-enter
+      style="--delay: 5"
+    >
+      <Image src={whispLogo} alt={summaryText.whisp.alt} loading="eager" class="size-full object-cover" />
+    </Card>
+
+    <Card class="@container col-span-2 flex gap-(--space) p-(--pad-wide)" data-enter data-follow-card style="--delay: 6">
+      <div class="flex min-w-0 grow flex-col items-start justify-between">
+        <div class="flex max-w-full items-center gap-2 @min-[21rem]:gap-3">
           <button
             type="button"
-            aria-label={summaryText.openPhoto(photo.alt)}
-            class:list={[
-              'relative aspect-square press overflow-hidden rounded-xl transition duration-500 ease-spring hover:z-10 hover:scale-110 hover:shadow-lg',
-              scatter[i],
-            ]}
-            data-gallery-open="photos"
+            aria-label={site.socials.instagram.name}
+            class="shrink-0 press rounded-xl transition-transform duration-500 ease-spring hover:scale-115 hover:-rotate-12"
+            data-instagram-logo
           >
-            <Picture
-              src={photo.src}
-              alt={photo.alt}
-              formats={['avif']}
-              fallbackFormat="webp"
-              width={256}
-              widths={[96, 160, 256]}
-              sizes="(min-width: 768px) 64px, (min-width: 640px) 96px, calc(25vw - 24px)"
-              loading="eager"
-              pictureAttributes={{ class: 'contents' }}
-              class="size-full object-cover"
-            />
+            <span class="relative block" data-instagram-icon>
+              <Image src={instagramIcon} alt="" loading="eager" width={40} height={40} class="size-(--logo)" />
+              <span aria-hidden="true" class="pointer-events-none absolute -top-0.5 -right-0.5">
+                {notices.map(({ angle, color }) => (
+                  <span
+                    class="absolute top-0 left-0 h-[3px] w-2.5 origin-left rounded-full opacity-0"
+                    style={`rotate: ${angle}deg; background: ${color}`}
+                    data-notice
+                  />
+                ))}
+              </span>
+            </span>
           </button>
-        ))
-      }
-    </div>
-  </Card>
+          <span class="min-w-0 truncate text-(length:--handle) text-muted @max-[15rem]:hidden">{site.socials.instagram.label}</span>
+        </div>
+        <Button
+          href={site.socials.instagram.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={summaryText.followLabel}
+          data-follow
+        >
+          {summaryText.follow}
+        </Button>
+      </div>
+
+      <div class="grid aspect-square h-full shrink-0 grid-cols-2 grid-rows-2 gap-(--photo-gap)">
+        {
+          photos.map((photo, i) => (
+            <button
+              type="button"
+              aria-label={summaryText.openPhoto(photo.alt)}
+              class:list={[
+                'relative press overflow-hidden rounded-(--photo-radius) transition duration-500 ease-spring hover:z-10 hover:scale-110 hover:shadow-lg',
+                scatter[i],
+              ]}
+              data-gallery-open="photos"
+            >
+              <Picture
+                src={photo.src}
+                alt={photo.alt}
+                formats={['avif']}
+                fallbackFormat="webp"
+                width={256}
+                widths={[96, 160, 256]}
+                sizes="(min-width: 528px) 72px, calc(17vw - 12px)"
+                loading="eager"
+                pictureAttributes={{ class: 'contents' }}
+                class="size-full object-cover"
+              />
+            </button>
+          ))
+        }
+      </div>
+    </Card>
+  </div>
 </section>
 
 <Gallery name="photos" label={summaryText.photos} count={slides.length} class="max-w-3xl">
@@ -182,6 +158,56 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
 </Gallery>
 
 <style>
+  @property --cell {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 0px;
+  }
+
+  [data-bento] {
+    --cols: 2;
+    --gap: 1rem;
+    --cell: calc((100cqi - (var(--cols) - 1) * var(--gap)) / var(--cols));
+    --pad: clamp(1rem, 13%, 1.75rem);
+    --pad-wide: clamp(1rem, 13% / 2.1, 1.75rem);
+    --space: clamp(1rem, var(--cell) * 0.13, 1.75rem);
+    --title: clamp(1.125rem, var(--cell) * 0.115, 1.75rem);
+    --logo: clamp(1.5rem, var(--cell) * 0.165, 2.5rem);
+    --handle: clamp(0.75rem, var(--cell) * 0.095, 1rem);
+    --photo-gap: calc(var(--cell) * 0.055);
+    --photo-radius: calc(var(--cell) * 0.06);
+    --envelope: calc(var(--cell) * 0.53);
+    --envelope-offset: calc(var(--cell) * 0.095);
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    grid-auto-rows: var(--cell);
+  }
+
+  @container (width >= 30rem) {
+    [data-bento] {
+      --cols: 3;
+      --gap: 1.25rem;
+    }
+  }
+
+  [data-languages] {
+    --icons: var(--all);
+  }
+
+  @container (width < 17.5rem) {
+    [data-languages] {
+      --icons: var(--core);
+    }
+
+    [data-optional] {
+      display: none;
+    }
+  }
+
+  [data-language-icon] {
+    width: calc(100cqi / (var(--icons) + (var(--icons) - 1) * 0.35));
+    height: auto;
+  }
+
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     [data-language]:hover {
       translate: 0 -0.6rem;

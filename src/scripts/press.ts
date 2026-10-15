@@ -6,6 +6,21 @@ window.addEventListener('pointerdown', () => (keyboard = false), { capture: true
 
 export const usingKeyboard = () => keyboard;
 
+export const restoreFocus = (element: HTMLElement, visible: boolean) => {
+  if (document.activeElement === element) element.blur();
+  element.focus({ preventScroll: true, focusVisible: visible });
+  if (visible || !element.matches(':focus-visible')) return;
+  element.setAttribute('data-quiet-focus', '');
+  const settle = (event: Event) => {
+    if (event.type === 'blur' && !document.hasFocus()) return;
+    element.removeAttribute('data-quiet-focus');
+    element.removeEventListener('blur', settle);
+    window.removeEventListener('keydown', settle, true);
+  };
+  element.addEventListener('blur', settle);
+  window.addEventListener('keydown', settle, true);
+};
+
 const ghostWindow = 500;
 
 export const onActivate = (button: HTMLElement, callback: () => void) => {

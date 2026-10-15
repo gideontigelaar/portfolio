@@ -20,6 +20,8 @@ const item =
 const icon = 'size-4 shrink-0 transition-transform duration-300 ease-spring';
 const separator = 'my-1 shrink-0 border-t border-line';
 const newTabMotion = 'group-focus:translate-x-0.5 group-focus:-translate-y-0.5 group-focus:scale-125';
+const disabled = 'aria-disabled:cursor-default aria-disabled:opacity-50';
+const still = 'group-aria-disabled:rotate-none group-aria-disabled:scale-none';
 
 const actions = [
   { name: 'open', label: menuText.open, icon: ArrowsOutSimpleIcon, motion: 'group-focus:scale-125' },
@@ -37,7 +39,7 @@ const actions = [
   aria-label={menuText.label}
   tabindex="-1"
   inert
-  class="invisible fixed top-0 left-0 z-60 flex max-h-[calc(100dvh-1rem)] w-56 scale-95 flex-col overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,scale,visibility] duration-200 outline-none data-open:visible data-open:scale-100 data-open:opacity-100 data-open:blur-none data-open:transition-[opacity,filter,scale] data-open:duration-300 data-open:ease-spring motion-reduce:scale-100 motion-reduce:blur-none"
+  class="invisible fixed top-0 left-0 z-60 flex max-h-[calc(100dvh-1rem)] w-56 scale-95 flex-col overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface p-1.5 text-sm opacity-0 shadow-lg blur-[5px] transition-[opacity,filter,scale,visibility] duration-200 outline-none data-instant:transition-none data-open:visible data-open:scale-100 data-open:opacity-100 data-open:blur-none data-open:transition-[opacity,filter,scale] data-open:duration-300 data-open:ease-spring motion-reduce:scale-100 motion-reduce:blur-none"
   data-context-menu
 >
   <a
@@ -76,9 +78,9 @@ const actions = [
     <HouseIcon class:list={[icon, 'group-focus:-translate-y-0.5 group-focus:scale-125']} aria-hidden="true" />
     {navText.home}
   </a>
-  <button type="button" role="menuitem" tabindex="-1" class={item} data-context-theme>
-    <MoonIcon class:list={[icon, 'group-focus:-rotate-12 group-focus:scale-125 dark:hidden']} aria-hidden="true" />
-    <SunIcon class:list={[icon, 'hidden group-focus:rotate-45 group-focus:scale-125 dark:block']} aria-hidden="true" />
+  <button type="button" role="menuitem" tabindex="-1" class:list={[item, disabled]} data-context-theme>
+    <MoonIcon class:list={[icon, still, 'group-focus:-rotate-12 group-focus:scale-125 dark:hidden']} aria-hidden="true" />
+    <SunIcon class:list={[icon, still, 'hidden group-focus:rotate-45 group-focus:scale-125 dark:block']} aria-hidden="true" />
     <span class="dark:hidden">{navText.dark}</span>
     <span class="hidden dark:inline">{navText.light}</span>
   </button>

@@ -1,7 +1,7 @@
-export const maxDots = 5;
+export const maxDots = 4;
 
 export const dotWindow = (count: number, active: number) => {
-  const start = Math.max(0, Math.min(active - Math.floor(maxDots / 2), count - maxDots));
+  const start = Math.max(0, Math.min(active - Math.floor((maxDots - 1) / 2), count - maxDots));
   return {
     start,
     hidden: (i: number) => count > maxDots && (i < start || i >= start + maxDots),

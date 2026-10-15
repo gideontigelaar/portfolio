@@ -11,10 +11,9 @@ const links = [
 ];
 ---
 
-<div aria-hidden="true" class="pointer-events-none sticky top-0 z-40 -mb-16 h-16" data-nav-glass>
-  <div class="absolute inset-x-0 top-full h-6" data-nav-fade></div>
-</div>
-<header class="sticky top-0 z-50">
+<div aria-hidden="true" class="absolute inset-x-0 top-0 h-px" data-nav-sentinel></div>
+<div aria-hidden="true" class="pointer-events-none sticky top-0 z-40 -mb-16 h-16" data-nav-blur></div>
+<header class="sticky top-0 z-50" data-nav-bar>
   <nav class="mx-auto flex max-w-[700px] items-center justify-between px-2 py-3 min-[360px]:px-4 sm:px-1">
     <a href="/#home" aria-label={navText.home} data-home class="relative flex nav-item items-center p-2">
       <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
@@ -46,33 +45,19 @@ const links = [
 </header>
 
 <style>
-  [data-nav-glass] {
-    --nav-tint: color-mix(in oklab, var(--color-zinc-50) var(--nav-opacity, 90%), transparent);
-    background-color: var(--nav-tint);
-    -webkit-backdrop-filter: var(--nav-blur, blur(16px) saturate(1.5));
-    backdrop-filter: var(--nav-blur, blur(16px) saturate(1.5));
+  [data-nav-blur] {
+    backdrop-filter: var(--glass-filter);
   }
 
-  :global(.dark) [data-nav-glass] {
-    --nav-tint: color-mix(in oklab, var(--color-zinc-950) var(--nav-opacity, 90%), transparent);
+  [data-nav-bar] {
+    view-transition-name: nav;
+    background-color: var(--glass);
+    box-shadow: inset 0 -1px transparent;
+    transition: box-shadow 0.3s;
   }
 
-  [data-nav-fade] {
-    background-image: linear-gradient(var(--nav-tint), transparent);
-  }
-
-  @media (prefers-reduced-transparency: reduce) {
-    [data-nav-glass] {
-      --nav-opacity: 100%;
-      --nav-blur: none;
-    }
-  }
-
-  @supports (-moz-appearance: none) or (-webkit-touch-callout: none) {
-    [data-nav-glass] {
-      --nav-opacity: 100%;
-      --nav-blur: none;
-    }
+  [data-nav-bar][data-scrolled] {
+    box-shadow: inset 0 -1px var(--line);
   }
 </style>
 
@@ -86,6 +71,8 @@ const links = [
     top: number;
   }
 
+  const bar = document.querySelector<HTMLElement>('[data-nav-bar]')!;
+  const sentinel = document.querySelector<HTMLElement>('[data-nav-sentinel]')!;
   const home = document.querySelector<HTMLAnchorElement>('[data-home]')!;
   const list = document.querySelector<HTMLElement>('[data-nav]')!;
   const pill = list.querySelector<HTMLElement>('[data-nav-pill]')!;
@@ -141,6 +128,10 @@ const links = [
     sync();
   };
 
+  new IntersectionObserver((entries) => {
+    bar.toggleAttribute('data-scrolled', !entries[entries.length - 1].isIntersecting);
+  }).observe(sentinel);
+
   new ResizeObserver(() => {
     links.forEach((link) =>
       boxes.set(link, { width: link.offsetWidth, height: link.offsetHeight, left: link.offsetLeft, top: link.offsetTop }),
@@ -166,8 +157,8 @@ const links = [
 
     if (footer) {
       new IntersectionObserver(
-        ([entry]) => {
-          atBottom = entry.isIntersecting;
+        (entries) => {
+          atBottom = entries[entries.length - 1].isIntersecting;
           sync();
         },
         { rootMargin: '0px 0px 4px 0px', threshold: 1 },

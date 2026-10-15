@@ -1,7 +1,7 @@
 import { uiText } from '../data/text';
 import { windowDots } from './dots';
 import { reducedMotion, scrollTimelines } from './motion';
-import { onActivate, usingKeyboard } from './press';
+import { onActivate, restoreFocus, usingKeyboard } from './press';
 import { clampIndex, labelSlides, stepOf, swipe } from './swipe';
 import { inViewport } from './viewport';
 
@@ -50,6 +50,8 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   let closeQueued = false;
   let heading: number | undefined;
   let pressedBackdrop = false;
+  let origin: HTMLElement | undefined;
+  let keyboardNavigation = false;
 
   const fading = () => {
     const boxed = fades.filter(isBoxed);
@@ -191,8 +193,20 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       if (trigger) trigger.style.visibility = '';
       animations.forEach((animation) => animation.cancel());
       if (!opening && dialog.open) {
+        const focusTarget = trigger ?? origin;
+        const visible = keyboardNavigation && usingKeyboard();
         dialog.close();
-        if (usingKeyboard()) trigger?.focus({ preventScroll: true });
+        if (focusTarget) {
+          restoreFocus(focusTarget, visible);
+          dialog.addEventListener(
+            'close',
+            () => {
+              const active = document.activeElement;
+              if (active && active !== document.body && active !== focusTarget) restoreFocus(focusTarget, visible);
+            },
+            { once: true },
+          );
+        }
       }
       dialog.inert = false;
       track.style.removeProperty('overflow');
@@ -204,9 +218,11 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     }
   };
 
-  const open = (next: number) => {
+  const open = (next: number, opener: HTMLElement) => {
     if (busy || dialog.open) return;
     closeQueued = false;
+    origin = opener;
+    keyboardNavigation = usingKeyboard();
     items.forEach((item, i) => {
       const thumbnail = triggers[i]?.querySelector('img');
       if (item instanceof HTMLImageElement && thumbnail) {
@@ -237,7 +253,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   };
 
   openers.forEach((opener) =>
-    opener.addEventListener('click', () => open(Number(opener.dataset.galleryIndex ?? triggers.indexOf(opener)))),
+    opener.addEventListener('click', () => open(Number(opener.dataset.galleryIndex ?? triggers.indexOf(opener)), opener)),
   );
   dots.forEach((dot, i) => dot.addEventListener('click', () => navigate(i)));
 
@@ -260,6 +276,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   });
 
   dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab') keyboardNavigation = true;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault();
       shift(event.key === 'ArrowRight' ? 1 : -1);

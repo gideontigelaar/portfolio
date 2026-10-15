@@ -17,6 +17,7 @@ const intentDistance = 8;
 const dragSlop = 5;
 const flipDistance = 60;
 const settleFallback = 600;
+const scrollTolerance = 1;
 
 export const stepOf = (track: HTMLElement) => {
   const [first, second] = track.children as HTMLCollectionOf<HTMLElement>;
@@ -36,36 +37,29 @@ export const labelSlides = (slides: HTMLElement[]) =>
 const stretch = (distance: number, size: number) =>
   Math.sign(distance) * (1 - 1 / ((Math.abs(distance) * resistance) / size + 1)) * size;
 
-const createBounce = (track: HTMLElement, slides: HTMLElement[]) => {
+const createBounce = (track: HTMLElement) => {
   let offset = 0;
-  let returning: Animation[] = [];
+  let returning: Animation | undefined;
 
   const apply = (value: number) => {
-    const translate = value ? `${value}px` : '';
-    slides.forEach((slide) => (slide.style.translate = translate));
+    offset = value;
+    track.style.translate = value ? `${value}px` : '';
   };
 
   const pull = (position: number) => {
     if (reducedMotion.matches) return;
-    if (returning.length) {
-      returning.forEach((animation) => animation.cancel());
-      returning = [];
-    }
+    returning?.cancel();
+    returning = undefined;
     const max = track.scrollWidth - track.clientWidth;
     const overshoot = position - Math.min(Math.max(position, 0), max);
-    const native = track.scrollLeft < 0 || track.scrollLeft > max;
-    offset = overshoot && !native ? -stretch(overshoot, track.clientWidth * stretchRatio) : 0;
-    apply(offset);
+    const native = track.scrollLeft < -scrollTolerance || track.scrollLeft > max + scrollTolerance;
+    apply(overshoot && !native ? -stretch(overshoot, track.clientWidth * stretchRatio) : 0);
   };
 
   const release = () => {
     if (!offset) return;
-    const from = `${offset}px`;
-    offset = 0;
+    returning = track.animate({ translate: [`${offset}px`, '0px'] }, { duration: returnDuration, easing: smooth() });
     apply(0);
-    returning = slides.map((slide) =>
-      slide.animate({ translate: [from, '0px'] }, { duration: returnDuration, easing: smooth() }),
-    );
   };
 
   return { pull, release };
@@ -79,7 +73,7 @@ export const swipe = (
   const slides = [...track.children] as HTMLElement[];
   if (slides.length < 2) return () => {};
 
-  const bounce = createBounce(track, slides);
+  const bounce = createBounce(track);
   let frame = 0;
   let dragged = false;
   let timer = 0;
@@ -95,13 +89,19 @@ export const swipe = (
   const paint = () => {
     cancelAnimationFrame(frame);
     frame = 0;
-    if (scrollTimelines) return;
-    const progress = track.scrollLeft / stepOf(track);
-    slides.forEach((slide, i) => slide.style.setProperty('--distance', String(Math.min(Math.abs(i - progress), 1))));
+    if (scrollTimelines || !track.clientWidth) return;
+    const step = stepOf(track);
+    const range = (track.clientWidth + slides[0].offsetWidth) / 2;
+    const left = track.scrollLeft;
+    slides.forEach((slide, i) =>
+      slide.style.setProperty('--distance', String(Math.min(Math.abs(i * step - left) / range, 1))),
+    );
   };
 
   if (!scrollTimelines) {
-    track.addEventListener('scroll', () => (frame ||= requestAnimationFrame(paint)), { passive: true });
+    const schedule = () => (frame ||= requestAnimationFrame(paint));
+    track.addEventListener('scroll', schedule, { passive: true });
+    schedule();
   }
 
   const endTouch = () => {

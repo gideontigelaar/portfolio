@@ -31,6 +31,8 @@ try {
 
 export const isDesktop = () => !touchOnly.matches;
 
+export const onDeviceChange = (callback: () => void) => touchOnly.addEventListener('change', callback);
+
 const available = () => ids.filter((id) => registry[id] === 'all' || isDesktop());
 
 export const total = () => available().length;
@@ -40,6 +42,7 @@ export const count = () => available().filter((id) => discovered.has(id)).length
 const golden = () => document.documentElement.toggleAttribute('data-golden', count() === total());
 
 golden();
+onDeviceChange(golden);
 
 export const found = (egg: Egg) => {
   if (discovered.has(egg) || !available().includes(egg)) return;

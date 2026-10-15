@@ -9,7 +9,7 @@ import pythonIcon from '../assets/icons/skill-icons/python.svg';
 export interface Language {
   name: string;
   icon: ImageMetadata;
-  hiddenOnMobile?: boolean;
+  optional?: boolean;
 }
 
 export const languages: Language[] = [
@@ -17,6 +17,6 @@ export const languages: Language[] = [
   { name: 'MySQL', icon: mysqlIcon },
   { name: 'C++', icon: cppIcon },
   { name: 'Java', icon: javaIcon },
-  { name: 'Python', icon: pythonIcon, hiddenOnMobile: true },
+  { name: 'Python', icon: pythonIcon, optional: true },
   { name: 'C#', icon: csIcon },
 ];

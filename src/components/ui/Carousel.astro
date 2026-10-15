@@ -24,15 +24,17 @@ const icon = 'size-4.5 transition-transform duration-300 ease-spring';
   aria-label={paged ? label : undefined}
   data-carousel={paged || undefined}
 >
-  <div
-    class:list={[
-      paged &&
-        '-m-3 flex snap-x snap-mandatory items-start gap-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
-    ]}
-    data-carousel-pages
-    data-swipe-fade={paged || undefined}
-  >
-    <slot />
+  <div class:list={[paged && '-m-3 overflow-clip']}>
+    <div
+      class:list={[
+        paged &&
+          'flex snap-x snap-mandatory items-start gap-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
+      ]}
+      data-carousel-pages
+      data-swipe-fade={paged || undefined}
+    >
+      <slot />
+    </div>
   </div>
   {
     paged && (

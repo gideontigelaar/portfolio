@@ -40,97 +40,106 @@ import { notFoundText } from '../data/text';
 
 <script>
   import { notFoundText } from '../data/text';
-  import { found, isDesktop } from '../scripts/eggs';
+  import { found, isDesktop, onDeviceChange } from '../scripts/eggs';
   import { reducedMotion } from '../scripts/motion';
 
-  if (isDesktop()) {
-    const wrap = document.querySelector<HTMLElement>('[data-game-wrap]')!;
-    wrap.hidden = false;
+  const wrap = document.querySelector<HTMLElement>('[data-game-wrap]')!;
+  const area = wrap.querySelector<HTMLElement>('[data-game]')!;
+  const dot = area.querySelector<HTMLElement>('[data-game-dot]')!;
+  const core = dot.querySelector<HTMLElement>('[data-game-core]')!;
+  const score = wrap.querySelector<HTMLElement>('[data-game-score]')!;
+  const home = document.querySelector<HTMLElement>('[data-home-button]');
+  const goal = 5;
+  const zone = 28;
+  let caught = 0;
+  let playing = false;
+  let timer = 0;
+  let ready = false;
 
-    const area = wrap.querySelector<HTMLElement>('[data-game]')!;
-    const dot = area.querySelector<HTMLElement>('[data-game-dot]')!;
-    const core = dot.querySelector<HTMLElement>('[data-game-core]')!;
-    const score = wrap.querySelector<HTMLElement>('[data-game-score]')!;
-    const home = document.querySelector<HTMLElement>('[data-home-button]');
-    const goal = 5;
-    const zone = 28;
-    let caught = 0;
-    let playing = false;
-    let timer = 0;
+  const speed = () => 900 - caught * 120;
 
-    const speed = () => 900 - caught * 120;
+  const shrink = () => {
+    core.style.setProperty('--caught', String(caught));
+  };
 
-    const shrink = () => {
-      core.style.setProperty('--caught', String(caught));
-    };
+  const place = (x: number, y: number) => {
+    dot.style.translate = `${x}px ${y}px`;
+  };
 
-    const place = (x: number, y: number) => {
-      dot.style.translate = `${x}px ${y}px`;
-    };
+  const center = () => ({
+    x: (area.clientWidth - dot.offsetWidth) / 2,
+    y: (area.clientHeight - dot.offsetHeight) / 2,
+  });
 
-    const center = () => ({
-      x: (area.clientWidth - dot.offsetWidth) / 2,
-      y: (area.clientHeight - dot.offsetHeight) / 2,
-    });
+  const move = () => {
+    if (!playing) return;
+    const middle = center();
+    const duration = speed();
+    const near = Math.random() < 0.3;
+    const x = near ? middle.x + (Math.random() - 0.5) * 20 : Math.random() * middle.x * 2;
+    const y = near ? middle.y + (Math.random() - 0.5) * 20 : Math.random() * middle.y * 2;
+    dot.style.transitionDuration = `${duration}ms`;
+    place(x, y);
+    if (reducedMotion.matches) timer = window.setTimeout(move, duration);
+  };
 
-    const move = () => {
-      if (!playing) return;
-      const middle = center();
-      const duration = speed();
-      const near = Math.random() < 0.3;
-      const x = near ? middle.x + (Math.random() - 0.5) * 20 : Math.random() * middle.x * 2;
-      const y = near ? middle.y + (Math.random() - 0.5) * 20 : Math.random() * middle.y * 2;
-      dot.style.transitionDuration = `${duration}ms`;
-      place(x, y);
-      if (reducedMotion.matches) timer = window.setTimeout(move, duration);
-    };
+  const start = () => {
+    if (playing || caught >= goal) return;
+    playing = true;
+    score.textContent = notFoundText.score(caught, goal);
+    move();
+  };
 
-    const start = () => {
-      if (playing || caught >= goal) return;
-      playing = true;
+  const stop = () => {
+    playing = false;
+    window.clearTimeout(timer);
+  };
+
+  const miss = () => {
+    if (!playing || !caught) return;
+    caught -= 1;
+    shrink();
+    score.textContent = notFoundText.missed(caught, goal);
+    if (reducedMotion.matches) return;
+    area.animate(
+      { translate: ['0 0', '-4px 0', '4px 0', '-2px 0', '0 0'] },
+      { duration: 250, easing: 'ease-out' },
+    );
+  };
+
+  const win = () => {
+    stop();
+    score.textContent = notFoundText.win;
+    found('catch-the-dot');
+    if (reducedMotion.matches) return;
+    home?.animate(
+      { scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgb(59 130 246 / 0.5)', '0 0 0 12px rgb(59 130 246 / 0)', 'none'] },
+      { duration: 1000, iterations: 4, easing: 'ease-out', composite: 'add' },
+    );
+  };
+
+  const catchDot = () => {
+    if (!playing) return;
+    caught += 1;
+    shrink();
+    if (!reducedMotion.matches) dot.animate({ scale: [1.8, 1] }, { duration: 300, easing: 'ease-out' });
+
+    if (caught < goal) {
       score.textContent = notFoundText.score(caught, goal);
-      move();
-    };
-
-    const miss = () => {
-      if (!playing || !caught) return;
-      caught -= 1;
-      shrink();
-      score.textContent = notFoundText.missed(caught, goal);
-      if (reducedMotion.matches) return;
-      area.animate(
-        { translate: ['0 0', '-4px 0', '4px 0', '-2px 0', '0 0'] },
-        { duration: 250, easing: 'ease-out' },
-      );
-    };
-
-    const win = () => {
-      playing = false;
       window.clearTimeout(timer);
-      score.textContent = notFoundText.win;
-      found('catch-the-dot');
-      if (reducedMotion.matches) return;
-      home?.animate(
-        { scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgb(59 130 246 / 0.5)', '0 0 0 12px rgb(59 130 246 / 0)', 'none'] },
-        { duration: 1000, iterations: 4, easing: 'ease-out', composite: 'add' },
-      );
-    };
+      move();
+      return;
+    }
 
-    const catchDot = () => {
-      if (!playing) return;
-      caught += 1;
-      shrink();
-      if (!reducedMotion.matches) dot.animate({ scale: [1.8, 1] }, { duration: 300, easing: 'ease-out' });
+    win();
+  };
 
-      if (caught < goal) {
-        score.textContent = notFoundText.score(caught, goal);
-        window.clearTimeout(timer);
-        move();
-        return;
-      }
-
-      win();
-    };
+  const prepare = () => {
+    ready = true;
+    const middle = center();
+    place(middle.x, middle.y);
+    dot.style.transitionProperty = reducedMotion.matches ? 'none' : 'translate';
+    dot.style.transitionTimingFunction = 'ease-in-out';
 
     window.winGame = () => {
       caught = goal;
@@ -138,55 +147,62 @@ import { notFoundText } from '../data/text';
       win();
       return notFoundText.won;
     };
+  };
 
-    const middle = center();
-    place(middle.x, middle.y);
-    dot.style.transitionProperty = reducedMotion.matches ? 'none' : 'translate';
-    dot.style.transitionTimingFunction = 'ease-in-out';
+  const sync = () => {
+    wrap.hidden = !isDesktop();
+    if (wrap.hidden) {
+      stop();
+    } else if (!ready) {
+      prepare();
+    }
+  };
 
-    dot.addEventListener('transitionend', (event) => {
-      if (event.propertyName === 'translate') move();
-    });
+  dot.addEventListener('transitionend', (event) => {
+    if (event.propertyName === 'translate') move();
+  });
 
-    area.addEventListener('pointerenter', start);
-    area.addEventListener('focus', start);
+  area.addEventListener('pointerenter', start);
+  area.addEventListener('focus', start);
 
-    dot.addEventListener('pointerdown', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (!playing) {
-        start();
-        return;
-      }
-      catchDot();
-    });
-
-    area.addEventListener('pointerdown', () => {
-      if (playing) {
-        miss();
-        return;
-      }
+  dot.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!playing) {
       start();
-    });
+      return;
+    }
+    catchDot();
+  });
 
-    area.addEventListener('keydown', (event) => {
-      if (event.key !== ' ') return;
-      event.preventDefault();
-      if (!playing) {
-        start();
-        return;
-      }
-      const zoneRect = area.getBoundingClientRect();
-      const dotRect = dot.getBoundingClientRect();
-      const distance = Math.hypot(
-        dotRect.left + dotRect.width / 2 - (zoneRect.left + zoneRect.width / 2),
-        dotRect.top + dotRect.height / 2 - (zoneRect.top + zoneRect.height / 2),
-      );
-      if (distance <= zone) {
-        catchDot();
-      } else {
-        miss();
-      }
-    });
-  }
+  area.addEventListener('pointerdown', () => {
+    if (playing) {
+      miss();
+      return;
+    }
+    start();
+  });
+
+  area.addEventListener('keydown', (event) => {
+    if (event.key !== ' ') return;
+    event.preventDefault();
+    if (!playing) {
+      start();
+      return;
+    }
+    const zoneRect = area.getBoundingClientRect();
+    const dotRect = dot.getBoundingClientRect();
+    const distance = Math.hypot(
+      dotRect.left + dotRect.width / 2 - (zoneRect.left + zoneRect.width / 2),
+      dotRect.top + dotRect.height / 2 - (zoneRect.top + zoneRect.height / 2),
+    );
+    if (distance <= zone) {
+      catchDot();
+    } else {
+      miss();
+    }
+  });
+
+  sync();
+  onDeviceChange(sync);
 </script>
