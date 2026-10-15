@@ -34,8 +34,8 @@ const navigation = [
   data-crossfade={crossfade || undefined}
 >
   <div class="fixed inset-x-0 -inset-y-1/2 -z-10 bg-zinc-950/50 backdrop-blur-sm" data-gallery-backdrop data-gallery-fade></div>
-  <div class="@container w-full shrink-0">
-    <div class="relative mx-auto max-w-(--gallery-width)">
+  <div class="pointer-events-none @container w-full shrink-0">
+    <div class="pointer-events-auto relative mx-auto max-w-(--gallery-width)">
       <div class="pointer-events-none -mx-(--gallery-side) -my-1 overflow-clip py-1 lg:pointer-fine:-m-1 lg:pointer-fine:p-1">
         <div
           class:list={[
