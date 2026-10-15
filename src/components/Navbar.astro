@@ -13,36 +13,38 @@ const links = [
 
 <div aria-hidden="true" class="absolute inset-x-0 top-0 h-px" data-nav-sentinel></div>
 <div aria-hidden="true" class="pointer-events-none sticky top-0 z-40 -mb-16 h-16" data-nav-blur></div>
-<header class="sticky top-0 z-50" data-nav-bar>
-  <nav class="mx-auto flex max-w-[700px] items-center justify-between px-2 py-3 min-[360px]:px-4 sm:px-1">
-    <a href="/#home" aria-label={navText.home} data-home class="relative flex nav-item items-center p-2">
-      <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
-      <Zzz place="nav" class="-top-0.5 left-3/4" />
-    </a>
-    <ul class="relative isolate flex items-center gap-0.5 min-[340px]:gap-1" data-nav>
-      <li
-        aria-hidden="true"
-        class="absolute top-0 left-0 -z-10 rounded-full bg-zinc-200/70 opacity-0 transition-[translate,width,opacity] duration-500 ease-spring dark:bg-zinc-800"
-        data-nav-pill
-      >
-      </li>
-      {
-        links.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              class="nav-item px-1.5 py-1.5 text-sm aria-[current=true]:text-zinc-950 min-[340px]:px-2 min-[340px]:text-base min-[360px]:px-3 dark:aria-[current=true]:text-zinc-50"
-              data-nav-link
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <ThemeToggle />
-  </nav>
-</header>
+<div class="sticky top-0 z-50">
+  <header data-nav-bar>
+    <nav class="mx-auto flex max-w-[700px] items-center justify-between px-2 py-3 min-[360px]:px-4 sm:px-1">
+      <a href="/#home" aria-label={navText.home} data-home class="relative flex nav-item items-center p-2">
+        <HouseIcon class="size-6 origin-bottom" aria-hidden="true" />
+        <Zzz place="nav" class="-top-0.5 left-3/4" />
+      </a>
+      <ul class="relative isolate flex items-center gap-0.5 min-[340px]:gap-1" data-nav>
+        <li
+          aria-hidden="true"
+          class="absolute top-0 left-0 -z-10 rounded-full bg-zinc-200/70 opacity-0 transition-[translate,width,opacity] duration-500 ease-spring dark:bg-zinc-800"
+          data-nav-pill
+        >
+        </li>
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="nav-item px-1.5 py-1.5 text-sm aria-[current=true]:text-zinc-950 min-[340px]:px-2 min-[340px]:text-base min-[360px]:px-3 dark:aria-[current=true]:text-zinc-50"
+                data-nav-link
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ThemeToggle />
+    </nav>
+  </header>
+</div>
 
 <style>
   [data-nav-blur] {

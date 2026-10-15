@@ -28,7 +28,7 @@ const icon = 'size-4.5 transition-transform duration-300 ease-spring';
     <div
       class:list={[
         paged &&
-          'flex snap-x snap-mandatory items-start gap-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
+          'flex snap-x snap-mandatory items-start gap-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center *:snap-always any-pointer-coarse:overscroll-x-none [&::-webkit-scrollbar]:hidden',
       ]}
       data-carousel-pages
       data-swipe-fade={paged || undefined}

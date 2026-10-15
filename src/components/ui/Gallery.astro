@@ -37,7 +37,7 @@ const navigation = [
     <div class="pointer-events-none -m-1 overflow-clip p-1">
       <div
         class:list={[
-          'pointer-events-auto flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:max-h-[calc(100svh-var(--gallery-space))] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
+          'pointer-events-auto flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:max-h-[calc(100svh-var(--gallery-space))] *:w-full *:shrink-0 *:snap-center *:snap-always any-pointer-coarse:overscroll-x-none [&::-webkit-scrollbar]:hidden',
           count > 1 && 'cursor-grab active:cursor-grabbing',
         ]}
         data-gallery-track

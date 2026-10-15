@@ -17,7 +17,6 @@ const intentDistance = 8;
 const dragSlop = 5;
 const flipDistance = 60;
 const settleFallback = 600;
-const scrollTolerance = 1;
 
 export const stepOf = (track: HTMLElement) => {
   const [first, second] = track.children as HTMLCollectionOf<HTMLElement>;
@@ -39,7 +38,6 @@ const stretch = (distance: number, size: number) =>
 
 const createBounce = (track: HTMLElement) => {
   let offset = 0;
-  let returning: Animation | undefined;
 
   const apply = (value: number) => {
     offset = value;
@@ -48,17 +46,14 @@ const createBounce = (track: HTMLElement) => {
 
   const pull = (position: number) => {
     if (reducedMotion.matches) return;
-    returning?.cancel();
-    returning = undefined;
     const max = track.scrollWidth - track.clientWidth;
     const overshoot = position - Math.min(Math.max(position, 0), max);
-    const native = track.scrollLeft < -scrollTolerance || track.scrollLeft > max + scrollTolerance;
-    apply(overshoot && !native ? -stretch(overshoot, track.clientWidth * stretchRatio) : 0);
+    apply(-stretch(overshoot, track.clientWidth * stretchRatio));
   };
 
   const release = () => {
     if (!offset) return;
-    returning = track.animate({ translate: [`${offset}px`, '0px'] }, { duration: returnDuration, easing: smooth() });
+    track.animate({ translate: [`${offset}px`, '0px'] }, { duration: returnDuration, easing: smooth(), composite: 'add' });
     apply(0);
   };
 
