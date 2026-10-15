@@ -31,11 +31,11 @@ const maxEducationOnPage = 2;
     </div>
   </div>
 
-  <Gallery name="work" label={aboutText.work} count={work.length} crossfade class="max-w-md">
+  <Gallery name="work" label={aboutText.work} count={work.length} width="28rem" crossfade>
     {work.map((entry) => <ExperienceDetail {...entry} />)}
   </Gallery>
 
-  <Gallery name="education" label={aboutText.education} count={education.length} crossfade class="max-w-md">
+  <Gallery name="education" label={aboutText.education} count={education.length} width="28rem" crossfade>
     {education.map((entry) => <ExperienceDetail {...entry} />)}
   </Gallery>
 </section>

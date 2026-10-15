@@ -207,9 +207,7 @@
   [data-enter='text'] {
     animation-name: reveal-text;
   }
-}
 
-@media screen and (prefers-reduced-motion: no-preference) {
   html[data-js] [data-reveal]:not([data-revealed]) {
     opacity: 0;
   }

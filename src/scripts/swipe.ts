@@ -13,7 +13,6 @@ interface SwipeOptions {
 const resistance = 0.55;
 const stretchRatio = 0.5;
 const returnDuration = 600;
-const intentDistance = 8;
 const dragSlop = 5;
 const flipDistance = 60;
 const settleFallback = 600;
@@ -40,6 +39,7 @@ const createBounce = (track: HTMLElement) => {
   let offset = 0;
 
   const apply = (value: number) => {
+    if (value === offset) return;
     offset = value;
     track.style.translate = value ? `${value}px` : '';
   };
@@ -72,8 +72,6 @@ export const swipe = (
   let frame = 0;
   let dragged = false;
   let timer = 0;
-  let origin: { x: number; y: number; left: number } | undefined;
-  let horizontal: boolean | undefined;
 
   const restoreSnap = () => {
     window.clearTimeout(timer);
@@ -98,38 +96,6 @@ export const swipe = (
     track.addEventListener('scroll', schedule, { passive: true });
     schedule();
   }
-
-  const endTouch = () => {
-    origin = undefined;
-    bounce.release();
-  };
-
-  track.addEventListener(
-    'touchstart',
-    ({ touches }) => {
-      horizontal = undefined;
-      origin =
-        touches.length === 1 && enabled()
-          ? { x: touches[0].clientX, y: touches[0].clientY, left: track.scrollLeft }
-          : undefined;
-    },
-    { passive: true },
-  );
-
-  track.addEventListener(
-    'touchmove',
-    ({ touches }) => {
-      if (!origin || touches.length !== 1) return;
-      const dx = touches[0].clientX - origin.x;
-      const dy = touches[0].clientY - origin.y;
-      if (horizontal === undefined && Math.hypot(dx, dy) > intentDistance) horizontal = Math.abs(dx) > Math.abs(dy);
-      if (horizontal) bounce.pull(origin.left - dx);
-    },
-    { passive: true },
-  );
-
-  track.addEventListener('touchend', endTouch, { passive: true });
-  track.addEventListener('touchcancel', endTouch, { passive: true });
 
   host.addEventListener(
     'click',

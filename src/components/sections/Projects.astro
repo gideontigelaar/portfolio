@@ -33,7 +33,7 @@ const pages = paginate(projects, maxProjectsPerPage);
     }
   </Carousel>
 
-  <Gallery name="projects" label={projectsText.title} count={projects.length} crossfade class="max-w-lg">
+  <Gallery name="projects" label={projectsText.title} count={projects.length} width="32rem" crossfade>
     {projects.map((project) => <ProjectDetail {...project} />)}
   </Gallery>
 </section>

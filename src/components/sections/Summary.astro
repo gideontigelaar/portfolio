@@ -135,7 +135,7 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
   </div>
 </section>
 
-<Gallery name="photos" label={summaryText.photos} count={slides.length} class="max-w-3xl">
+<Gallery name="photos" label={summaryText.photos} count={slides.length} width={`${galleryWidth}px`}>
   {
     slides.map(({ src, alt, ratio }) => (
       <div class="grid place-items-center">

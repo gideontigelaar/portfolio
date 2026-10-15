@@ -9,11 +9,11 @@ interface Props {
   name: string;
   label: string;
   count: number;
+  width: string;
   crossfade?: boolean;
-  class?: string;
 }
 
-const { name, label, count, crossfade = false, class: className } = Astro.props;
+const { name, label, count, width, crossfade = false } = Astro.props;
 
 const pillButton =
   'group relative grid size-9 press place-items-center rounded-full bg-white/15 text-white transition-[background-color,scale] duration-300 ease-spring after:absolute after:-inset-1 hover:bg-white/25 lg:pointer-fine:hidden';
@@ -28,41 +28,44 @@ const navigation = [
   id={`${name}-gallery`}
   aria-label={label}
   tabindex="-1"
-  class="isolate m-0 size-full max-h-none max-w-none flex-col items-center justify-center gap-5 overflow-y-auto overscroll-contain bg-transparent p-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] text-zinc-950 outline-none [--gallery-space:calc(6.25rem+env(safe-area-inset-bottom))] backdrop:bg-transparent open:flex sm:px-18 sm:pb-4 sm:[--gallery-space:3.75rem] dark:text-zinc-50"
+  class="isolate m-0 size-full max-h-none max-w-none flex-col items-center justify-center gap-5 overflow-y-auto overscroll-contain bg-transparent px-(--gallery-pad) pt-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] text-zinc-950 outline-none [--gallery-pad:1rem] [--gallery-space:calc(6.25rem+env(safe-area-inset-bottom))] backdrop:bg-transparent open:flex sm:pb-4 sm:[--gallery-pad:4.5rem] sm:[--gallery-space:3.75rem] dark:text-zinc-50"
+  style={`--gallery-width: ${width}`}
   data-gallery={name}
   data-crossfade={crossfade || undefined}
 >
   <div class="fixed inset-x-0 -inset-y-1/2 -z-10 bg-zinc-950/50 backdrop-blur-sm" data-gallery-backdrop data-gallery-fade></div>
-  <div class:list={['relative w-full shrink-0', className]}>
-    <div class="pointer-events-none -m-1 overflow-clip p-1">
-      <div
-        class:list={[
-          'pointer-events-auto flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain [scrollbar-width:none] *:max-h-[calc(100svh-var(--gallery-space))] *:w-full *:shrink-0 *:snap-center *:snap-always any-pointer-coarse:overscroll-x-none [&::-webkit-scrollbar]:hidden',
-          count > 1 && 'cursor-grab active:cursor-grabbing',
-        ]}
-        data-gallery-track
-        data-swipe-fade
-      >
-        <slot />
+  <div class="@container w-full shrink-0">
+    <div class="relative mx-auto max-w-(--gallery-width)">
+      <div class="pointer-events-none -mx-(--gallery-side) -my-1 overflow-clip py-1 lg:pointer-fine:-m-1 lg:pointer-fine:p-1">
+        <div
+          class:list={[
+            'pointer-events-auto flex w-full snap-x snap-mandatory gap-(--gallery-gap) overflow-x-auto overscroll-x-contain px-(--gallery-side) [scrollbar-width:none] *:max-h-[calc(100svh-var(--gallery-space))] *:w-full *:shrink-0 *:snap-center *:snap-always lg:pointer-fine:gap-6 lg:pointer-fine:px-0 [&::-webkit-scrollbar]:hidden',
+            count > 1 && 'cursor-grab active:cursor-grabbing',
+          ]}
+          data-gallery-track
+          data-swipe-fade
+        >
+          <slot />
+        </div>
       </div>
+      {
+        count > 1 &&
+          navigation.map(({ icon: Icon, label, direction, position, nudge }) => (
+            <button
+              type="button"
+              aria-label={label}
+              class:list={[
+                'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 press place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-[color,background-color,scale] duration-300 ease-spring hover:bg-white/20 lg:pointer-fine:grid',
+                position,
+              ]}
+              data-gallery-shift={direction}
+              data-gallery-fade
+            >
+              <Icon class:list={['size-5 transition-transform duration-300 ease-spring', nudge]} aria-hidden="true" />
+            </button>
+          ))
+      }
     </div>
-    {
-      count > 1 &&
-        navigation.map(({ icon: Icon, label, direction, position, nudge }) => (
-          <button
-            type="button"
-            aria-label={label}
-            class:list={[
-              'group absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 press place-items-center rounded-full bg-white/10 text-white backdrop-blur-md transition-[color,background-color,scale] duration-300 ease-spring hover:bg-white/20 lg:pointer-fine:grid',
-              position,
-            ]}
-            data-gallery-shift={direction}
-            data-gallery-fade
-          >
-            <Icon class:list={['size-5 transition-transform duration-300 ease-spring', nudge]} aria-hidden="true" />
-          </button>
-        ))
-    }
   </div>
   <div
     class="fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto flex w-fit items-center gap-3 rounded-full bg-zinc-900/70 p-1 shadow-lg ring-1 ring-white/10 backdrop-blur-md backdrop-saturate-150 sm:contents"
@@ -119,6 +122,11 @@ const navigation = [
     syntax: '<length>';
     inherits: false;
     initial-value: 0px;
+  }
+
+  [data-gallery] {
+    --gallery-side: calc(var(--gallery-pad) + max(0px, (100cqi - var(--gallery-width)) / 2));
+    --gallery-gap: max(1.5rem, var(--gallery-side));
   }
 
   :global([data-gallery-scroll]) {

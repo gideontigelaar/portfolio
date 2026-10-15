@@ -41,7 +41,7 @@ const { email } = Astro.props;
 
       status.textContent = emailText.copied;
       button.setAttribute('data-copied', '');
-      clearTimeout(timeout);
+      window.clearTimeout(timeout);
       timeout = window.setTimeout(() => button.removeAttribute('data-copied'), 2000);
     });
   });

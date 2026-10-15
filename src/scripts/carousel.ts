@@ -7,7 +7,7 @@ import { clampIndex, labelSlides, stepOf, swipe } from './swipe';
 const enterDuration = 550;
 const enterStagger = 70;
 const blur = 'blur(8px)';
-const wide = matchMedia('(min-width: 40rem)');
+const wide = window.matchMedia('(min-width: 40rem)');
 
 document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
   const track = root.querySelector<HTMLElement>('[data-carousel-pages]')!;
