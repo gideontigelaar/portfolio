@@ -200,7 +200,6 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
           ghostRegions[i].scrollTop = region.scrollTop;
         });
         item.style.visibility = 'hidden';
-        if (!crossfade) trigger.style.visibility = 'hidden';
 
         animations.push(
           ghost.animate(
@@ -221,7 +220,6 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     } finally {
       ghost?.remove();
       if (item) item.style.visibility = '';
-      if (trigger) trigger.style.visibility = '';
       animations.forEach((animation) => animation.cancel());
       if (!opening && dialog.open) {
         const focusTarget = trigger ?? origin;
