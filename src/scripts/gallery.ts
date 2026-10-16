@@ -321,32 +321,10 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     region.scrollBy({ top: event.key === 'ArrowDown' ? 64 : -64, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
   });
 
-  let wheel = { time: -Infinity, navigated: -Infinity, vertical: false, used: false, last: 0 };
-
   dialog.addEventListener(
     'wheel',
     (event) => {
-      const dx = Math.abs(event.deltaX);
-      const dy = Math.abs(event.deltaY);
-      const surge =
-        wheel.vertical && wheel.used && dy > Math.max(wheel.last * 2, 12) && event.timeStamp - wheel.navigated > 300;
-      if (event.timeStamp - wheel.time > 200 || surge) {
-        wheel = { ...wheel, vertical: dy > dx, used: false };
-      }
-      wheel.time = event.timeStamp;
-      wheel.last = dy;
-      const navigates =
-        wheel.vertical &&
-        slides.length > 1 &&
-        dialog.scrollHeight <= dialog.clientHeight &&
-        !overflows(regionOf(event.target));
-      if (!busy && !navigates) return;
-      event.preventDefault();
-      if (busy) wheel.used = true;
-      if (wheel.used || dy < 4) return;
-      wheel.used = true;
-      wheel.navigated = event.timeStamp;
-      navigate((heading ?? index) + Math.sign(event.deltaY));
+      if (busy) event.preventDefault();
     },
     { passive: false },
   );
