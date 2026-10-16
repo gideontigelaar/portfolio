@@ -209,23 +209,27 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
   }
 
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered]) {
+    :global(:where(:root:not([data-hover-lock]))) [data-language]:hover,
+    [data-language][data-hovered] {
       translate: 0 -0.6rem;
       scale: 1.25;
       filter: drop-shadow(0 0.5rem 0.5rem rgb(0 0 0 / 0.15));
     }
 
-    [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered]):active {
+    :global(:where(:root:not([data-hover-lock]))) [data-language]:hover:active,
+    [data-language][data-hovered]:active {
       scale: 1.1;
     }
 
-    [data-language]:has(+ [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered])) {
+    :global(:where(:root:not([data-hover-lock]))) [data-language]:has(+ [data-language]:hover),
+    [data-language][data-next-hovered] {
       translate: 0 -0.25rem;
       scale: 1.1;
       rotate: -6deg;
     }
 
-    [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered]) + [data-language] {
+    :global(:where(:root:not([data-hover-lock]))) [data-language]:hover + [data-language],
+    [data-language][data-hovered] + [data-language] {
       translate: 0 -0.25rem;
       scale: 1.1;
       rotate: 6deg;

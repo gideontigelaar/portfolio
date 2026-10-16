@@ -4,8 +4,17 @@
 
 @custom-variant hover {
   @media (hover: hover) {
-    &:hover:where(:root:not([data-hover-lock]) *, [data-context-menu], [data-context-menu] *),
+    :where(:root:not([data-hover-lock]), [data-context-menu]) &:hover,
     &[data-hovered] {
+      @slot;
+    }
+  }
+}
+
+@custom-variant group-hover {
+  @media (hover: hover) {
+    :where(:root:not([data-hover-lock]), [data-context-menu]) :where(.group):hover &,
+    :where(.group)[data-hovered] & {
       @slot;
     }
   }
