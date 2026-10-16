@@ -9,6 +9,7 @@
 </div>
 
 <script>
+  import { hoverable, onHoverRelease } from '../scripts/hover-lock';
   import { keepAboveDialogs } from '../scripts/top-layer';
 
   const cursor = document.querySelector<HTMLElement>('[data-cursor]')!;
@@ -70,10 +71,16 @@
     { passive: true },
   );
 
-  window.addEventListener('pointerover', (event) => {
-    const control = (event.target as Element).closest(interactive);
-    cursor.toggleAttribute('data-hover', !!control && !control.matches(':disabled, [aria-disabled="true"]'));
-  });
+  const sync = (element?: Element) => {
+    const control = element?.closest(interactive);
+    cursor.toggleAttribute(
+      'data-hover',
+      !!control && hoverable(control) && !control.matches(':disabled, [aria-disabled="true"]'),
+    );
+  };
+
+  window.addEventListener('pointerover', (event) => sync(event.target as Element));
+  onHoverRelease(() => sync([...document.querySelectorAll(':hover')].at(-1)));
 
   window.addEventListener('pointerdown', (event) => {
     cursor.toggleAttribute('data-press', event.pointerType === 'mouse');

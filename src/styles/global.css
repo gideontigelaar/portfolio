@@ -2,11 +2,18 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@custom-variant group-hocus {
+@custom-variant hover {
   @media (hover: hover) {
-    &:is(:where(.group):hover *) {
+    &:hover:where(:root:not([data-hover-lock]) *, [data-context-menu], [data-context-menu] *),
+    &[data-hovered] {
       @slot;
     }
+  }
+}
+
+@custom-variant group-hocus {
+  @variant group-hover {
+    @slot;
   }
 
   &:is(:where(.group:not([data-quiet-focus])):focus-visible *) {
@@ -95,9 +102,15 @@
       transition: translate 0.9s var(--ease-smooth);
     }
 
-    @media (hover: hover) {
-      &:hover::after,
-      :where(.group):hover &::after {
+    @variant hover {
+      &::after {
+        translate: 100% 0;
+        transition: translate 0.9s var(--ease-smooth);
+      }
+    }
+
+    @variant group-hover {
+      &::after {
         translate: 100% 0;
         transition: translate 0.9s var(--ease-smooth);
       }
@@ -111,10 +124,8 @@
     background-size 0.3s var(--ease-smooth, ease-out),
     translate 0.3s var(--ease-smooth, ease-out);
 
-  @media (hover: hover) {
-    :where(.group):hover & {
-      background-size: 100% 1px;
-    }
+  @variant group-hover {
+    background-size: 100% 1px;
   }
 
   :where(.group:not([data-quiet-focus])):focus-visible & {

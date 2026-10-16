@@ -1,5 +1,6 @@
 import { toastText } from '../data/text';
 import { count, found, total } from './eggs';
+import { lockHover, releaseHover } from './hover-lock';
 import { restoreFocus, usingKeyboard } from './press';
 import { toggleTheme } from './theme';
 import { toast } from './toast';
@@ -243,6 +244,7 @@ const show = (origin: Element | null, from: Source, secret: boolean, point?: { x
     placeBy(origin);
   }
   window.clearTimeout(closeTimer);
+  lockHover();
   menu.inert = false;
   menu.setAttribute('data-open', '');
   if (from === 'keyboard') {
@@ -257,6 +259,7 @@ const hide = (restore = true, instant = false) => {
   if (!isOpen()) return;
   menu.toggleAttribute('data-instant', instant);
   menu.removeAttribute('data-open');
+  releaseHover();
   if (instant) {
     void getComputedStyle(menu).opacity;
     menu.removeAttribute('data-instant');

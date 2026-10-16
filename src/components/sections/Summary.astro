@@ -209,23 +209,23 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
   }
 
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    [data-language]:hover {
+    [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered]) {
       translate: 0 -0.6rem;
       scale: 1.25;
       filter: drop-shadow(0 0.5rem 0.5rem rgb(0 0 0 / 0.15));
     }
 
-    [data-language]:hover:active {
+    [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered]):active {
       scale: 1.1;
     }
 
-    [data-language]:has(+ [data-language]:hover) {
+    [data-language]:has(+ [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered])) {
       translate: 0 -0.25rem;
       scale: 1.1;
       rotate: -6deg;
     }
 
-    [data-language]:hover + [data-language] {
+    [data-language]:is(:hover:where(:root:not([data-hover-lock]) *), [data-hovered]) + [data-language] {
       translate: 0 -0.25rem;
       scale: 1.1;
       rotate: 6deg;
@@ -235,13 +235,19 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
 
 <script>
   import { found } from '../../scripts/eggs';
+  import { hoverable, onHoverRelease } from '../../scripts/hover-lock';
   import { playOnce, reducedMotion, smooth, spring } from '../../scripts/motion';
 
   const maxTilt = 10;
 
   document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
+    const level = () => {
+      card.style.removeProperty('--tilt-x');
+      card.style.removeProperty('--tilt-y');
+    };
+
     card.addEventListener('pointermove', (event) => {
-      if (event.pointerType !== 'mouse' || reducedMotion.matches) return;
+      if (event.pointerType !== 'mouse' || reducedMotion.matches || !hoverable(card)) return;
       const { left, top, width, height } = card.getBoundingClientRect();
       const x = (event.clientX - left) / width;
       const y = (event.clientY - top) / height;
@@ -250,8 +256,11 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
     });
 
     card.addEventListener('pointerleave', () => {
-      card.style.removeProperty('--tilt-x');
-      card.style.removeProperty('--tilt-y');
+      if (hoverable(card)) level();
+    });
+
+    onHoverRelease(() => {
+      if (!card.matches(':hover')) level();
     });
   });
 
@@ -401,7 +410,7 @@ const slides = photos.map((photo) => ({ ...photo, ratio: photo.src.width / photo
     };
 
     follow.addEventListener('pointerenter', ({ pointerType }) => {
-      if (pointerType === 'mouse') cheer();
+      if (pointerType === 'mouse' && hoverable(follow)) cheer();
     });
     follow.addEventListener('focus', () => {
       if (follow.matches(':focus-visible')) cheer();

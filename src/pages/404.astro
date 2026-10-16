@@ -41,6 +41,7 @@ import { notFoundText } from '../data/text';
 <script>
   import { notFoundText } from '../data/text';
   import { found, isDesktop, onDeviceChange } from '../scripts/eggs';
+  import { hoverable } from '../scripts/hover-lock';
   import { reducedMotion } from '../scripts/motion';
 
   const wrap = document.querySelector<HTMLElement>('[data-game-wrap]')!;
@@ -162,7 +163,9 @@ import { notFoundText } from '../data/text';
     if (event.propertyName === 'translate') move();
   });
 
-  area.addEventListener('pointerenter', start);
+  area.addEventListener('pointerenter', () => {
+    if (hoverable(area)) start();
+  });
   area.addEventListener('focus', start);
 
   dot.addEventListener('pointerdown', (event) => {
