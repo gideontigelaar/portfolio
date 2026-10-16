@@ -32,6 +32,33 @@ const fade = (region: HTMLElement) => {
 
 const focusable = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
+const settleDelay = 150;
+
+const readLink = () => {
+  try {
+    return decodeURIComponent(location.hash.slice(1)).split('/');
+  } catch {
+    return [];
+  }
+};
+
+const afterScroll = (done: () => void) => {
+  let timer = 0;
+  const finish = () => {
+    window.clearTimeout(timer);
+    window.removeEventListener('scroll', wait);
+    window.removeEventListener('scrollend', finish);
+    done();
+  };
+  const wait = () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(finish, settleDelay);
+  };
+  window.addEventListener('scroll', wait, { passive: true });
+  window.addEventListener('scrollend', finish);
+  wait();
+};
+
 document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((dialog) => {
   const track = dialog.querySelector<HTMLElement>('[data-gallery-track]')!;
   const slides = [...track.children] as HTMLElement[];
@@ -52,6 +79,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   let pressedBackdrop = false;
   let origin: HTMLElement | undefined;
   let keyboardNavigation = false;
+  let returnUrl = location.href;
 
   const fading = () => {
     const boxed = fades.filter(isBoxed);
@@ -69,10 +97,13 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
 
   const slideDots = windowDots(dots);
 
+  const linkTo = (i: number) => `#${dialog.dataset.gallery}/${slides[i].dataset.gallerySlug ?? i + 1}`;
+
   const select = (next: number) => {
     index = clamp(next);
     dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
     slideDots(index);
+    if (dialog.open) history.replaceState(history.state, '', linkTo(index));
   };
 
   const announce = () => {
@@ -231,6 +262,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     });
     if (status) status.textContent = '';
     heading = undefined;
+    returnUrl = location.hash.includes('/') ? `${location.pathname}${location.search}` : location.href;
     dialog.showModal();
     dialog.focus({ preventScroll: true });
     dialog.scrollTop = 0;
@@ -260,6 +292,8 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   dialog.querySelectorAll<HTMLButtonElement>('[data-gallery-shift]').forEach((button) => {
     onActivate(button, () => shift(Number(button.dataset.galleryShift)));
   });
+
+  dialog.addEventListener('close', () => history.replaceState(history.state, '', returnUrl));
 
   dialog.addEventListener('cancel', (event) => {
     event.preventDefault();
@@ -348,4 +382,28 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   const forget = () => (heading = undefined);
   track.addEventListener('pointerdown', forget, { passive: true });
   track.addEventListener('touchstart', forget, { passive: true });
+
+  const linked = () => {
+    const [name, key] = readLink();
+    if (name !== dialog.dataset.gallery || !key) return -1;
+    const position = Number(key);
+    if (Number.isInteger(position) && position > 0 && position <= slides.length) return position - 1;
+    return slides.findIndex((slide) => slide.dataset.gallerySlug === key);
+  };
+
+  const follow = () => {
+    const next = linked();
+    if (next < 0) return;
+    if (dialog.open) {
+      navigate(next);
+      return;
+    }
+    const anchor = triggers[next] ?? openers.at(-1);
+    if (!anchor || document.querySelector('dialog[open]')) return;
+    anchor.scrollIntoView({ block: 'center' });
+    afterScroll(() => open(next, anchor));
+  };
+
+  window.addEventListener('hashchange', follow);
+  follow();
 });

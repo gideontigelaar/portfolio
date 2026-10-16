@@ -5,13 +5,14 @@ import Button from '../ui/Button.astro';
 import Card from '../ui/Card.astro';
 import type { ExperienceEntry } from '../../data/experience';
 import { aboutText } from '../../data/text';
+import { slugify } from '../../lib/slug';
 
 type Props = ExperienceEntry;
 
 const { title, organization, period, href, logo, logoAlt, details } = Astro.props;
 ---
 
-<Card class="flex flex-col" data-gallery-item>
+<Card class="flex flex-col" data-gallery-item data-gallery-slug={slugify(organization)}>
   <div class="flex min-h-0 grow flex-col items-start gap-4 overflow-y-auto overscroll-y-contain p-6 pb-0" data-gallery-scroll>
     <Image
       src={logo}

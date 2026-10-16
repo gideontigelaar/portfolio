@@ -5,13 +5,14 @@ import Card from '../ui/Card.astro';
 import ProjectScreenshot from './ProjectScreenshot.astro';
 import type { Project } from '../../data/projects';
 import { projectsText } from '../../data/text';
+import { slugify } from '../../lib/slug';
 
 type Props = Project;
 
 const { title, year, description, details, tech, href, screenshot, screenshotDark } = Astro.props;
 ---
 
-<Card class="flex flex-col" data-gallery-item>
+<Card class="flex flex-col" data-gallery-item data-gallery-slug={slugify(title)}>
   <div class="flex min-h-0 grow flex-col gap-4 overflow-y-auto overscroll-y-contain p-3 pb-0" data-gallery-scroll>
     <ProjectScreenshot
       title={title}
