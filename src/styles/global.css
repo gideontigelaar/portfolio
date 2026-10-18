@@ -284,6 +284,14 @@
   }
 }
 
+[data-toast][data-gold] {
+  background:
+    linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.8) 50%, transparent 60%) 100% 0 / 300% 100% no-repeat,
+    linear-gradient(to right, #f59e0b, #fcd34d, #f59e0b);
+  color: #451a03;
+  box-shadow: 0 8px 28px -6px rgb(245 158 11 / 0.7);
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root),
 ::view-transition-old(nav),

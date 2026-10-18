@@ -1,6 +1,5 @@
 <script>
   import { toastText } from '../../data/text';
-  import { confetti } from '../../scripts/confetti';
   import { found } from '../../scripts/eggs';
   import { onSequence } from '../../scripts/keys';
   import { reducedMotion } from '../../scripts/motion';
@@ -24,7 +23,6 @@
       timer = window.setTimeout(() => root.removeAttribute('data-retro'), fade);
     }
 
-    if (!reducedMotion.matches) confetti();
     toast(on ? toastText.retroOn : toastText.retroOff);
     found('konami');
   });

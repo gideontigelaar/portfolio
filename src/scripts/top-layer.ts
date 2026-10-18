@@ -23,4 +23,5 @@ export const keepAboveDialogs = (element: HTMLElement) => {
     observer.observe(document.body, { subtree: true, attributeFilter: ['open'] });
   }
   dialogs.at(-1)?.append(element);
+  return () => elements.delete(element);
 };

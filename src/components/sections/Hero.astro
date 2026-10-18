@@ -85,19 +85,13 @@ import { heroText } from '../../data/text';
 
   const isGolden = () => document.documentElement.hasAttribute('data-golden');
 
-  const dropIn = (element: HTMLElement) => {
+  const wear = (element: HTMLElement) => {
+    element.hidden = false;
     if (reducedMotion.matches) return;
     element.animate(
       { translate: ['0 -6rem', '0 0'], opacity: [0, 1] },
       { duration: 700, delay: 150, easing: bounce(), fill: 'backwards' },
     );
-  };
-
-  const dropHat = () => {
-    found('party-hat');
-    if (isGolden()) return;
-    hat.removeAttribute('hidden');
-    dropIn(hat);
   };
 
   const pop = async (element: HTMLElement) => {
@@ -108,19 +102,13 @@ import { heroText } from '../../data/text';
         { duration: 450, easing: smooth() },
       ).finished.catch(() => {});
     }
-    element.setAttribute('hidden', '');
+    element.hidden = true;
   };
-
-  const placeCrown = (animate: boolean) => {
-    crown.removeAttribute('hidden');
-    if (animate) dropIn(crown);
-  };
-
-  if (isGolden()) placeCrown(false);
 
   window.addEventListener('eggs-complete', async () => {
-    if (!hat.hasAttribute('hidden')) await pop(hat);
-    placeCrown(true);
+    if (!crown.hidden) return;
+    if (!hat.hidden) await pop(hat);
+    wear(crown);
   });
 
   avatar.addEventListener('click', (event) => {
@@ -143,9 +131,10 @@ import { heroText } from '../../data/text';
       );
     }
 
-    if (spins >= spinsNeeded && hat.hasAttribute('hidden') && !isGolden()) {
+    if (spins >= spinsNeeded && hat.hidden && crown.hidden) {
       spins = 0;
-      dropHat();
+      wear(isGolden() ? crown : hat);
+      found('party-hat');
     }
   });
 

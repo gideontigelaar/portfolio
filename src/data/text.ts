@@ -71,10 +71,10 @@ export const contactText = {
 export const footerText = {
   milestones: [
     { clicks: 10, text: 'Warming up', shake: 0 },
-    { clicks: 25, text: 'On fire!', shake: 0.23 },
-    { clicks: 50, text: 'Unstoppable', shake: 0.38 },
-    { clicks: 100, text: 'Legendary', shake: 0.56 },
-    { clicks: 250, text: 'Maybe take a break?', shake: 0.75 },
+    { clicks: 25, text: 'On fire!', shake: 0.17 },
+    { clicks: 50, text: 'Unstoppable', shake: 0.28 },
+    { clicks: 100, text: 'Legendary', shake: 0.41 },
+    { clicks: 250, text: 'Maybe take a break?', shake: 0.55 },
   ],
   streak: (clicks: number, text: string) => `${clicks}× ${text}`,
   future: 'Welcome to the future!',

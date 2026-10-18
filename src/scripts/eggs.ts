@@ -1,4 +1,5 @@
 import { toastText } from '../data/text';
+import { confetti } from './confetti';
 import { toast } from './toast';
 
 const storageKey = 'easter-eggs';
@@ -51,6 +52,9 @@ export const found = (egg: Egg) => {
     localStorage.setItem(storageKey, JSON.stringify([...discovered]));
   } catch {}
   toast(toastText.eggFound(count(), total()));
-  if (count() === total()) toast(toastText.allEggs);
-  if (golden()) window.dispatchEvent(new Event('eggs-complete'));
+  if (!golden()) return;
+  toast(toastText.allEggs, { gold: true }).then(() => {
+    confetti();
+    window.dispatchEvent(new Event('eggs-complete'));
+  });
 };

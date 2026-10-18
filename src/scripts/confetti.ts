@@ -1,12 +1,17 @@
-const colors = ['#3b82f6', '#60a5fa', '#f59e0b', '#f43f5e', '#10b981', '#a855f7'];
+import { reducedMotion } from './motion';
+import { keepAboveDialogs } from './top-layer';
+
+const colors = ['#fef08a', '#fde68a', '#fcd34d', '#fbbf24', '#f59e0b', '#d97706'];
 const steps = 12;
 const pieces = 60;
 
 export const confetti = () => {
+  if (reducedMotion.matches) return;
   const layer = document.createElement('div');
   layer.setAttribute('aria-hidden', 'true');
   layer.className = 'pointer-events-none fixed inset-0 z-70 overflow-hidden';
   document.body.append(layer);
+  const release = keepAboveDialogs(layer);
 
   const falls = Array.from({ length: pieces }, () => {
     const piece = document.createElement('span');
@@ -37,5 +42,8 @@ export const confetti = () => {
     }).finished;
   });
 
-  Promise.allSettled(falls).then(() => layer.remove());
+  Promise.allSettled(falls).then(() => {
+    release();
+    layer.remove();
+  });
 };
