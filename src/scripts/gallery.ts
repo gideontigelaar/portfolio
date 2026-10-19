@@ -12,6 +12,11 @@ const isVisible = (rect: DOMRect) => rect.width > 0 && inViewport(rect);
 
 const isBoxed = (element: Element) => getComputedStyle(element).display !== 'contents';
 
+const images = (root: Element) =>
+  [root, ...root.querySelectorAll('img')].filter((element) => element instanceof HTMLImageElement);
+
+const loaded = (image?: HTMLImageElement) => !!image?.complete && image.naturalWidth > 0;
+
 const regionOf = (target: EventTarget | null) =>
   target instanceof Element ? target.closest<HTMLElement>('[data-gallery-scroll]') : null;
 
@@ -33,6 +38,8 @@ const fade = (region: HTMLElement) => {
 const focusable = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 const settleDelay = 150;
+
+const decodeLimit = 150;
 
 const readLink = () => {
   try {
@@ -149,7 +156,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     const trigger = triggers[index];
     if (!opening) trigger?.dispatchEvent(new Event('gallery-reveal', { bubbles: true }));
     let ghost: HTMLElement | undefined;
-    let animations: Animation[] = [];
+    const animations: Animation[] = [];
 
     try {
       const options: KeyframeAnimationOptions = {
@@ -160,12 +167,6 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       };
       const source = trigger?.getBoundingClientRect();
       const target = item?.getBoundingClientRect();
-      animations = fading().map((element) =>
-        element.animate(
-          element.dataset.galleryFade === 'rise' ? { opacity: [0, 1], translate: ['0 0.75rem', '0 0'] } : { opacity: [0, 1] },
-          options,
-        ),
-      );
 
       if (item && (!trigger || !source || !target || reducedMotion.matches || !isVisible(source) || !target.width)) {
         animations.push(item.animate({ opacity: [0, 1], scale: [0.95, 1] }, options));
@@ -188,10 +189,20 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
         });
         ghost.setAttribute('aria-hidden', 'true');
         ghost.inert = true;
-        if (ghost instanceof HTMLImageElement && item instanceof HTMLImageElement) {
-          ghost.removeAttribute('srcset');
-          ghost.removeAttribute('sizes');
-          ghost.src = item.currentSrc || trigger.querySelector('img')?.currentSrc || item.src;
+        const originals = images(item);
+        const thumbnails = images(trigger);
+        const decoding = images(ghost).map((image, i) => {
+          const available = [originals[i], thumbnails[i]].find(loaded);
+          if (!available) return undefined;
+          image.closest('picture')?.replaceWith(image);
+          image.removeAttribute('srcset');
+          image.removeAttribute('sizes');
+          image.loading = 'eager';
+          image.src = available.currentSrc;
+          return image.decode().catch(() => {});
+        });
+        if (!opening) {
+          await Promise.race([Promise.all(decoding), new Promise((resolve) => window.setTimeout(resolve, decodeLimit))]);
         }
         dialog.append(ghost);
         const ghostRegions = ghost.querySelectorAll<HTMLElement>('[data-gallery-scroll]');
@@ -216,6 +227,14 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
         );
       }
 
+      animations.push(
+        ...fading().map((element) =>
+          element.animate(
+            element.dataset.galleryFade === 'rise' ? { opacity: [0, 1], translate: ['0 0.75rem', '0 0'] } : { opacity: [0, 1] },
+            options,
+          ),
+        ),
+      );
       await Promise.allSettled(animations.map((animation) => animation.finished));
     } finally {
       ghost?.remove();
