@@ -19,6 +19,7 @@ const sizes = compact ? ['text-[0.5rem]', 'text-[0.625rem]', 'text-xs'] : ['text
 </span>
 
 <script>
+  import { sleepText } from '../../data/text';
   import { found } from '../../scripts/eggs';
   import { reducedMotion } from '../../scripts/motion';
   import { inViewport } from '../../scripts/viewport';
@@ -37,6 +38,12 @@ const sizes = compact ? ['text-[0.5rem]', 'text-[0.625rem]', 'text-xs'] : ['text
     timer = window.setTimeout(check, delay);
   };
 
+  const doze = () => {
+    sleeper = zzzs.find((zzz) => zzz.dataset.zzz === (avatarInView() ? 'hero' : 'nav'));
+    sleeper?.removeAttribute('hidden');
+    avatar?.setAttribute('data-sleeping', '');
+  };
+
   const check = () => {
     if (sleeper) return;
     const idle = performance.now() - lastActivity;
@@ -44,9 +51,7 @@ const sizes = compact ? ['text-[0.5rem]', 'text-[0.625rem]', 'text-xs'] : ['text
       arm(idleAfter - idle);
       return;
     }
-    sleeper = zzzs.find((zzz) => zzz.dataset.zzz === (avatarInView() ? 'hero' : 'nav'));
-    sleeper?.removeAttribute('hidden');
-    avatar?.setAttribute('data-sleeping', '');
+    doze();
   };
 
   const wake = () => {
@@ -85,6 +90,11 @@ const sizes = compact ? ['text-[0.5rem]', 'text-[0.625rem]', 'text-xs'] : ['text
     lastActivity = performance.now();
     if (!sleeper) arm();
   });
+
+  window.goToSleep = () => {
+    if (!sleeper) doze();
+    return sleepText.asleep;
+  };
 
   arm();
 </script>

@@ -22,8 +22,7 @@ export const work: ExperienceEntry[] = [
     href: 'https://www.dotsimpel.nl/',
     logo: dotsimpelLogo,
     logoAlt: 'Dotsimpel Logo',
-    details:
-      'Building new features and maintaining the Dotsimpel CMS for a wide range of customers, primarily using PHP, MySQL, and JavaScript.',
+    details: 'Building new features and maintaining the Dotsimpel CMS for a wide range of customers, primarily using PHP, MySQL, and JavaScript.',
   },
   {
     title: 'Assistant Store Manager',
@@ -32,8 +31,7 @@ export const work: ExperienceEntry[] = [
     href: 'https://www.aldi.nl/',
     logo: aldiNordLogo,
     logoAlt: 'ALDI Nord Logo',
-    details:
-      "Taking full charge of the store in the manager's absence and driving daily operations, from planning and guiding the team to keeping things on track.",
+    details: "Taking full charge of the store in the manager's absence and driving daily operations, from planning and guiding the team to keeping things on track.",
   },
 ];
 
@@ -45,8 +43,7 @@ export const education: ExperienceEntry[] = [
     href: 'https://www.hanze.nl/',
     logo: hanzeLogo,
     logoAlt: 'Hanze Logo',
-    details:
-      'Focusing on full-stack software development, system design, and agile teamwork in project-driven environments.',
+    details: 'Focusing on full-stack software development, system design, and agile teamwork in project-driven environments.',
   },
   {
     title: 'MBO 4, Software Development',
@@ -55,7 +52,6 @@ export const education: ExperienceEntry[] = [
     href: 'https://www.alfa-college.nl/',
     logo: alfaCollegeLogo,
     logoAlt: 'Alfa-college Logo',
-    details:
-      'Learned the fundamentals of software development, from coding basic apps and games to delivering projects for real clients.',
+    details: 'Learned the fundamentals of software development, from coding basic apps and games to delivering projects for real clients.',
   },
 ];

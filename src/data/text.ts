@@ -119,6 +119,10 @@ export const toastText = {
   allEggs: 'You found them all',
 };
 
+export const sleepText = {
+  asleep: 'Zzz... Move, scroll or press a key to wake up',
+};
+
 export const notFoundText = {
   title: `Page not found - ${site.name}`,
   heading: '404',
