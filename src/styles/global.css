@@ -323,6 +323,15 @@
   backdrop-filter: var(--glass-filter);
 }
 
+::view-transition-group(cursor),
+::view-transition-new(cursor) {
+  animation: none;
+}
+
+::view-transition-old(cursor) {
+  display: none;
+}
+
 @keyframes theme-reveal {
   from {
     clip-path: circle(0px at var(--theme-x) var(--theme-y));
