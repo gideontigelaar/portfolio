@@ -1,7 +1,10 @@
 import type { ImageMetadata } from 'astro';
+import bombermanScreenshot from '../assets/images/screenshots/bomberman.png';
 import fiscariepScreenshot from '../assets/images/screenshots/fiscariep.png';
 import groenwerfDarkScreenshot from '../assets/images/screenshots/groenwerf-dark.png';
 import groenwerfLightScreenshot from '../assets/images/screenshots/groenwerf-light.png';
+import projectArchitectureScreenshot from '../assets/images/screenshots/project-architecture.png';
+import ticTacToeScreenshot from '../assets/images/screenshots/tic-tac-toe.png';
 import whispScreenshot from '../assets/images/screenshots/whisp.png';
 
 export interface Project {
@@ -10,12 +13,21 @@ export interface Project {
   description: string;
   details: string;
   tech: string[];
-  href: string;
+  href?: string;
   screenshot: ImageMetadata;
   screenshotDark?: ImageMetadata;
 }
 
 export const projects: Project[] = [
+  {
+    title: 'Tic-Tac-Toe',
+    year: 2026,
+    description: 'A Tic-Tac-Toe game running on a custom game engine, written from scratch in Java using LWJGL.',
+    details: 'The engine supports scene management, animations, text rendering, and UI components like buttons and text fields.',
+    tech: ['Java', 'LWJGL', 'OpenGL'],
+    href: 'https://github.com/gideontigelaar/java-game-engine',
+    screenshot: ticTacToeScreenshot,
+  },
   {
     title: 'Groenwerf',
     year: 2026,
@@ -43,5 +55,21 @@ export const projects: Project[] = [
     tech: ['PHP', 'MySQL', 'Bootstrap'],
     href: 'https://github.com/gideontigelaar/whisp',
     screenshot: whispScreenshot,
+  },
+  {
+    title: 'Bomberman',
+    year: 2023,
+    description: 'A Bomberman game built with RT2D, an OpenGL framework written by my teacher.',
+    details: 'The project uses CMake for building, and the code is documented using Doxygen.',
+    tech: ['C++', 'RT2D', 'OpenGL'],
+    screenshot: bombermanScreenshot,
+  },
+  {
+    title: 'Project Architecture',
+    year: 2022,
+    description: 'A game made in Unity that showcases custom 3D models made in Blender.',
+    details: 'In the game, you repair an interactive village that was destroyed by a monster.',
+    tech: ['C#', 'Unity', 'Blender'],
+    screenshot: projectArchitectureScreenshot,
   },
 ];

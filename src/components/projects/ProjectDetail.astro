@@ -13,7 +13,7 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
 ---
 
 <Card class="flex flex-col" data-gallery-item data-gallery-slug={slugify(title)}>
-  <div class="flex min-h-0 grow flex-col gap-4 overflow-y-auto overscroll-y-contain p-3 pb-0" data-gallery-scroll>
+  <div class:list={['flex min-h-0 grow flex-col gap-4 overflow-y-auto overscroll-y-contain p-3', href ? 'pb-0' : 'pb-5']} data-gallery-scroll>
     <ProjectScreenshot
       title={title}
       screenshot={screenshot}
@@ -41,9 +41,13 @@ const { title, year, description, details, tech, href, screenshot, screenshotDar
       <p class="text-muted">{description} {details}</p>
     </div>
   </div>
-  <div class="shrink-0 px-5 pt-3 pb-5">
-    <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`${projectsText.github}: ${title}`}>
-      {projectsText.github}
-    </Button>
-  </div>
+  {
+    href && (
+      <div class="shrink-0 px-5 pt-3 pb-5">
+        <Button href={href} target="_blank" rel="noopener noreferrer" aria-label={`${projectsText.github}: ${title}`}>
+          {projectsText.github}
+        </Button>
+      </div>
+    )
+  }
 </Card>

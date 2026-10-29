@@ -15,7 +15,7 @@ export const GET: APIRoute = ({ site: origin }) => {
     '',
     `## ${llmsText.projects}`,
     '',
-    ...projects.map(({ title, year, href, description }) => `- [${title} (${year})](${href}): ${description}`),
+    ...projects.map(({ title, year, href, description }) => href ? `- [${title} (${year})](${href}): ${description}` : `- ${title} (${year}): ${description}`),
     '',
     `## ${llmsText.experience}`,
     '',

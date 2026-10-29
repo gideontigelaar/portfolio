@@ -207,8 +207,10 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
         dialog.append(ghost);
         const ghostRegions = ghost.querySelectorAll<HTMLElement>('[data-gallery-scroll]');
         item.querySelectorAll<HTMLElement>('[data-gallery-scroll]').forEach((region, i) => {
-          ghostRegions[i].style.overflow = 'hidden';
-          ghostRegions[i].scrollTop = region.scrollTop;
+          const ghostRegion = ghostRegions[i];
+          ghostRegion.style.overflow = 'hidden';
+          ghostRegion.scrollTop = region.scrollTop;
+          if (region.scrollHeight <= region.clientHeight) ghostRegion.style.maskImage = 'none';
         });
         item.style.visibility = 'hidden';
 
