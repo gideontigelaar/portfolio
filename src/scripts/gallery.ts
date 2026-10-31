@@ -76,10 +76,17 @@ const readLink = () => {
   }
 };
 
-const afterScroll = (done: () => void) => {
+const scrollLimit = 2000;
+
+const afterScroll = (target: Element, done: () => void) => {
   let timer = 0;
+  const start = performance.now();
   const finish = () => {
     window.clearTimeout(timer);
+    if (!isVisible(target.getBoundingClientRect()) && performance.now() - start < scrollLimit) {
+      wait();
+      return;
+    }
     window.removeEventListener('scroll', wait);
     window.removeEventListener('scrollend', finish);
     done();
@@ -133,11 +140,20 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
 
   const linkTo = (i: number) => `#${dialog.dataset.gallery}/${slides[i].dataset.gallerySlug ?? i + 1}`;
 
+  const preload = () =>
+    [index, index + 1, index - 1].forEach((i) =>
+      images(slides[(i + slides.length) % slides.length])
+        .filter(rendered)
+        .forEach((image) => (image.loading = 'eager')),
+    );
+
   const select = (next: number) => {
     index = clamp(next);
     dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
     slideDots(index);
-    if (dialog.open) history.replaceState(history.state, '', linkTo(index));
+    if (!dialog.open) return;
+    history.replaceState(history.state, '', linkTo(index));
+    preload();
   };
 
   const announce = () => {
@@ -423,7 +439,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     const anchor = triggers[next] ?? openers.at(-1);
     if (!anchor || document.querySelector('dialog[open]')) return;
     anchor.scrollIntoView({ block: 'center' });
-    afterScroll(() => open(next, anchor));
+    afterScroll(anchor, () => open(next, anchor));
   };
 
   window.addEventListener('hashchange', follow);
