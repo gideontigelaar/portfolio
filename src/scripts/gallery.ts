@@ -15,7 +15,31 @@ const isBoxed = (element: Element) => getComputedStyle(element).display !== 'con
 const images = (root: Element) =>
   [root, ...root.querySelectorAll('img')].filter((element) => element instanceof HTMLImageElement);
 
-const loaded = (image?: HTMLImageElement) => !!image?.complete && image.naturalWidth > 0;
+const loaded = (image?: HTMLImageElement): image is HTMLImageElement => !!image?.complete && image.naturalWidth > 0;
+
+const rendered = (image: HTMLImageElement) => image.getClientRects().length > 0;
+
+const decoded = (image: HTMLImageElement) =>
+  new Promise((resolve, reject) => {
+    if (image.complete) return resolve(undefined);
+    image.addEventListener('load', resolve, { once: true });
+    image.addEventListener('error', reject, { once: true });
+  }).then(() => image.decode());
+
+const placehold = (image: HTMLImageElement, thumbnail?: HTMLImageElement) => {
+  if (!loaded(thumbnail) || thumbnail.currentSrc === image.currentSrc) return;
+  const placeholder = {
+    'background-image': `url("${thumbnail.currentSrc}")`,
+    'background-position': getComputedStyle(image).objectPosition,
+    'background-size': 'cover',
+    color: 'transparent',
+  };
+  Object.entries(placeholder).forEach(([property, value]) => image.style.setProperty(property, value));
+  decoded(image).then(
+    () => Object.keys(placeholder).forEach((property) => image.style.removeProperty(property)),
+    () => {},
+  );
+};
 
 const regionOf = (target: EventTarget | null) =>
   target instanceof Element ? target.closest<HTMLElement>('[data-gallery-scroll]') : null;
@@ -40,6 +64,9 @@ const focusable = 'a[href], button, input, select, textarea, [tabindex]:not([tab
 const settleDelay = 150;
 
 const decodeLimit = 150;
+
+const settle = (decoding: unknown[]) =>
+  Promise.race([Promise.all(decoding), new Promise((resolve) => window.setTimeout(resolve, decodeLimit))]);
 
 const readLink = () => {
   try {
@@ -155,6 +182,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     const item = items[index];
     const trigger = triggers[index];
     if (!opening) trigger?.dispatchEvent(new Event('gallery-reveal', { bubbles: true }));
+    const ready = opening && item ? images(item).filter(rendered).map((image) => decoded(image).catch(() => {})) : [];
     let ghost: HTMLElement | undefined;
     const animations: Animation[] = [];
 
@@ -201,9 +229,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
           image.src = available.currentSrc;
           return image.decode().catch(() => {});
         });
-        if (!opening) {
-          await Promise.race([Promise.all(decoding), new Promise((resolve) => window.setTimeout(resolve, decodeLimit))]);
-        }
+        if (!opening) await settle(decoding);
         dialog.append(ghost);
         const ghostRegions = ghost.querySelectorAll<HTMLElement>('[data-gallery-scroll]');
         item.querySelectorAll<HTMLElement>('[data-gallery-scroll]').forEach((region, i) => {
@@ -238,6 +264,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
         ),
       );
       await Promise.allSettled(animations.map((animation) => animation.finished));
+      if (ghost) await settle(ready);
     } finally {
       ghost?.remove();
       if (item) item.style.visibility = '';
@@ -274,10 +301,8 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     origin = opener;
     keyboardNavigation = usingKeyboard();
     items.forEach((item, i) => {
-      const thumbnail = triggers[i]?.querySelector('img');
-      if (item instanceof HTMLImageElement && thumbnail) {
-        item.style.background = `center / cover url("${thumbnail.currentSrc}")`;
-      }
+      const thumbnails = triggers[i] ? images(triggers[i]) : [];
+      images(item).forEach((image, j) => placehold(image, thumbnails[j]));
     });
     if (status) status.textContent = '';
     heading = undefined;
