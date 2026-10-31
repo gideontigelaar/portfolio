@@ -147,6 +147,15 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
     anchor();
   }).observe(track);
 
+  new IntersectionObserver(
+    (entries, observer) => {
+      if (!entries.some(({ isIntersecting }) => isIntersecting)) return;
+      observer.disconnect();
+      track.querySelectorAll('img').forEach((image) => (image.loading = 'eager'));
+    },
+    { rootMargin: '100% 0px' },
+  ).observe(track);
+
   root.addEventListener('gallery-reveal', ({ target }) => {
     const item = items.findIndex((candidate) => target instanceof Node && candidate.contains(target));
     const page = Math.floor(item / size);
