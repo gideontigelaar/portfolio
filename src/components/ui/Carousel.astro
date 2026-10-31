@@ -40,7 +40,7 @@ const icon = 'size-4.5 transition-transform duration-300 ease-spring';
       class:list={[
         'grid items-start gap-y-6 sm:gap-y-2',
         paged &&
-          'auto-cols-[100%] grid-flow-col grid-rows-[repeat(var(--per-page-mobile),auto)] snap-x snap-mandatory gap-x-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:snap-center *:snap-always sm:grid-rows-[repeat(var(--per-page),auto)] [&::-webkit-scrollbar]:hidden',
+          'auto-cols-[100%] grid-flow-col grid-rows-[repeat(var(--per-page-mobile),auto)] snap-x snap-mandatory gap-x-6 overflow-x-auto overscroll-x-contain p-3 [overflow-anchor:none] [scrollbar-width:none] *:snap-center *:snap-always sm:grid-rows-[repeat(var(--per-page),auto)] [&::-webkit-scrollbar]:hidden',
       ]}
       style={paged ? `--per-page: ${perPage}; --per-page-mobile: ${perPageMobile}` : undefined}
       data-carousel-pages

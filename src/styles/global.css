@@ -30,6 +30,8 @@
   }
 }
 
+@custom-variant active (&:active:not(:where([data-swiping] *)));
+
 @theme inline {
   --font-sans: var(--font-manrope);
   --color-surface: var(--surface);
@@ -78,11 +80,22 @@
 
 @utility press {
   @media (prefers-reduced-motion: no-preference) {
-    &:active {
+    &:active:not(:where([data-swiping] *)) {
       scale: var(--press-scale, 0.95);
       transition-duration: 0.1s;
       transition-timing-function: ease-out;
     }
+  }
+
+  @media (pointer: coarse) {
+    :where([data-swipe-fade]) &:active {
+      scale: none;
+      transition-delay: 0.15s;
+    }
+  }
+
+  :where([data-swiping]) &:active {
+    transition: none;
   }
 }
 
@@ -233,6 +246,12 @@
   }
 }
 
+@property --distance {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
 [data-swipe-fade] {
   --swipe-opacity: 0.2;
   --swipe-scale: 0.9;
@@ -241,30 +260,26 @@
 @keyframes swipe-fade {
   0%,
   100% {
-    opacity: var(--swipe-opacity);
-    scale: var(--swipe-scale);
+    --distance: 1;
   }
 
   50% {
-    opacity: 1;
-    scale: 1;
+    --distance: 0;
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  [data-swipe-fade] > * {
+    opacity: calc(1 - (1 - var(--swipe-opacity)) * var(--distance));
+    scale: calc(1 - (1 - var(--swipe-scale)) * var(--distance));
+  }
+
   @supports (animation-timeline: scroll()) {
     [data-swipe-fade] > * {
       animation-name: swipe-fade;
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: view(inline);
-    }
-  }
-
-  @supports not (animation-timeline: scroll()) {
-    [data-swipe-fade] > * {
-      opacity: calc(1 - (1 - var(--swipe-opacity)) * var(--distance, 0));
-      scale: calc(1 - (1 - var(--swipe-scale)) * var(--distance, 0));
     }
   }
 }

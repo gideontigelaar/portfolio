@@ -69,6 +69,18 @@ export const swipe = (
   const slides = [...track.children] as HTMLElement[];
   if (slides.length < 2) return () => {};
 
+  let touching = false;
+  track.addEventListener(
+    'pointerdown',
+    ({ pointerType }) => {
+      touching = pointerType !== 'mouse';
+      track.removeAttribute('data-swiping');
+    },
+    { passive: true },
+  );
+  track.addEventListener('pointercancel', () => track.toggleAttribute('data-swiping', true), { passive: true });
+  track.addEventListener('scroll', () => touching && track.toggleAttribute('data-swiping', true), { passive: true });
+
   const bounce = createBounce(track);
   let frame = 0;
   let dragged = false;

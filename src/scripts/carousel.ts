@@ -129,6 +129,14 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
   );
 
   track.addEventListener('pointerdown', forget, { passive: true });
+  track.addEventListener(
+    'pointerdown',
+    ({ pointerType }) => {
+      if (pointerType === 'mouse') return;
+      contents.forEach((content) => content.getAnimations().forEach((animation) => animation.finish()));
+    },
+    { passive: true },
+  );
   track.addEventListener('touchstart', forget, { passive: true });
 
   new ResizeObserver(() => {
