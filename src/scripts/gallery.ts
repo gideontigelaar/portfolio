@@ -190,8 +190,11 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     go(heading);
   };
 
+  const block = (event: WheelEvent) => event.preventDefault();
+
   const animate = async (opening: boolean) => {
     busy = true;
+    dialog.addEventListener('wheel', block, { passive: false });
     dialog.inert = !opening;
     track.style.overflow = 'hidden';
     if (!opening) go(index, 'instant');
@@ -303,6 +306,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
       }
       dialog.inert = false;
       track.style.removeProperty('overflow');
+      dialog.removeEventListener('wheel', block);
       busy = false;
       if (closeQueued && dialog.open) {
         closeQueued = false;
@@ -382,14 +386,6 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
     event.preventDefault();
     region.scrollBy({ top: event.key === 'ArrowDown' ? 64 : -64, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
   });
-
-  dialog.addEventListener(
-    'wheel',
-    (event) => {
-      if (busy) event.preventDefault();
-    },
-    { passive: false },
-  );
 
   track.addEventListener(
     'scroll',
