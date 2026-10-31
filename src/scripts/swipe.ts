@@ -18,8 +18,9 @@ const flipDistance = 60;
 const settleFallback = 600;
 
 export const stepOf = (track: HTMLElement) => {
-  const [first, second] = track.children as HTMLCollectionOf<HTMLElement>;
-  return (second ? second.offsetLeft - first.offsetLeft : 0) || track.clientWidth || 1;
+  const [first, ...rest] = track.children as HTMLCollectionOf<HTMLElement>;
+  const next = rest.find((slide) => slide.offsetLeft !== first.offsetLeft);
+  return (next ? next.offsetLeft - first.offsetLeft : 0) || track.clientWidth || 1;
 };
 
 export const clampIndex = (value: number, count: number) =>
@@ -83,11 +84,10 @@ export const swipe = (
     cancelAnimationFrame(frame);
     frame = 0;
     if (scrollTimelines || !track.clientWidth) return;
-    const step = stepOf(track);
     const range = (track.clientWidth + slides[0].offsetWidth) / 2;
-    const left = track.scrollLeft;
-    slides.forEach((slide, i) =>
-      slide.style.setProperty('--distance', String(Math.min(Math.abs(i * step - left) / range, 1))),
+    const left = track.scrollLeft + slides[0].offsetLeft;
+    slides.forEach((slide) =>
+      slide.style.setProperty('--distance', String(Math.min(Math.abs(slide.offsetLeft - left) / range, 1))),
     );
   };
 

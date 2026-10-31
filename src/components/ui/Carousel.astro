@@ -7,11 +7,22 @@ import { uiText } from '../../data/text';
 interface Props {
   label: string;
   count: number;
+  perPage: number;
+  perPageMobile: number;
   class?: string;
 }
 
-const { label, count, class: className } = Astro.props;
-const paged = count > 1;
+const { label, count, perPage, perPageMobile, class: className } = Astro.props;
+const pages = Math.ceil(count / perPage);
+const pagesMobile = Math.ceil(count / perPageMobile);
+const paged = Math.max(pages, pagesMobile) > 1;
+const controls =
+  pages === pagesMobile
+    ? [{ pages, visibility: undefined }]
+    : [
+        { pages: pagesMobile, visibility: 'sm:hidden' },
+        { pages, visibility: 'max-sm:hidden' },
+      ];
 const control =
   'group relative grid size-9 shrink-0 press place-items-center rounded-full bg-current/10 transition-[background-color,scale] duration-300 ease-spring after:absolute after:-inset-1 hover:bg-current/20';
 const icon = 'size-4.5 transition-transform duration-300 ease-spring';
@@ -27,9 +38,11 @@ const icon = 'size-4.5 transition-transform duration-300 ease-spring';
   <div class:list={[paged && '-m-3 overflow-clip']}>
     <div
       class:list={[
+        'grid items-start gap-y-6 sm:gap-y-2',
         paged &&
-          'flex snap-x snap-mandatory items-start gap-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:w-full *:shrink-0 *:snap-center *:snap-always [&::-webkit-scrollbar]:hidden',
+          'auto-cols-[100%] grid-flow-col grid-rows-[repeat(var(--per-page-mobile),auto)] snap-x snap-mandatory gap-x-6 overflow-x-auto overscroll-x-contain p-3 [scrollbar-width:none] *:snap-center *:snap-always sm:grid-rows-[repeat(var(--per-page),auto)] [&::-webkit-scrollbar]:hidden',
       ]}
+      style={paged ? `--per-page: ${perPage}; --per-page-mobile: ${perPageMobile}` : undefined}
       data-carousel-pages
       data-swipe-fade={paged || undefined}
     >
@@ -37,19 +50,23 @@ const icon = 'size-4.5 transition-transform duration-300 ease-spring';
     </div>
   </div>
   {
-    paged && (
-      <div class="flex items-center justify-center gap-4">
-        <button type="button" aria-label={uiText.previousPage} class={control} data-carousel-shift="-1">
-          <CaretLeftIcon class:list={[icon, 'group-hover:-translate-x-0.5']} aria-hidden="true" />
-        </button>
-        <Dots count={count} label={uiText.showPage} tone="current" current={0} />
-        <button type="button" aria-label={uiText.nextPage} class={control} data-carousel-shift="1">
-          <CaretRightIcon class:list={[icon, 'group-hover:translate-x-0.5']} aria-hidden="true" />
-        </button>
-        <p class="sr-only" role="status" data-carousel-status />
-      </div>
-    )
+    paged &&
+      controls.map(
+        ({ pages, visibility }) =>
+          pages > 1 && (
+            <div class:list={['flex items-center justify-center gap-4', visibility]} data-carousel-controls>
+              <button type="button" aria-label={uiText.previousPage} class={control} data-carousel-shift="-1">
+                <CaretLeftIcon class:list={[icon, 'group-hover:-translate-x-0.5']} aria-hidden="true" />
+              </button>
+              <Dots count={pages} label={uiText.showPage} tone="current" current={0} />
+              <button type="button" aria-label={uiText.nextPage} class={control} data-carousel-shift="1">
+                <CaretRightIcon class:list={[icon, 'group-hover:translate-x-0.5']} aria-hidden="true" />
+              </button>
+            </div>
+          ),
+      )
   }
+  {paged && <p class="sr-only" role="status" data-carousel-status />}
 </div>
 
 <script>

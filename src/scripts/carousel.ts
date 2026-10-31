@@ -11,36 +11,71 @@ const wide = window.matchMedia('(min-width: 40rem)');
 
 document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
   const track = root.querySelector<HTMLElement>('[data-carousel-pages]')!;
-  const pages = [...track.children] as HTMLElement[];
-  if (pages.length < 2) return;
+  const items = [...track.children] as HTMLElement[];
+  if (items.length < 2) return;
+  const contents = items.map((item) => item.querySelector<HTMLElement>('[data-carousel-item]') ?? item);
 
-  const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-dots] button')];
   const status = root.querySelector<HTMLElement>('[data-carousel-status]');
-  const items = pages.map((page) => [...page.querySelectorAll<HTMLElement>('[data-carousel-item]')]);
-  const slideDots = windowDots(dots);
+  const dotSets = [...root.querySelectorAll<HTMLElement>('[data-carousel-controls]')].map((controls) => {
+    const dots = [...controls.querySelectorAll<HTMLButtonElement>('[data-dots] button')];
+    return { dots, slide: windowDots(dots) };
+  });
+
+  const perPage = () => {
+    const next = items.findIndex((item) => item.offsetLeft !== items[0].offsetLeft);
+    return next === -1 ? items.length : next;
+  };
+
+  let size = perPage();
   let index = 0;
   let heading: number | undefined;
   let entering: Animation[] = [];
 
+  const count = () => Math.ceil(items.length / size);
+
+  const pageContents = (page: number) => contents.slice(page * size, (page + 1) * size);
+
   const scrollTo = (next: number, behavior: ScrollBehavior) =>
     track.scrollTo({ left: next * stepOf(track), behavior: reducedMotion.matches ? 'instant' : behavior });
 
-  const lock = () => pages.forEach((page, i) => (page.inert = i !== index));
+  const lock = () => items.forEach((item, i) => (item.inert = Math.floor(i / size) !== index));
+
+  const anchor = () =>
+    items.forEach((item, i) => {
+      const first = items[i - (i % size)];
+      const last = items[Math.min(i - (i % size) + size, items.length) - 1];
+      const middle = (first.offsetTop + last.offsetTop + last.offsetHeight) / 2;
+      item.style.transformOrigin = `50% ${middle - item.offsetTop}px`;
+    });
 
   const select = (next: number) => {
     index = next;
     lock();
-    dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
-    slideDots(index);
-    if (status) status.textContent = uiText.page(index + 1, pages.length);
+    const dotSet = dotSets.find(({ dots }) => dots.length === count());
+    dotSet?.dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === index)));
+    dotSet?.slide(index);
+    if (status) status.textContent = uiText.page(index + 1, count());
   };
+
+  const settled = new Set<HTMLElement>();
+
+  const settleReveals = () =>
+    contents.forEach((content, i) => {
+      if (i >= size && content.hasAttribute('data-reveal') && !content.hasAttribute('data-revealed')) {
+        content.setAttribute('data-revealed', '');
+        settled.add(content);
+      } else if (i < size && settled.has(content) && !contents[0].hasAttribute('data-revealed')) {
+        settled.delete(content);
+        content.removeAttribute('data-revealed');
+      }
+    });
 
   const reveal = (direction: number) => {
     entering.forEach((animation) => animation.cancel());
     entering = [];
     if (reducedMotion.matches) return;
-    entering = items[index].map((item, i) =>
-      item.animate(
+    entering = pageContents(index).map((content, i) =>
+      content.animate(
         { opacity: [0, 1], filter: [blur, 'none'], scale: [0.97, 1], translate: [`${direction * 1.25}rem 0.5rem`, '0 0'] },
         { duration: enterDuration, delay: i * enterStagger, easing: smooth(), fill: 'backwards' },
       ),
@@ -49,7 +84,7 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
 
   const paint = swipe(track, {
     index: () => index,
-    go: (next) => scrollTo(clampIndex(next, pages.length), 'smooth'),
+    go: (next) => scrollTo(clampIndex(next, count()), 'smooth'),
     host: root,
   });
 
@@ -69,20 +104,24 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
 
   const forget = () => (heading = undefined);
 
-  labelSlides(pages);
+  labelSlides(items);
   lock();
+  settleReveals();
 
-  dots.forEach((dot, i) => dot.addEventListener('click', () => show(i, Math.sign(i - index))));
+  dotSets.forEach(({ dots }) =>
+    dots.forEach((dot, i) => dot.addEventListener('click', () => show(i, Math.sign(i - index)))),
+  );
 
   root.querySelectorAll<HTMLButtonElement>('[data-carousel-shift]').forEach((button) => {
     const direction = Number(button.dataset.carouselShift);
-    onActivate(button, () => show(((heading ?? index) + direction + pages.length) % pages.length, direction));
+    onActivate(button, () => show(((heading ?? index) + direction + count()) % count(), direction));
   });
 
   track.addEventListener(
     'scroll',
     () => {
-      const next = clampIndex(track.scrollLeft / stepOf(track), pages.length);
+      if (size !== perPage()) return;
+      const next = clampIndex(track.scrollLeft / stepOf(track), count());
       if (next === heading) heading = undefined;
       if (next !== index) select(next);
     },
@@ -92,9 +131,26 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
   track.addEventListener('pointerdown', forget, { passive: true });
   track.addEventListener('touchstart', forget, { passive: true });
 
+  new ResizeObserver(() => {
+    const next = perPage();
+    if (next !== size) {
+      const page = Math.floor((index * size) / next);
+      size = next;
+      forget();
+      entering.forEach((animation) => animation.cancel());
+      entering = [];
+      settleReveals();
+      select(page);
+      scrollTo(page, 'instant');
+      paint();
+    }
+    anchor();
+  }).observe(track);
+
   root.addEventListener('gallery-reveal', ({ target }) => {
-    const page = pages.findIndex((candidate) => target instanceof Node && candidate.contains(target));
-    if (page === -1 || page === index) return;
+    const item = items.findIndex((candidate) => target instanceof Node && candidate.contains(target));
+    const page = Math.floor(item / size);
+    if (item === -1 || page === index) return;
     forget();
     select(page);
     scrollTo(page, 'instant');
