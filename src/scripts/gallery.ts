@@ -101,6 +101,7 @@ const afterScroll = (target: Element, done: () => void) => {
 };
 
 document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((dialog) => {
+  const parts = [...dialog.children] as HTMLElement[];
   const track = dialog.querySelector<HTMLElement>('[data-gallery-track]')!;
   const slides = [...track.children] as HTMLElement[];
   const items = [...track.querySelectorAll<HTMLElement>('[data-gallery-item]')];
@@ -195,7 +196,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
   const animate = async (opening: boolean) => {
     busy = true;
     dialog.addEventListener('wheel', block, { passive: false });
-    dialog.inert = !opening;
+    parts.forEach((part) => (part.inert = !opening));
     track.style.overflow = 'hidden';
     if (!opening) go(index, 'instant');
     const item = items[index];
@@ -304,7 +305,7 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach((di
           );
         }
       }
-      dialog.inert = false;
+      parts.forEach((part) => (part.inert = false));
       track.style.removeProperty('overflow');
       dialog.removeEventListener('wheel', block);
       busy = false;

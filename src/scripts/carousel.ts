@@ -70,16 +70,18 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
       }
     });
 
-  const reveal = (direction: number) => {
+  const reveal = (direction: number, exclude?: HTMLElement) => {
     entering.forEach((animation) => animation.cancel());
     entering = [];
     if (reducedMotion.matches) return;
-    entering = pageContents(index).map((content, i) =>
-      content.animate(
-        { opacity: [0, 1], filter: [blur, 'none'], scale: [0.97, 1], translate: [`${direction * 1.25}rem 0.5rem`, '0 0'] },
-        { duration: enterDuration, delay: i * enterStagger, easing: smooth(), fill: 'backwards' },
-      ),
-    );
+    entering = pageContents(index)
+      .filter((content) => content !== exclude)
+      .map((content, i) =>
+        content.animate(
+          { opacity: [0, 1], filter: [blur, 'none'], scale: [0.97, 1], translate: [`${direction * 1.25}rem 0.5rem`, '0 0'] },
+          { duration: enterDuration, delay: i * enterStagger, easing: smooth(), fill: 'backwards' },
+        ),
+      );
   };
 
   const paint = swipe(track, {
@@ -168,9 +170,11 @@ document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
     const item = items.findIndex((candidate) => target instanceof Node && candidate.contains(target));
     const page = Math.floor(item / size);
     if (item === -1 || page === index) return;
+    const direction = Math.sign(page - index);
     forget();
     select(page);
     scrollTo(page, 'instant');
     paint();
+    reveal(direction, contents[item]);
   });
 });
