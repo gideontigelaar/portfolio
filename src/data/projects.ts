@@ -3,6 +3,8 @@ import bombermanScreenshot from '../assets/images/screenshots/bomberman.png';
 import fiscariepScreenshot from '../assets/images/screenshots/fiscariep.png';
 import groenwerfDarkScreenshot from '../assets/images/screenshots/groenwerf-dark.png';
 import groenwerfLightScreenshot from '../assets/images/screenshots/groenwerf-light.png';
+import lyraDarkScreenshot from '../assets/images/screenshots/lyra-dark.png';
+import lyraLightScreenshot from '../assets/images/screenshots/lyra-light.png';
 import projectArchitectureScreenshot from '../assets/images/screenshots/project-architecture.png';
 import ticTacToeScreenshot from '../assets/images/screenshots/tic-tac-toe.png';
 import whispScreenshot from '../assets/images/screenshots/whisp.png';
@@ -19,6 +21,16 @@ export interface Project {
 }
 
 export const projects: Project[] = [
+  {
+    title: 'Lyra',
+    year: 2026,
+    description: 'A home automation system using ESP32-C6 boards, keeping track of the temperature, humidity and battery levels of Bluetooth sensors around the house.',
+    details: 'The ESP32 firmware relays the sensor readings to a PHP API, which stores everything in MariaDB for a dashboard built with Astro.',
+    tech: ['C++', 'PHP', 'Astro'],
+    href: 'https://github.com/gideontigelaar/lyra',
+    screenshot: lyraDarkScreenshot,
+    screenshotDark: lyraLightScreenshot,
+  },
   {
     title: 'Tic-Tac-Toe',
     year: 2026,
